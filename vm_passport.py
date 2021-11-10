@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import os
 import json
 import time
 import hashlib
@@ -9,17 +8,18 @@ from functools import reduce
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from env import portal_info
+
 
 def json_read(json_object: dict):
     print(json.dumps(json_object, indent=4))
 
 
 def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict = '') -> dict:
-    # cmdb_api_url: str = "https://cmdb.common.gos-tech.xyz/rest/"
-    cmdb_api_url: str = os.environ['DATA_GERRY_CMDB_URL']
+    cmdb_api_url: str = "https://cmdb.common.gos-tech.xyz/rest/"
     headers_cmdb_api: dict = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer %s' % token
@@ -52,6 +52,15 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
                 foo = foo / 1024
             return foo
 
+        def get_metric(ns_info: list, looking_metric: str, type_metric: str) -> str:
+            for metric in ns_info:
+                if metric[0] == looking_metric and metric[1] == type_metric:
+                    return metric[2][1]
+
+        # metric = lambda x, y: filter(lambda foo: foo[2][1] if foo[0] == x and foo[1] == y else None, vm_info['info'])
+
+        get_usage = lambda x, y: "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
+
         fract = lambda x: str(int(x)) if x - int(x) == 0 else "%.2f" % x
 
         namespace_object_template: dict = {
@@ -66,27 +75,31 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
                 },
                 {
                     "name": "limits.cpu-hard",
-                    "value": vm_info['info'][0][2][1]
+                    "value": get_metric(vm_info['info'], 'limits.cpu', 'hard')
                 },
                 {
                     "name": "limits.cpu-used",
-                    "value": vm_info['info'][1][2][1]
+                    "value": get_metric(vm_info['info'], 'limits.cpu', 'used')
                 },
                 {
                     "name": "cores-usage",
-                    "value": "%.2f" % ((float(vm_info['info'][1][2][1]) / float(vm_info['info'][0][2][1])) * 100)
+                    # "value": "%.2f" % ((float(get_metric(vm_info['info'], 'limits.cpu', 'used')) / float(get_metric(vm_info['info'], 'limits.cpu', 'hard'))) * 100)
+                    "value": get_usage(get_metric(vm_info['info'], 'limits.cpu', 'used'),
+                                       get_metric(vm_info['info'], 'limits.cpu', 'hard'))
                 },
                 {
                     "name": "limits.memory-hard",
-                    "value": fract(convert_to_gb(vm_info['info'][4][2][1]))
+                    "value": fract(convert_to_gb(get_metric(vm_info['info'], 'limits.memory', 'hard')))
                 },
                 {
                     "name": "limits.memory-used",
-                    "value": fract(convert_to_gb(vm_info['info'][5][2][1]))
+                    "value": fract(convert_to_gb(get_metric(vm_info['info'], 'limits.memory', 'used')))
                 },
                 {
                     "name": "memory-usage",
-                    "value": "%.2f" % ((float(vm_info['info'][5][2][1]) / float(vm_info['info'][4][2][1])) * 100)
+                    # "value": "%.2f" % ((float(get_metric(vm_info['info'], 'limits.memory', 'used')) / float(get_metric(vm_info['info'], 'limits.memory', 'hard'))) * 100)
+                    "value": get_usage(get_metric(vm_info['info'], 'limits.memory', 'used'),
+                                       get_metric(vm_info['info'], 'limits.memory', 'hard'))
                 }
             ]
         }
@@ -273,7 +286,6 @@ def categorie_id(categorie_name: str, categorie_label: str, categorie_icon: str,
 
 
 def PassportsVM(portal_name: str):
-
     def sbercloud_api(api_name: str) -> dict:
         headers: dict = {
             'user-agent': 'CMDB',

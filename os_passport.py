@@ -59,11 +59,9 @@ def PassportsOS(portal_name: str):
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
 
     for cluster in os_info:
-
         if not any(map(lambda x: any(
-                map(lambda y: y['name'] == f"os-cluster--{cluster['cluster'].replace('.', '_')}", x['results'])),
-                       cmdb_projects)):
-
+                map(lambda y: y['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}", x['results'])),
+                       cmdb_projects)):# and cluster['cluster'] == 'ocp.bootcampsdp.tech':
             data_type_template: dict = {
                 "fields": [
                     {
@@ -120,7 +118,7 @@ def PassportsOS(portal_name: str):
                                 "memory-usage"
                             ],
                             "type": "section",
-                            "name": f"os-cluster--{cluster['cluster']}",
+                            "name": f"os-cluster-{portal_name}--{cluster['cluster']}",
                             "label": cluster['cluster']
                         }
                     ],
@@ -153,14 +151,14 @@ def PassportsOS(portal_name: str):
                         }
                     }
                 },
-                "name": f"os-cluster--{cluster['cluster'].replace('.', '_')}",
+                "name": f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
                 "label": cluster['cluster'],
                 "description": f'openshift cluster {cluster["cluster"]}'
             }
 
             create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
             print(create_type)
-            all_types_pages = get_info_from_all_page('types')[0]['pager']['total_pages']
+            all_types_pages = get_info_from_all_page('types', cmdb_token)[0]['pager']['total_pages']
             new_all_types_pages = list()
             for page in range(1, all_types_pages + 1):
                 response_page = cmdb_api('GET', f'types/?page={page}', cmdb_token)
@@ -169,13 +167,13 @@ def PassportsOS(portal_name: str):
             new_type_id = None
             for new_types in new_all_types_pages:
                 for new_item in new_types['results']:
-                    if new_item['name'] == f"os-cluster--{cluster['cluster'].replace('.', '_')}":
+                    if new_item['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}":
                         new_type_id = new_item['public_id']
 
             print(new_type_id, 'new type id')
 
             os_portal_categorie_id = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
-                                                  os_passports_categorie_id['public_id'])
+                                                  os_passports_categorie_id['public_id'], all_categories)
             data_cat_template: dict = {
                 "public_id": os_portal_categorie_id['public_id'],
                 "name": os_portal_categorie_id['name'],
@@ -187,7 +185,7 @@ def PassportsOS(portal_name: str):
                 "parent": os_passports_categorie_id['public_id'],
                 "types": os_portal_categorie_id['types']
             }
-
+            #
             if new_type_id == None:
                 return
 
@@ -195,7 +193,7 @@ def PassportsOS(portal_name: str):
 
             put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdb_token,
                                               data_cat_template)
-            print(put_type_in_catigories)
+            print('put_type_in_catigories', put_type_in_catigories)
             print('data_cat_template', data_cat_template)
 
             for namespace in cluster['info']:
@@ -205,13 +203,13 @@ def PassportsOS(portal_name: str):
 
 
     all_objects = get_info_from_all_page('objects', cmdb_token)
+    # from objects import all_objects
 
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
     all_cmdb_cluster_types = reduce(lambda x, y: x + y,
                                     map(lambda x_inner: tuple(
-                                        filter(lambda y_inner: 'os-cluster--' in y_inner['name'], x_inner['results'])),
+                                        filter(lambda y_inner: f'os-cluster-{portal_name}--' in y_inner['name'], x_inner['results'])),
                                         cmdb_projects))
-
 
     for cmdb_cluster in all_cmdb_cluster_types:
         for cluster in os_info:
@@ -238,7 +236,7 @@ def PassportsOS(portal_name: str):
                                               'NAMESPACE', template=True)
                         if cmdb_ns['fields'][0]['value'] == os_namespace['namespace'] and cmdb_ns['fields'] != \
                                 ns_template['fields']:
-                            print(f"UPDATE NAMESPACE {cmdb_ns['type_id']}", os_namespace['namespace'])
+                            print(f"NAMESPACE FOR UPDATE in {cmdb_ns['type_id']}", os_namespace['namespace'])
 
                             update_object_template: dict = {
                                 "type_id": cmdb_ns['type_id'],
@@ -259,6 +257,7 @@ def PassportsOS(portal_name: str):
                                 "views": 0,
                                 "comment": ""
                             }
+                            json_read(update_object_template)
 
                             print(objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT'))
 
