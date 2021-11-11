@@ -32,6 +32,7 @@ pipeline {
             steps {
                 sh 'whoami'
                 sh 'echo $PATH'
+                sh 'cat /etc/profiled'
                 echo '######################################'
             }
         }
