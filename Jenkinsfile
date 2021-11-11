@@ -17,11 +17,12 @@ properties([disableConcurrentBuilds()])
                     //  keys_repo_cred: keys_repo_cred]
 
 pipeline {
-    agent {
+    agent any
+//     {
 //         label agent
 //         dockerfile true
-        label any
-        }
+//         label any
+//         }
     // options {
         // buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
     // }
