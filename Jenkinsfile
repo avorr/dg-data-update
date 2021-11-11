@@ -27,9 +27,12 @@ pipeline {
         // buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
     // }
 
+    withEnv(['PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker'])
+
     stages {
+
         stage('Build the context') {
-        withEnv(['PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker'])
+
             steps {
                 sh 'whoami'
                 sh 'echo $PATH'
