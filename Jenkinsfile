@@ -43,9 +43,9 @@ pipeline {
 //                     reuseNode true
 //                 }
             }
-            steps {
-                sh 'docker images'
-            }
+//             steps {
+//                 sh 'docker images'
+//             }
         }
     }
 
