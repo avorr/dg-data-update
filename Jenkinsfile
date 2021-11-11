@@ -30,7 +30,7 @@ pipeline {
 //     withEnv(['PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker'])
     environment {
 //     PATH = "/hot/new/bin:${env.PATH}"
-    PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker"
+    PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
     }
 
     stages {
@@ -49,7 +49,7 @@ pipeline {
 //                 sh 'env'
                 sh 'set'
                 echo '######################################'
-                sh '/usr/local/bin/docker -h'
+                sh 'docker -h'
             }
         }
     }
