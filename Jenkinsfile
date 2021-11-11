@@ -32,7 +32,9 @@ pipeline {
             steps {
                 sh 'whoami'
                 sh 'echo $PATH'
-                sh 'cat /etc/profiled'
+//                 sh 'cat /etc/profiled'
+                sh 'export PATH="$PATH:/usr/local/bin/docker"'
+                sh 'docker -h'
                 echo '######################################'
             }
         }
