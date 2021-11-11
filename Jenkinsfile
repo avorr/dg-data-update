@@ -18,8 +18,8 @@ properties([disableConcurrentBuilds()])
 
 pipeline {
     agent {
-        // label agent
-        { dockerfile true }
+//         label agent
+        dockerfile true
         }
     // options {
         // buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
