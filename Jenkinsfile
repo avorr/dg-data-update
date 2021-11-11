@@ -30,29 +30,38 @@ pipeline {
 //     withEnv(['PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker'])
     environment {
 //     PATH = "/hot/new/bin:${env.PATH}"
-    PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+        PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
     }
 
     stages {
-
-        stage('Build the context') {
-
+        stage('Build') {
+            agent {
+                docker {
+//                     image 'gradle:6.7-jdk11'
+                    dockerfile true
+                    // Run the container on the node specified at the top-level of the Pipeline, in the same workspace, rather than on a new node entirely:
+//                     reuseNode true
+                }
+            }
             steps {
-                sh 'whoami'
-                sh 'echo $PATH'
-//                 sh 'cat /etc/profiled'
-//                 sh 'export PATH="$PATH:/usr/local/bin/docker"'
-//                 sh 'ls -la ~/'
-//                 sh 'docker -h'
-
-                echo '######################################'
-//                 sh 'env'
-                sh 'set'
-                echo '######################################'
-                sh 'docker -h'
+                sh 'docker images'
             }
         }
     }
+
+
+
+
+
+
+//     stages {
+//         stage('Build the context') {
+//             steps {
+//                 sh 'docker -h'
+//             }
+//         }
+//     }
+
         // stage('Run dynamic inventory script') {
         //     steps {
         //         script {
