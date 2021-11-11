@@ -27,7 +27,11 @@ pipeline {
         // buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
     // }
 
-    withEnv(['PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker'])
+//     withEnv(['PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker'])
+    environment {
+//     PATH = "/hot/new/bin:${env.PATH}"
+    PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker"
+    }
 
     stages {
 
