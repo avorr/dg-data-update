@@ -34,7 +34,7 @@ pipeline {
                 sh 'echo $PATH'
 //                 sh 'cat /etc/profiled'
                 sh 'export PATH="$PATH:/usr/local/bin/docker"'
-                sh 'docker -h'
+                sh '/usr/local/bin/docker -h'
                 echo '######################################'
             }
         }
