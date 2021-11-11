@@ -29,11 +29,12 @@ pipeline {
 
     stages {
         stage('Build the context') {
+        withEnv(['PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker'])
             steps {
                 sh 'whoami'
                 sh 'echo $PATH'
 //                 sh 'cat /etc/profiled'
-                sh 'export PATH="$PATH:/usr/local/bin/docker"'
+//                 sh 'export PATH="$PATH:/usr/local/bin/docker"'
 //                 sh 'ls -la ~/'
 //                 sh 'docker -h'
 
@@ -41,6 +42,7 @@ pipeline {
 //                 sh 'env'
                 sh 'set'
                 echo '######################################'
+                sh 'docker -h'
             }
         }
     }
