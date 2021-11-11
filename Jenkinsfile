@@ -20,7 +20,7 @@ pipeline {
     agent {
 //         label agent
 //         dockerfile true
-        any
+        label 'master'
         }
     // options {
         // buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
