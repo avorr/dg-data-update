@@ -49,7 +49,7 @@ pipeline {
 //                 sh 'env'
                 sh 'set'
                 echo '######################################'
-                sh 'docker -h'
+                sh '/usr/local/bin/docker -h'
             }
         }
     }
