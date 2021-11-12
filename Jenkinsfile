@@ -43,11 +43,6 @@ pipeline {
                     args '-e CMDB_LOGIN=CMDB_LOGIN'
                 }
             }
-//             steps {
-//                 sh 'ls -la'
-//             }
-
-            }
         }
    }
 
