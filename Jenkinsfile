@@ -32,13 +32,16 @@ pipeline {
             }
             steps {
                 sh 'docker images'
+                docker.image('datagerry-cmdb').withRun {c ->
+                sh './test-with-local-db'
+                }
             }
         }
     }
-    node {
-        git '…'
-        docker.image('datagerry-cmdb').withRun {c ->
-            sh './test-with-local-db'
-        }
-    }
+//     node {
+//         git '…'
+//         docker.image('datagerry-cmdb').withRun {c ->
+//             sh './test-with-local-db'
+//         }
+//     }
 }
