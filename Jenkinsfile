@@ -24,46 +24,45 @@ pipeline {
     }
 
 
-    stages {
-        stage("Prepare build image") {
-            steps {
-                sh "docker build -f Dockerfile . -t datagerry"
-            }
-        }
-
-        stage("Build project") {
-            agent {
-                docker {
-                    image "datagerry"
-                    args "-e CMDB_LOGIN=CMDB_LOGIN"
-                    reuseNode true
-//                     label "build-image"
-                }
-            }
-            steps {
-//                 sh "yarn"
-                sh "python3 -V"
-                sh "cat /etc/*-release"
-//                 sh "pwd"
-//                 sh "/usr/local/bin/docker run --env-file .env -e PORTAL_TOKEN_PD15=${PORTAL_TOKEN_PD15} -e CMDB_LOGIN=${CMDB_LOGIN} -e CMDB_PASSWORD=${CMDB_PASSWORD} --rm -it datagerry"
-            }
-        }
-    }
-
-
 //     stages {
-//         stage('Build') {
+//         stage("Prepare build image") {
+//             steps {
+//                 sh "docker build -f Dockerfile . -t datagerry"
+//             }
+//         }
+//
+//         stage("Build project") {
 //             agent {
-//                 dockerfile {
-//                     filename 'Dockerfile'
-//                     args '-e CMDB_LOGIN=CMDB_LOGIN'
+//                 docker {
+//                     image "datagerry"
+//                     args "-e CMDB_LOGIN=CMDB_LOGIN"
+//                     reuseNode true
+//                     label "build-image"
 //                 }
 //             }
 //             steps {
-//                 sh "echo ${env.BUILD_ID}"
-//                 sh "echo ${env}"
-//
+//                 sh "python3 -V"
+//                 sh "cat /etc/*-release"
 //             }
 //         }
 //     }
+
+
+    stages {
+        stage('Build') {
+            agent {
+                dockerfile {
+                    filename 'Dockerfile'
+                    args '-e CMDB_LOGIN=CMDB_LOGIN'
+                }
+            }
+            steps {
+//                 sh "echo ${env.BUILD_ID}"
+//                 sh "echo ${env}"
+                sh "python3 -V"
+                sh "cat /etc/*-release"
+
+            }
+        }
+    }
 }
