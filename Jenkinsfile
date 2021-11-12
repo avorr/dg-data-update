@@ -60,7 +60,7 @@ pipeline {
 //                 sh "echo ${env.BUILD_ID}"
 //                 sh "echo ${env}"
                 sh "python3 main.py"
-                sh "cat /etc/*-release"
+//                 sh "cat /etc/*-release"
 
             }
         }
