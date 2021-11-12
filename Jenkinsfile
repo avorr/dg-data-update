@@ -35,6 +35,7 @@ pipeline {
 //                 sh "docker logs ${c.id}"
 //                 sh "echo ${c.id}"
                 sh "echo ${env.BUILD_ID}"
+                sh "echo ${env}"
 
             }
         }
