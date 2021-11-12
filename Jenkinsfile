@@ -59,7 +59,7 @@ pipeline {
             steps {
 //                 sh "echo ${env.BUILD_ID}"
 //                 sh "echo ${env}"
-                sh "python3 -V"
+                sh "python3 main.py"
                 sh "cat /etc/*-release"
 
             }
