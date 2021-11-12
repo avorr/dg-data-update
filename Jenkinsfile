@@ -30,6 +30,9 @@ pipeline {
                     additionalBuildArgs  '--build-arg version="cmdb-datagerry"'
                 }
             }
+                        steps {
+                sh 'ls -la'
+            }
 
         stage('Build') {
             agent {
@@ -40,9 +43,9 @@ pipeline {
                 }
             }
         }
-//             steps {
-//                 sh 'ls -la'
-//             }
+            steps {
+                sh 'ls -la'
+            }
         }
     }
 }
