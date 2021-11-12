@@ -27,12 +27,18 @@ pipeline {
                     filename 'Dockerfile'
 //                     tag 'datagerry-cmdb'
                     args '-e CMDB_LOGIN=CMDB_LOGIN'
-                    additionalBuildArgs  '--build-arg version="cmdb-datagerry"'
+//                     additionalBuildArgs  '--build-arg version="cmdb-datagerry"'
                 }
             }
             steps {
-                sh 'ls -la'
+                sh 'docker images'
             }
+        }
+    }
+    node {
+        git '…'
+        docker.image('datagerry-cmdb').withRun {c ->
+            sh './test-with-local-db'
         }
     }
 }
