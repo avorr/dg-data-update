@@ -22,7 +22,6 @@ pipeline {
 
 
     stages {
-
         stage("Prepare build image") {
             steps {
                 sh "docker build -f Dockerfile . -t datagerry"
@@ -43,6 +42,7 @@ pipeline {
                 sh "ls -la"
             }
         }
+    }
 
 
 //     stages {
