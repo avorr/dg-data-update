@@ -20,30 +20,44 @@ pipeline {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
     }
 
+
     stages {
-        stage('Build') {
+
+        stage("Prepare build image") {
+            steps {
+                sh "docker build -f Dockerfile . -t datagerry"
+            }
+        }
+
+        stage("Build project") {
             agent {
-                dockerfile {
-                    filename 'Dockerfile'
-//                     tag 'datagerry-cmdb'
-                    args '-e CMDB_LOGIN=CMDB_LOGIN'
-//                     additionalBuildArgs  '--build-arg version="cmdb-datagerry"'
+                docker {
+                    image "datagerry"
+                    args "-v ${PWD}:/usr/src/app -w /usr/src/app"
+                    reuseNode true
+//                     label "build-image"
                 }
             }
             steps {
-//                 sh 'docker images'
-//                 sh "docker logs ${c.id}"
-//                 sh "echo ${c.id}"
-                sh "echo ${env.BUILD_ID}"
-                sh "echo ${env}"
-
+//                 sh "yarn"
+                sh "ls -la"
             }
         }
-    }
-//     node {
-//         git '…'
-//         docker.image('datagerry-cmdb').withRun {c ->
-//             sh './test-with-local-db'
+
+
+//     stages {
+//         stage('Build') {
+//             agent {
+//                 dockerfile {
+//                     filename 'Dockerfile'
+//                     args '-e CMDB_LOGIN=CMDB_LOGIN'
+//                 }
+//             }
+//             steps {
+//                 sh "echo ${env.BUILD_ID}"
+//                 sh "echo ${env}"
+//
+//             }
 //         }
 //     }
 }
