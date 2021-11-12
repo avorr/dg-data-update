@@ -23,9 +23,10 @@ pipeline {
 //         dockerfile true
 //         label any
 //         }
-    // options {
-        // buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
-    // }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
+        timestamps()
+    }
 
 //     withEnv(['PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/docker'])
     environment {
@@ -35,11 +36,18 @@ pipeline {
 
     stages {
         stage('Build') {
-            agent { dockerfile true }
+            agent {
+                dockerfile true
+//                         docker {
+//             image 'maven:3.8.1-adoptopenjdk-11'
+                args '-v $HOME/.m2:/root/.m2'
+//         }
+            }
             steps {
                 sh 'ls -la'
             }
         }
+
     }
 
 
