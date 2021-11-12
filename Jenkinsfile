@@ -50,10 +50,11 @@ pipeline {
             steps {
                 agent {
                     docker {
-                    image "project-build:${DOCKER_IMAGE_BRANCH}"
-                    args "-v ${PWD}:/usr/src/app -w /usr/src/app"
-                    reuseNode true
-                    label "build-image"
+                        image "project-build:${DOCKER_IMAGE_BRANCH}"
+                        args "-v ${PWD}:/usr/src/app -w /usr/src/app"
+                        reuseNode true
+                        label "build-image"
+                    }
                 }
             }
 //             steps {
