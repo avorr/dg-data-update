@@ -47,20 +47,7 @@ pipeline {
 //                 sh 'ls -la'
 //             }
 
-            steps {
-                agent {
-                    docker {
-                        image "project-build:${DOCKER_IMAGE_BRANCH}"
-                        args "-v ${PWD}:/usr/src/app -w /usr/src/app"
-                        reuseNode true
-                        label "build-image"
-                    }
-                }
             }
-//             steps {
-//                 sh "yarn"
-//                 sh "yarn build"
-//             }
         }
    }
 
