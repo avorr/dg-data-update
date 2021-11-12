@@ -60,6 +60,9 @@ pipeline {
 //                 sh "echo ${env.BUILD_ID}"
 //                 sh "echo ${env}"
                 sh "python3 main.py"
+
+
+                sh 'env | grep CMD'
 //                 sh "cat /etc/*-release"
 
             }
