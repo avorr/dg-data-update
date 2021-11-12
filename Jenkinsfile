@@ -24,7 +24,7 @@ pipeline {
 //         label any
 //         }
     options {
-        buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
+//         buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
         timestamps()
     }
 
@@ -39,7 +39,7 @@ pipeline {
             agent {
                 dockerfile {
                     filename 'Dockerfile'
-                    label 'datagerry-cmdb'
+                    tag 'datagerry-cmdb'
                 }
             }
             steps {
