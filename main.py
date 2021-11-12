@@ -6,5 +6,6 @@ from os_passport import PassportsOS
 
 
 if __name__ == '__main__':
-    all(map(PassportsVM, portal_info))
-    all(map(PassportsOS, portal_info))
+    # all(map(PassportsVM, portal_info))
+    # all(map(PassportsOS, portal_info))
+    print('#################'*100)
