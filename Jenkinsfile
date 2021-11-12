@@ -40,6 +40,7 @@ pipeline {
             steps {
 //                 sh "yarn"
                 sh "ls -la"
+                sh "pwd"
             }
         }
     }
