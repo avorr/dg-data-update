@@ -32,9 +32,9 @@ pipeline {
             }
             steps {
                 sh 'docker images'
-                docker.image('datagerry-cmdb').withRun {c ->
-                sh './test-with-local-db'
-                }
+                sh "docker logs ${c.id}"
+                sh "echo ${env.BUILD_ID}"
+
             }
         }
     }
