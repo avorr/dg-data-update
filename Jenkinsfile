@@ -31,8 +31,9 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker images'
-                sh "docker logs ${c.id}"
+//                 sh 'docker images'
+//                 sh "docker logs ${c.id}"
+                sh "echo ${c.id}"
                 sh "echo ${env.BUILD_ID}"
 
             }
