@@ -18,6 +18,7 @@ pipeline {
 
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+        PORTAL_TOKEN_PD15 = "TEST"
     }
 
 
