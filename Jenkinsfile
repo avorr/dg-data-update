@@ -39,6 +39,7 @@ pipeline {
             agent {
                 dockerfile {
                     filename 'Dockerfile'
+                    tag 'datagerry-cmdb'
                 }
             }
             steps {
