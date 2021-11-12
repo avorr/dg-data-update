@@ -42,7 +42,7 @@ pipeline {
             }
             steps {
 //                 sh "yarn"
-                sh "ls -la ~/"
+                sh "cat /etc/*-releace"
 //                 sh "pwd"
 //                 sh "/usr/local/bin/docker run --env-file .env -e PORTAL_TOKEN_PD15=${PORTAL_TOKEN_PD15} -e CMDB_LOGIN=${CMDB_LOGIN} -e CMDB_PASSWORD=${CMDB_PASSWORD} --rm -it datagerry"
             }
