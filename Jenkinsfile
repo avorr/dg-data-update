@@ -43,10 +43,25 @@ pipeline {
                     args '-e CMDB_LOGIN=CMDB_LOGIN'
                 }
             }
-            steps {
-                sh 'ls -la'
+//             steps {
+//                 sh 'ls -la'
+//             }
+
+        stage("Build project") {
+            agent {
+                docker {
+                image "project-build:${DOCKER_IMAGE_BRANCH}"
+                args "-v ${PWD}:/usr/src/app -w /usr/src/app"
+                reuseNode true
+                label "build-image"
             }
         }
+//             steps {
+//                 sh "yarn"
+//                 sh "yarn build"
+//             }
+        }
+   }
 
 //         docker {
 //             image 'maven:3.8.1-adoptopenjdk-11'
