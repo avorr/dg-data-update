@@ -32,7 +32,7 @@ pipeline {
             agent {
                 docker {
                     image "datagerry"
-                    args "-v ${PWD}:/usr/src/app -w /usr/src/app"
+                    args "-e CMDB_LOGIN=CMDB_LOGIN"
                     reuseNode true
 //                     label "build-image"
                 }
