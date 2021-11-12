@@ -27,7 +27,7 @@ pipeline {
                     filename 'Dockerfile'
 //                     tag 'datagerry-cmdb'
                     args '-e CMDB_LOGIN=CMDB_LOGIN'
-                    additionalBuildArgs  '--build-arg version="$version"'
+                    additionalBuildArgs  '--build-arg version="cmdb-datagerry"'
                 }
             }
             steps {
