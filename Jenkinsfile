@@ -19,6 +19,19 @@ pipeline {
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
         PORTAL_TOKEN_PD15 = "TEST"
+
+
+        withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//         environment {
+            CMDB_LOGIN1 = $USERNAME
+            CMDB_PASSWORD1 = $PASSWORD
+//         }
+//             sh 'echo $USERNAME'
+//             sh 'echo $PASSWORD'
+//             sh "python3 -V"
+//             sh "cat /etc/*-release"
+        }
+
         CMDB_LOGIN = credantials('cmdb-cred').USERNAME
         CMDB_LOGIN = 'TEST'
         CMDB_PASSWORD = "TEST"
