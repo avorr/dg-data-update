@@ -79,6 +79,7 @@ pipeline {
             steps {
                 script {
                     dockerImage = docker.build imagename
+                    sh 'ls -la'
                 }
             }
         }
