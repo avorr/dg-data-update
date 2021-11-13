@@ -59,17 +59,16 @@ pipeline {
 
     stages {
         stage("Prepare build image") {
-            steps {
-                environment {
+            environment {
                 test = ''
                 test2 = ''
-
-
-                }
-                withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    test = $USERNAME
-                    test2 = $PASSWORD
-                }
+            }
+            withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                test = $USERNAME
+                test2 = $PASSWORD
+            }
+            steps {
+                sh 'echo prinvet'
             }
         }
 
