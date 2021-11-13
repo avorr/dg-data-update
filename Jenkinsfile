@@ -35,7 +35,7 @@ pipeline {
 //         CMDB_LOGIN = credantials('cmdb-cred')
 //         CMDB_LOGIN = 'TEST'
 //         CMDB_PASSWORD = "TEST"
-        imagename = "datagerry-test"
+        imagename = "datagerry-cmdb"
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
 
@@ -106,7 +106,7 @@ pipeline {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
-                    image "datagerry-test"
+                    image "datagerry-cmdb"
                     args "--env-file ${env.WORKSPACE}/.env"
 //                     reuseNode true
 //                     label "build-image"
