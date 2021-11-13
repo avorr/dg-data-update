@@ -56,7 +56,7 @@ pipeline {
             steps {
                 sh "python3 -V"
                 sh "cat /etc/*-release"
-                echo '${CMDB_LOGIN}'
+                sh CMDB_LOGIN
             }
         }
     }
