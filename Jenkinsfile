@@ -21,16 +21,16 @@ pipeline {
         PORTAL_TOKEN_PD15 = "TEST"
 
 
-        withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //         environment {
-            CMDB_LOGIN1 = $USERNAME
-            CMDB_PASSWORD1 = $PASSWORD
+//             CMDB_LOGIN1 = $USERNAME
+//             CMDB_PASSWORD1 = $PASSWORD
 //         }
 //             sh 'echo $USERNAME'
 //             sh 'echo $PASSWORD'
 //             sh "python3 -V"
 //             sh "cat /etc/*-release"
-        }
+//         }
 
 //         CMDB_LOGIN = credantials('cmdb-cred')
         CMDB_LOGIN = 'TEST'
@@ -60,9 +60,15 @@ pipeline {
     stages {
         stage("Prepare build image") {
             steps {
+                environment {
+                test = ''
+                test2 = ''
+
+
+                }
                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh 'echo $USERNAME'
-                    sh 'echo $PASSWORD'
+                    test = $USERNAME
+                    test2 = $PASSWORD
                 }
             }
         }
