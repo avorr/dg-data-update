@@ -101,7 +101,7 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-cmdb"
-                    args "--env-file ${env.WORKSPACE}/.env"
+                    args "--rm --env-file ${env.WORKSPACE}/.env"
 //                     reuseNode true
 //                     label "build-image"
                 }
@@ -114,6 +114,7 @@ pipeline {
 //                     sh "cat /etc/*-release"
 //                     println(CMDB_CRED)
                     sh '''
+                        sleep 10000
                         python3 main.py
                        '''
 //                 }
