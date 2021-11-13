@@ -103,9 +103,10 @@ pipeline {
             }
             agent {
                 docker {
+
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-test"
-                    args "--env-file .env"
+                    args "--env-file $HOME/.env"
                     reuseNode true
 //                     label "build-image"
                 }
