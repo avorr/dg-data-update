@@ -33,8 +33,8 @@ pipeline {
 //         }
 
 //         CMDB_LOGIN = credantials('cmdb-cred')
-        CMDB_LOGIN = 'TEST'
-        CMDB_PASSWORD = "TEST"
+//         CMDB_LOGIN = 'TEST'
+//         CMDB_PASSWORD = "TEST"
         imagename = "datagerry-test"
         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
@@ -96,7 +96,7 @@ pipeline {
 
         stage("Build project") {
             environment {
-                CMDB_LOGIN1 = credentials('cmdb-cred')
+                CMDB_CRED = credentials('cmdb-cred')
 //                 CMDB_PASSWORD1 = $PASSWORD
             }
             agent {
@@ -116,8 +116,9 @@ pipeline {
 //                     sh "cat /etc/*-release"
                     sh '''
                         python3 -V
-                        echo $CMDB_LOGIN1
+                        echo $CMDB_CMDB_CRED
                         env
+                        sleep 100000
                        '''
 //                 }
 
