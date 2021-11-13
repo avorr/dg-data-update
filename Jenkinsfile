@@ -24,6 +24,12 @@ pipeline {
         imagename = "datagerry-test"
         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
+        withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//             sh 'cf login some.awesome.url -u $USERNAME -p $PASSWORD'
+            sh 'echo $USERNAME $PASSWORD'
+
+        }
+
     }
 
 
