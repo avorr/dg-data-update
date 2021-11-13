@@ -32,7 +32,7 @@ pipeline {
 //             sh "cat /etc/*-release"
         }
 
-        CMDB_LOGIN = credantials('cmdb-cred').USERNAME
+//         CMDB_LOGIN = credantials('cmdb-cred')
         CMDB_LOGIN = 'TEST'
         CMDB_PASSWORD = "TEST"
         imagename = "datagerry-test"
