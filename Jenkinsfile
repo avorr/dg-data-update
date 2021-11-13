@@ -61,14 +61,14 @@ pipeline {
 //                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME $PASSWORD'
 //                 }
-                node {
+//                 node {
                     withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                      sh '''
                         echo "$USERNAME"
                         echo "$PASSWORD"
                         '''
                     }
-                }
+//                 }
 
 //                 echo CMDB_LOGIN
             }
