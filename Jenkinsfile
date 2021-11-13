@@ -80,7 +80,7 @@ pipeline {
                 script {
                     dockerImage = docker.build imagename
                     sh 'ls -la'
-                    println(env)
+                    println(env.WORKSPACE)
                 }
             }
         }
