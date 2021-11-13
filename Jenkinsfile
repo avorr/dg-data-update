@@ -114,12 +114,11 @@ pipeline {
 //                     sh 'echo $PASSWORD'
 //                     sh "python3 -V"
 //                     sh "cat /etc/*-release"
-                    println(CMDB_CRED)
+//                     println(CMDB_CRED)
                     sh '''
                         python3 -V
-                        echo $CMDB_CMDB_CRED
-                        env
-                        sleep 100000
+                        echo $CMDB_USR
+                        python3 main.py
                        '''
 //                 }
 
