@@ -114,7 +114,6 @@ pipeline {
 //                     sh "cat /etc/*-release"
 //                     println(CMDB_CRED)
                     sh '''
-                        sleep 10000
                         python3 main.py
                        '''
 //                 }
