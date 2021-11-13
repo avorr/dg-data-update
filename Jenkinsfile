@@ -64,12 +64,12 @@ pipeline {
                 test = ''
                 test2 = ''
             }
-            withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                test = $USERNAME
-                test2 = $PASSWORD
-            }
+//             withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//                 test = $USERNAME
+//                 test2 = $PASSWORD
+//             }
 
-//                 sh 'echo prinvet'
+                sh 'echo prinvet'
             }
         }
 
