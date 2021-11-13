@@ -36,8 +36,6 @@ pipeline {
                     sh 'echo $USERNAME'
                     sh 'echo $PASSWORD'
                 }
-//                 sh "docker build -f Dockerfile . -t datagerry"
-//                 sh "echo $USERNAME"
             }
         }
 
@@ -71,9 +69,14 @@ pipeline {
                 }
             }
             steps {
-                sh "python3 -V"
+                withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh 'echo $USERNAME'
+                    sh 'echo $PASSWORD'
+                }
+
+//                 sh "python3 -V"
 //                 sh "cat /etc/*-release"
-                sh "echo ##################################################"
+//                 sh "echo ##################################################"
 //                     withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                      sh '''
 //                         echo "$USERNAME"
