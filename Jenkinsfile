@@ -59,6 +59,7 @@ pipeline {
 
     stages {
         stage("Prepare build image") {
+        steps {
             environment {
                 test = ''
                 test2 = ''
@@ -67,8 +68,8 @@ pipeline {
                 test = $USERNAME
                 test2 = $PASSWORD
             }
-            steps {
-                sh 'echo prinvet'
+
+//                 sh 'echo prinvet'
             }
         }
 
