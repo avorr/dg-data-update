@@ -42,13 +42,11 @@ pipeline {
 //             }
         }
 
-        stage("Prepare build image") {
+        stage("build image") {
             steps {
                 script {
                     dockerImage = docker.build imagename
-            }
-
-//                 sh "docker build -f Dockerfile . -t datagerry"
+                }
             }
         }
 
