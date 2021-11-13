@@ -59,10 +59,10 @@ pipeline {
 
     stages {
         stage("Prepare build image") {
-            environment {
-                test = TESTTT
+//             environment {
+//                 test = TESTTT
 //                 test2 = ''
-            }
+//             }
 
         steps {
 
