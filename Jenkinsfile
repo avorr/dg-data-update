@@ -37,18 +37,19 @@ pipeline {
             }
 
 
-//             steps {
-//                 sh "docker build -f Dockerfile . -t datagerry"
-//             }
-        }
-
-        stage("build image") {
             steps {
-                script {
-                    dockerImage = docker.build imagename
-                }
+//                 sh "docker build -f Dockerfile . -t datagerry"
+                sh "echo $USERNAME"
             }
         }
+
+//         stage("build image") {
+//             steps {
+//                 script {
+//                     dockerImage = docker.build imagename
+//                 }
+//             }
+//         }
 
 
 //         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
