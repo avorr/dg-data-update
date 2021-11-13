@@ -59,11 +59,13 @@ pipeline {
 
     stages {
         stage("Prepare build image") {
-        steps {
             environment {
                 test = TESTTT
 //                 test2 = ''
             }
+
+        steps {
+
 //             withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                 test = $USERNAME
 //                 test2 = $PASSWORD
