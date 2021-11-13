@@ -18,7 +18,7 @@ pipeline {
 
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-        PORTAL_TOKEN_PD15 = "TEST"
+//         PORTAL_TOKEN_PD15 = "TEST"
 
 
 //         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -36,7 +36,7 @@ pipeline {
 //         CMDB_LOGIN = 'TEST'
 //         CMDB_PASSWORD = "TEST"
         imagename = "datagerry-test"
-        registryCredential = 'yenigul-dockerhub'
+//         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
 
     }
@@ -114,6 +114,7 @@ pipeline {
 //                     sh 'echo $PASSWORD'
 //                     sh "python3 -V"
 //                     sh "cat /etc/*-release"
+                    println(CMDB_CRED)
                     sh '''
                         python3 -V
                         echo $CMDB_CMDB_CRED
