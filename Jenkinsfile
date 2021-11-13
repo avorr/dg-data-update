@@ -24,48 +24,49 @@ pipeline {
     }
 
 
-//     stages {
+    stages {
 //         stage("Prepare build image") {
 //             steps {
 //                 sh "docker build -f Dockerfile . -t datagerry"
 //             }
 //         }
-//
-//         stage("Build project") {
-//             agent {
-//                 docker {
+
+        stage("Build project") {
+            agent {
+                docker {
+                    Dockerfile 'Dockerfile'
 //                     image "datagerry"
-//                     args "-e CMDB_LOGIN=CMDB_LOGIN"
-//                     reuseNode true
+                    args "-e CMDB_LOGIN=CMDB_LOGIN"
+                    reuseNode true
 //                     label "build-image"
+                }
+            }
+            steps {
+                sh "python3 -V"
+                sh "cat /etc/*-release"
+            }
+        }
+    }
+
+
+//     stages {
+//         stage('Build') {
+//             agent {
+//                 dockerfile {
+//                     filename 'Dockerfile'
+//                     args '-e CMDB_LOGIN=CMDB_LOGIN'
 //                 }
 //             }
 //             steps {
-//                 sh "python3 -V"
-//                 sh "cat /etc/*-release"
+////                 sh "echo ${env}"
+//                 sh "python3 env.py"
+//                 sh 'env | grep CMD'
+////                 sh "cat /etc/*-release"
 //             }
 //         }
 //     }
 
 
-    stages {
-        stage('Build') {
-            agent {
-                dockerfile {
-                    filename 'Dockerfile'
-                    args '-e CMDB_LOGIN=CMDB_LOGIN'
-                }
-            }
-            steps {
-//                 sh "echo ${env.BUILD_ID}"
-//                 sh "echo ${env}"
-                sh "python3 env.py"
 
 
-                sh 'env | grep CMD'
-//                 sh "cat /etc/*-release"
-
-            }
-        }
-    }
 }
