@@ -58,29 +58,23 @@ pipeline {
 
 
     stages {
+//         stage("Prepare build image") {
+//         steps {
+//                 sh 'echo prinvet'
+//             }
+//         }
+
         stage("Prepare build image") {
-//             environment {
-//                 test = TESTTT
-//                 test2 = ''
-//             }
-
-        steps {
-
-//             withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//                 test = $USERNAME
-//                 test2 = $PASSWORD
-//             }
-
-                sh 'echo prinvet'
-            }
-        }
-
-        stage("build image") {
             steps {
                 script {
+                    echo '''
+                    ####################################
+                                BUILD IMAGE
+                    ####################################
+                    '''
                     dockerImage = docker.build imagename
-                    sh 'ls -la'
-                    println(env.WORKSPACE)
+//                     sh 'ls -la'
+//                     println(env.WORKSPACE)
                 }
             }
         }
@@ -120,7 +114,6 @@ pipeline {
 //                     sh "cat /etc/*-release"
 //                     println(CMDB_CRED)
                     sh '''
-                        env
                         python3 main.py
                        '''
 //                 }
