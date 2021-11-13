@@ -109,18 +109,17 @@ pipeline {
                 }
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
 //                     sh "python3 -V"
 //                     sh "cat /etc/*-release"
                     sh '''
-                        echo $USERNAME
-                        echo $PASSWORD
                         python3 -V
                         echo $CMDB_LOGIN1
+                        env
                        '''
-                }
+//                 }
 
 
 
