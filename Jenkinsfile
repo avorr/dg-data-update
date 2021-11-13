@@ -21,7 +21,7 @@ pipeline {
         PORTAL_TOKEN_PD15 = "TEST"
         CMDB_LOGIN = "TEST"
         CMDB_PASSWORD = "TEST"
-        imagename = "datagerry"
+        imagename = "datagerry-test"
         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
     }
@@ -47,7 +47,7 @@ pipeline {
             agent {
                 docker {
 //                     Dockerfile 'Dockerfile'
-                    image "datagerry"
+                    image "datagerry-test"
                     args "-e CMDB_LOGIN=CMDB_LOGIN"
                     reuseNode true
 //                     label "build-image"
