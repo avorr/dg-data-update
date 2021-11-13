@@ -11,5 +11,6 @@ if __name__ == '__main__':
     # print(tuple(map(PassportsVM, portal_info)))
     # all(map(PassportsOS, portal_info))
     print('!!!!!!!!!!!!!!!'*100)
-    print(cmdb_login)
-    print(cmdb_password)
+    print(f'{cmdb_login} + login from jenkins')
+    print(f'{cmdb_password} + password from jenkins')
+    # print(cmdb_password)
