@@ -56,8 +56,16 @@ pipeline {
             }
             steps {
                 sh "python3 -V"
-                sh "cat /etc/*-release"
-                echo CMDB_LOGIN
+//                 sh "cat /etc/*-release"
+                sh "echo ##################################################"
+                withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//             sh 'cf login some.awesome.url -u $USERNAME -p $PASSWORD'
+                    sh 'echo $USERNAME $PASSWORD'
+                sh "echo ##################################################"
+
+                }
+
+//                 echo CMDB_LOGIN
             }
         }
     }
