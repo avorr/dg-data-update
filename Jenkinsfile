@@ -30,26 +30,23 @@ pipeline {
 
     stages {
         stage("Prepare build image") {
-
-            withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                sh 'echo $USERNAME'
-                sh 'echo $PASSWORD'
-            }
-
-
             steps {
+                withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh 'echo $USERNAME'
+                    sh 'echo $PASSWORD'
+                }
 //                 sh "docker build -f Dockerfile . -t datagerry"
-                sh "echo $USERNAME"
+//                 sh "echo $USERNAME"
             }
         }
 
-//         stage("build image") {
-//             steps {
-//                 script {
-//                     dockerImage = docker.build imagename
-//                 }
-//             }
-//         }
+        stage("build image") {
+            steps {
+                script {
+                    dockerImage = docker.build imagename
+                }
+            }
+        }
 
 
 //         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
