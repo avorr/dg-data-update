@@ -107,8 +107,8 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-test"
-                    args "--env-file env.WORKSPACE/.env"
-                    reuseNode true
+                    args "--env-file ${env.WORKSPACE}/.env"
+//                     reuseNode true
 //                     label "build-image"
                 }
             }
