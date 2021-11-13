@@ -97,13 +97,14 @@ pipeline {
         stage("Build project") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
+                PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
 //                 CMDB_PASSWORD1 = $PASSWORD
             }
             agent {
                 docker {
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-test"
-                    args "-e CMDB_LOGIN=CMDB_LOGIN"
+                    args "--env-file .env"
                     reuseNode true
 //                     label "build-image"
                 }
@@ -116,8 +117,7 @@ pipeline {
 //                     sh "cat /etc/*-release"
 //                     println(CMDB_CRED)
                     sh '''
-                        python3 -V
-                        echo $CMDB_USR
+                        env
                         python3 main.py
                        '''
 //                 }
