@@ -104,7 +104,7 @@ pipeline {
             }
             agent {
                 docker {
-                    workdir 'env.WORKSPACE'
+                    customWorkspace "env.WORKSPACE"
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-test"
                     args "--env-file $HOME/.env"
