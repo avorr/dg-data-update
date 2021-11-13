@@ -95,6 +95,10 @@ pipeline {
 //         }
 
         stage("Build project") {
+            environment {
+                CMDB_LOGIN1 = credentials('cmdb-cred')
+//                 CMDB_PASSWORD1 = $PASSWORD
+            }
             agent {
                 docker {
 //                     Dockerfile 'Dockerfile'
@@ -114,6 +118,7 @@ pipeline {
                         echo $USERNAME
                         echo $PASSWORD
                         python3 -V
+                        echo $CMDB_LOGIN1
                        '''
                 }
 
