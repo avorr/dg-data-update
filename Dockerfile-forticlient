@@ -2,7 +2,6 @@ FROM ubuntu:20.04
 
 ENV LOGIN=
 ENV HOST=
-ENV PORT=18443
 ENV PASSWORD=
 ENV TZ=Europe/Moscow
 
@@ -33,4 +32,4 @@ RUN apt-get update && \
 
 COPY start-connect.exp start-connect.exp
 
-CMD expect start-connect.exp $HOST:$PORT $LOGIN $PASSWORD
+CMD expect start-connect.exp $HOST $LOGIN $PASSWORD
