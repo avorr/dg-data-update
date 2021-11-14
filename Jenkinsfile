@@ -71,13 +71,14 @@ pipeline {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
+                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
             }
             agent {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-cmdb"
-                    args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
+                    args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
 //                     label "build-image"
                 }

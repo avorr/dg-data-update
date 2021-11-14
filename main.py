@@ -6,7 +6,8 @@ from os_passport import PassportsOS
 from view_settings import visiableSetting
 
 if __name__ == '__main__':
-    # print(portal_info)
+    print(portal_info)
+    exit()
 
     # all(map(PassportsVM, portal_info))
     all(map(PassportsOS, portal_info))
