@@ -1,6 +1,6 @@
 FROM python:3-alpine
 
-RUN pip3 install --no-cache --upgrade requests
+RUN pip3 install --no-cache --upgrade requests pymongo
 
 COPY . /opt/
 
