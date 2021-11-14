@@ -8,6 +8,6 @@ from view_settings import visiableSetting
 if __name__ == '__main__':
     print(portal_info)
 
-    all(map(PassportsVM, portal_info))
-    # all(map(PassportsOS, portal_info))
-    # visiableSetting()
+    # all(map(PassportsVM, portal_info))
+    all(map(PassportsOS, portal_info))
+    visiableSetting()
