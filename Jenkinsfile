@@ -18,9 +18,6 @@ pipeline {
 
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-//         PORTAL_TOKEN_PD15 = "TEST"
-
-
 //         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //         environment {
 //             CMDB_LOGIN1 = $USERNAME
@@ -28,26 +25,16 @@ pipeline {
 //         }
 //             sh 'echo $USERNAME'
 //             sh 'echo $PASSWORD'
-//             sh "python3 -V"
-//             sh "cat /etc/*-release"
 //         }
-
-//         CMDB_LOGIN = credantials('cmdb-cred')
-//         CMDB_LOGIN = 'TEST'
-//         CMDB_PASSWORD = "TEST"
         imagename = "datagerry-cmdb"
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
-
     }
 
 //     withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //         environment {
-//
 //             CMDB_LOGIN1 = $USERNAME
 //             CMDB_PASSWORD1 = $PASSWORD
-//
-//
 //         }
 //         sh 'echo $USERNAME'
 //         sh 'echo $PASSWORD'
@@ -55,15 +42,7 @@ pipeline {
 //         sh "cat /etc/*-release"
 //     }
 
-
-
     stages {
-//         stage("Prepare build image") {
-//         steps {
-//                 sh 'echo prinvet'
-//             }
-//         }
-
         stage("Prepare build image") {
             steps {
                 script {
@@ -73,12 +52,10 @@ pipeline {
                     ####################################
                     '''
                     dockerImage = docker.build imagename
-//                     sh 'ls -la'
 //                     println(env.WORKSPACE)
                 }
             }
         }
-
 
 //         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             // available as an env variable, but will be masked if you try to print it out any which way
@@ -94,14 +71,13 @@ pipeline {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
-//                 CMDB_PASSWORD1 = $PASSWORD
             }
             agent {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-cmdb"
-                    args "--rm --env-file ${env.WORKSPACE}/.env"
+                    args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 //                     reuseNode true
 //                     label "build-image"
                 }
@@ -110,25 +86,10 @@ pipeline {
 //                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
-//                     sh "python3 -V"
-//                     sh "cat /etc/*-release"
-//                     println(CMDB_CRED)
                     sh '''
                         python3 main.py
                        '''
 //                 }
-
-
-
-//                 sh "echo ##################################################"
-//                     withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//                      sh '''
-//                         echo "$USERNAME"
-//                         echo "$PASSWORD"
-//                         '''
-//                     }
-
-//                 echo CMDB_LOGIN
             }
         }
     }
@@ -150,8 +111,5 @@ pipeline {
 //             }
 //         }
 //     }
-
-
-
 
 }

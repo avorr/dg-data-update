@@ -2,15 +2,10 @@
 
 import os
 
-# cmdb_login: str = os.environ['CMDB_CRED']
 cmdb_login: str = os.environ['CMDB_CRED_USR']
-# cmdb_password: str = os.environ['CMDB_PASSWORD']
 cmdb_password: str = os.environ['CMDB_CRED_PSW']
 
 env: dict = {url: os.environ[url] for url in os.environ if 'PORTAL_' in url or 'OS_METRICS_' in url}
-
-# print('!!!!!!!!!!!!!!!!')
-# print(env)
 
 portal_info: dict = \
     {url[11:]: {'url': env[url], 'token': env[url.replace('URL', 'TOKEN')], 'metrics': env[f'OS_METRICS_{url[11:]}']}
