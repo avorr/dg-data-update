@@ -299,9 +299,6 @@ def PassportsVM(portal_name: str):
 
     all_categories = get_info_from_all_page('categories', cmdb_token)
 
-    print(all_categories)
-    return
-
     passports_categorie_id = categorie_id('passports', 'Passports VM', 'far fa-folder-open', cmdb_token, all_categories)
     portal_categorie_id = categorie_id(portal_name, portal_name, 'fas fa-folder-open', cmdb_token, all_categories,
                                        passports_categorie_id['public_id'])
@@ -337,7 +334,9 @@ def PassportsVM(portal_name: str):
         return cloud_projects_with_check_sum
 
     all_projects = get_check_sum_cloud_projects(cloud_projects['projects'])
+
     print(len(all_projects))
+
     del cloud_projects
 
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
