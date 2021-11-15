@@ -109,6 +109,7 @@ pipeline {
 //                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 FORTI_CRED = credentials('FORTI_CRED')
+                def WORKDIR = "${env.WORKSPACE}"
             }
 
             steps {
@@ -118,7 +119,7 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
-                    def WORKDIR = env.WORKSPACE
+
 //                     'docker build -f Dockerfile-forticlient . -t forti-docker'
                     sh '''#!/bin/bash
                     echo ${FORTI_CRED_USR}
