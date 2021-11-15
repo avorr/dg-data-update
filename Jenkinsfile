@@ -145,7 +145,7 @@ pipeline {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
-                    image "fortivpnclient"
+                    image fortiImageName
                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
 //                     label "build-image"
@@ -155,6 +155,7 @@ pipeline {
 //                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
+                    sh 'sleep 100000'
                     sh 'bash /opt/startvpn.sh'
                     sh '''python3 main.py'''
 //                 }
