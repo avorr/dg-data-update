@@ -117,7 +117,7 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
-                    dockerFortiImage = docker.build('fortivpnclient --name ' + fortiImageName, '-f Dockerfile-forticlient ' + env.WORKSPACE)
+                    dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient ' + env.WORKSPACE)
 //                      fortiImageName
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
