@@ -43,19 +43,24 @@ pipeline {
 //     }
 
     stages {
-        stage("Prepare build image") {
-            steps {
-                script {
-                    echo '''
-                    ####################################
-                                BUILD IMAGE
-                    ####################################
-                    '''
-                    dockerImage = docker.build imagename
+//         stage("Prepare build image") {
+//             steps {
+//                 script {
+//                     echo '''
+//                     ####################################
+//                                 BUILD IMAGE
+//                     ####################################
+//                     '''
+//                     dockerImage = docker.build imagename
 //                     println(env.WORKSPACE)
-                }
-            }
-        }
+//                 }
+//             }
+//         }
+
+
+
+
+
 
 //         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             // available as an env variable, but will be masked if you try to print it out any which way
@@ -67,32 +72,36 @@ pipeline {
 //             echo "username is $USERNAME"
 //         }
 
-        stage("Build project") {
-            environment {
-                CMDB_CRED = credentials('cmdb-cred')
-                PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
+
+
+
+
+//         stage("Build project") {
+//             environment {
+//                 CMDB_CRED = credentials('cmdb-cred')
+//                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
 //                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-            }
-            agent {
-                docker {
-//                     customWorkspace "${env.WORKSPACE}"
-//                     Dockerfile 'Dockerfile'
-                    image "datagerry-cmdb"
-                    args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
-//                     reuseNode true
-//                     label "build-image"
-                }
-            }
-            steps {
-//                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//                     sh 'echo $USERNAME'
-//                     sh 'echo $PASSWORD'
-                    sh '''
-                        python3 main.py
-                       '''
+//             }
+//             agent {
+//                 docker {
+////                     customWorkspace "${env.WORKSPACE}"
+////                     Dockerfile 'Dockerfile'
+//                     image "datagerry-cmdb"
+//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
+////                     reuseNode true
+////                     label "build-image"
 //                 }
-            }
-        }
+//             }
+//             steps {
+////                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+////                     sh 'echo $USERNAME'
+////                     sh 'echo $PASSWORD'
+//                     sh '''
+//                         python3 main.py
+//                        '''
+////                 }
+//             }
+//         }
 
         stage("PD20") {
             environment {
@@ -110,6 +119,11 @@ pipeline {
                     ####################################
                     '''
                     sh 'docker build -f Dockerfile-forticlient . -t forti-docker'
+                    sh 'echo ${FORTI_CRED_USR}'
+                    sh 'echo ${FORTI_CRED_PSW}'
+                    sh 'echo ${FORTI_CRED_PSW}'
+                    sh 'echo ${env.WORKSPACE}'
+
                     sh 'docker run -it --rm --name docker-forticlient --privileged --net host --env-file=${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW} forti-docker'
                     sh 'docker exec -it $(docker ps -aq -f "name=docker-forticlient") /usr/bin/python3 /opt/main.py'
 //                     dockerImage = docker.build imagename
