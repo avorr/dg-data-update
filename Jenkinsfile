@@ -132,7 +132,6 @@ pipeline {
                 }
             }
         }
-    }
 
         stage('Build forti in docker') {
             environment {
@@ -155,5 +154,5 @@ pipeline {
 //                 sh "cat /etc/*-release"
             }
         }
-
+    }
 }
