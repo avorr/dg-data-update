@@ -119,13 +119,14 @@ pipeline {
                     ####################################
                     '''
                     def WORKDIR = env.WORKSPACE
-                    'docker build -f Dockerfile-forticlient . -t forti-docker'
-                    sh 'echo ${FORTI_CRED_USR}'
-                    sh 'echo ${FORTI_CRED_PSW}'
-                    println(WORKDIR)
-                    sh 'echo $WORKDIR'
+//                     'docker build -f Dockerfile-forticlient . -t forti-docker'
+                    sh '''#!/bin/bash
+                    echo ${FORTI_CRED_USR}
+                    echo ${FORTI_CRED_PSW}
                     echo '#########################################'
+                    echo ${WORKDIR}
                     echo '#########################################'
+                    '''
 //                     println(buildDir)
 
 //                     sh "docker run -it --rm --name docker-forticlient --privileged --net host --env-file \"${env.WORKSPACE}\"/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW} forti-docker"
