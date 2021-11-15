@@ -160,7 +160,8 @@ pipeline {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
 //                     sh 'sleep 100000'
-                    sh 'bash /opt/startvpn.sh'
+//                     sh 'bash /opt/startvpn.sh'
+                    sh 'expect /opt/start-connect.exp $HOST ${FORTI_CRED_USR} ${FORTI_CRED_PSW}'
 //                     sh '''python3 main.py'''
                     sh 'sleep 100000'
 //                 }
