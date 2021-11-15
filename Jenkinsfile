@@ -140,6 +140,7 @@ pipeline {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 FORTI_CRED = credentials('FORTI_CRED')
+                HOST = 37.18.109.130:18443
 //                 def FORTI_LOGIN = ${FORTI_CRED_USR}
 //                 def FORTI_PASS = ${FORTI_CRED_PSW}
             }
@@ -148,7 +149,8 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image fortiImageName
-                    args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD='${FORTI_CRED_PSW}' forti-docker"
+//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD='${FORTI_CRED_PSW}' forti-docker"
+                    args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
 //                     label "build-image"
                 }
