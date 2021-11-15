@@ -29,6 +29,9 @@ pipeline {
         imagename = "datagerry-cmdb"
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
+        dockerFortiImage = ''
+
+        fortiImageNmae = 'forti-docker'
     }
 
 //     withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -119,6 +122,7 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
+                    dockerFortiImage = docker.build('Dockerfile-forticlient') fortiImageNmae
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
 //                     '''
@@ -133,27 +137,64 @@ pipeline {
             }
         }
 
-        stage('Build forti in docker') {
+
+
+        stage("Build project PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
-//                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 FORTI_CRED = credentials('FORTI_CRED')
-                def WORKDIR = "${env.WORKSPACE}"
             }
             agent {
-                dockerfile {
-                    dir "${env.WORKSPACE}"
-                    filename 'Dockerfile-forticlient'
-                    args '--rm --name docker-forticlient --privileged --net host --env-file .env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW}'
+                docker {
+//                     customWorkspace "${env.WORKSPACE}"
+//                     Dockerfile 'Dockerfile'
+                    image "forti-docker"
+                    args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
+//                     reuseNode true
+//                     label "build-image"
                 }
             }
             steps {
-//                 sh "echo ${env}"
-                sh "python3 -V"
-                sh 'env'
-//                 sh "cat /etc/*-release"
+//                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//                     sh 'echo $USERNAME'
+//                     sh 'echo $PASSWORD'
+                    sh '''
+                        python3 main.py
+                       '''
+//                 }
             }
         }
+
+
+
+
+
+
+
+
+//         stage('Build forti in docker') {
+//             environment {
+//                 CMDB_CRED = credentials('cmdb-cred')
+//                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
+//                 FORTI_CRED = credentials('FORTI_CRED')
+//                 def WORKDIR = "${env.WORKSPACE}"
+//             }
+//             agent {
+//                 dockerfile {
+//                     dir "${env.WORKSPACE}"
+//                     filename 'Dockerfile-forticlient'
+//                     args '--rm --name docker-forticlient --privileged --net host --env-file .env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW}'
+//                 }
+//             }
+//             steps {
+//                 sh "python3 -V"
+//                 sh 'env'
+//             }
+//         }
+
+
+
+
     }
 }
