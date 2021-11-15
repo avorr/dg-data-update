@@ -155,9 +155,10 @@ pipeline {
 //                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
-                    sh 'sleep 100000'
+//                     sh 'sleep 100000'
                     sh 'bash /opt/startvpn.sh'
-                    sh '''python3 main.py'''
+//                     sh '''python3 main.py'''
+                    sh 'sleep 100000'
 //                 }
             }
         }
