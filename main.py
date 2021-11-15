@@ -13,7 +13,7 @@ if __name__ == '__main__':
     print(HOST)
     import os
 
-    os.system(f'expect /opt/start-connect.exp {HOST} {fortiLogin} {fortiPassword}')
+    os.system(f'expect /opt/start-connect.exp {HOST} {fortiLogin} "{fortiPassword}"')
 
     # print(fortiLogin[:-1])
     # print(fortiLogin[-1:])
