@@ -53,7 +53,6 @@ pipeline {
                     '''
                     dockerImage = docker.build imagename
                     println(env.WORKSPACE)
-                    println(buildDir)
                 }
             }
         }
@@ -122,8 +121,8 @@ pipeline {
                     'docker build -f Dockerfile-forticlient . -t forti-docker'
                     sh 'echo ${FORTI_CRED_USR}'
                     sh 'echo ${FORTI_CRED_PSW}'
+                    println(env.WORKSPACE)
                     sh 'echo ${env.WORKSPACE}'
-                    sh 'echo ${buildDir}'
                     echo '#########################################'
                     println(env.WORKSPACE)
                     println(env.WORKSPACE)
