@@ -6,6 +6,7 @@ from env import portal_info
 # from view_settings import visiableSetting
 
 if __name__ == '__main__':
+    foo = int(input('::::::'))
     print(portal_info)
     print('######' * 100)
     # import time

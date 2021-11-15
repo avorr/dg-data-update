@@ -158,9 +158,9 @@ pipeline {
 //                     sh 'whoami'
 //                     sh 'sleep 100000'
 //                     sh 'ls -la /opt/start-connect.exp'
-                    sh 'expect /opt/start-connect.exp 37.18.109.130:18443 $FORTI_CRED_USR "$FORTI_CRED_PSW" &'
-//                     sh '''python3 main.py'''
-                    sh 'sleep 100000'
+                    sh 'expect /opt/start-connect.exp 37.18.109.130:18443 $FORTI_CRED_USR "$FORTI_CRED_PSW"'
+                    sh '''python3 main.py'''
+//                     sh 'sleep 100000'
 //                 }
             }
         }
