@@ -118,12 +118,12 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
-                    sh 'docker build -f Dockerfile-forticlient . -t forti-docker'
+                    bash 'docker build -f Dockerfile-forticlient . -t forti-docker'
                     sh 'echo ${FORTI_CRED_USR}'
                     sh 'echo ${FORTI_CRED_PSW}'
                     sh 'echo ${env.WORKSPACE}'
-                    println(env.WORKSPACE)
-                    println(buildDir)
+//                     println(env.WORKSPACE)
+//                     println(buildDir)
 
                     sh "docker run -it --rm --name docker-forticlient --privileged --net host --env-file \"${env.WORKSPACE}\"/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW} forti-docker"
                     sh 'docker exec -it $(docker ps -aq -f "name=docker-forticlient") /usr/bin/python3 /opt/main.py'
