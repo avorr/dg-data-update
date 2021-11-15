@@ -1,8 +1,8 @@
 FROM ubuntu:20.04
 
-ENV LOGIN=
-ENV HOST=
-ENV PASSWORD=
+#ENV LOGIN=
+#ENV HOST=
+#ENV PASSWORD=
 ENV TZ=Europe/Moscow
 
 
