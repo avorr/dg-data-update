@@ -140,8 +140,8 @@ pipeline {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 FORTI_CRED = credentials('FORTI_CRED')
-                FORTI_LOGIN = FORTI_CRED_USR
-                FORTI_PASS = FORTI_CRED_PSW
+                def FORTI_LOGIN = FORTI_CRED_USR
+                def FORTI_PASS = FORTI_CRED_PSW
             }
             agent {
                 docker {
