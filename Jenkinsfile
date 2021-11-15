@@ -72,7 +72,7 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-cmdb"
-                    args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
+                    args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
 //                     label "build-image"
                 }
@@ -81,9 +81,7 @@ pipeline {
 //                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
-                    sh '''
-                        python3 main.py
-                       '''
+                    sh 'python3 main.py'
 //                 }
             }
         }
