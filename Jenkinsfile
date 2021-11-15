@@ -30,7 +30,7 @@ pipeline {
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
         dockerFortiImage = ''
-        fortiImageNmae = 'forti-docker'
+        fortiImageName = 'forti-docker'
     }
 
 //     withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -117,7 +117,7 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
-                    dockerFortiImage = docker.build(env.BUILD_ID, '-f Dockerfile-forticlient .') fortiImageNmae
+                    dockerFortiImage = docker.build(env.BUILD_ID, '-f Dockerfile-forticlient .') fortiImageName
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
 //                     '''
