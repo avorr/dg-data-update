@@ -148,7 +148,7 @@ pipeline {
             agent {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
-//                     Dockerfile 'Dockerfile'
+                    Dockerfile 'Dockerfile'
                     image "forti-docker"
                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
