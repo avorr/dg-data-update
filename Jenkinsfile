@@ -43,19 +43,19 @@ pipeline {
 //     }
 
     stages {
-//         stage("Prepare build image") {
-//             steps {
-//                 script {
-//                     echo '''
-//                     ####################################
-//                                 BUILD IMAGE
-//                     ####################################
-//                     '''
-//                     dockerImage = docker.build imagename
-//                     println(env.WORKSPACE)
-//                 }
-//             }
-//         }
+        stage("Prepare build image") {
+            steps {
+                script {
+                    echo '''
+                    ####################################
+                                BUILD IMAGE
+                    ####################################
+                    '''
+                    dockerImage = docker.build imagename
+                    println(env.WORKSPACE)
+                }
+            }
+        }
 
 
 
