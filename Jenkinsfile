@@ -108,7 +108,7 @@ pipeline {
                 CMDB_CRED = credentials('cmdb-cred')
 //                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-                FORTI_CRED = credentials('PORTAL_TOKEN_PD20')
+                FORTI_CRED = credentials('FORTI_CRED')
             }
 
             steps {
