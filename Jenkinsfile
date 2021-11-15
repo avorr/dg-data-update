@@ -122,8 +122,8 @@ pipeline {
 
 
 
-                    sh "echo ${FORTI_CRED_USR}"
-                    sh "echo ${FORTI_CRED_PSW}"
+//                     sh "echo ${FORTI_CRED_USR}"
+//                     sh "echo ${FORTI_CRED_PSW}"
                     sh "echo #########################################"
                     sh "echo ${WORKDIR}"
                     sh "echo #########################################"
