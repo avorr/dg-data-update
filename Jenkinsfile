@@ -122,7 +122,7 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
-                    dockerFortiImage = docker.build('Dockerfile-forticlient') fortiImageNmae
+                    dockerFortiImage = docker.build('${env.BUILD_ID}', 'Dockerfile-forticlient') fortiImageNmae
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
 //                     '''
@@ -172,27 +172,27 @@ pipeline {
 
 
 
-
-//         stage('Build forti in docker') {
-//             environment {
-//                 CMDB_CRED = credentials('cmdb-cred')
-//                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-//                 FORTI_CRED = credentials('FORTI_CRED')
-//                 def WORKDIR = "${env.WORKSPACE}"
-//             }
-//             agent {
-//                 dockerfile {
-//                     dir "${env.WORKSPACE}"
-//                     filename 'Dockerfile-forticlient'
-//                     args '--rm --name docker-forticlient --privileged --net host --env-file .env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW}'
-//                 }
-//             }
-//             steps {
-//                 sh "python3 -V"
-//                 sh 'env'
-//             }
-//         }
-
+/*
+        stage('Build forti in docker') {
+            environment {
+                CMDB_CRED = credentials('cmdb-cred')
+                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
+                FORTI_CRED = credentials('FORTI_CRED')
+                def WORKDIR = "${env.WORKSPACE}"
+            }
+            agent {
+                dockerfile {
+                    dir "${env.WORKSPACE}"
+                    filename 'Dockerfile-forticlient'
+                    args '--rm --name docker-forticlient --privileged --net host --env-file .env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW}'
+                }
+            }
+            steps {
+                sh "python3 -V"
+                sh 'env'
+            }
+        }
+*/
 
 
 
