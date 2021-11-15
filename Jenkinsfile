@@ -124,7 +124,7 @@ pipeline {
                     echo ${FORTI_CRED_USR}
                     echo ${FORTI_CRED_PSW}
                     echo '#########################################'
-                    echo ${WORKDIR}
+                    echo "${WORKDIR}"
                     echo '#########################################'
                     '''
 //                     println(buildDir)
