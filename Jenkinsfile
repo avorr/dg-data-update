@@ -133,7 +133,7 @@ pipeline {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 FORTI_CRED = credentials('FORTI_CRED')
-//                 HOST = 37.18.109.130:18443
+                HOST = "37.18.109.130:18443"
 //                 def FORTI_LOGIN = ${FORTI_CRED_USR}
 //                 def FORTI_PASS = ${FORTI_CRED_PSW}
             }
@@ -149,7 +149,7 @@ pipeline {
                 }
             }
             steps {
-//                     sh '"$HOST" $FORTI_CRED_USR $FORTI_CRED_PSW'
+                    sh '$HOST $FORTI_CRED_USR $FORTI_CRED_PSW'
 
 
 
@@ -158,7 +158,7 @@ pipeline {
 //                     sh 'whoami'
 //                     sh 'sleep 100000'
 //                     sh 'ls -la /opt/start-connect.exp'
-                    sh 'expect /opt/start-connect.exp \"37.18.109.130:18443\" $FORTI_CRED_USR "$FORTI_CRED_PSW"'
+                    sh 'expect /opt/start-connect.exp $HOST $FORTI_CRED_USR "$FORTI_CRED_PSW"'
 //                     sh '''python3 main.py'''
 //                     sh 'sleep 100000'
 //                 }
