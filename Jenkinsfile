@@ -149,7 +149,7 @@ pipeline {
                 }
             }
             steps {
-                    sh '"$HOST" $FORTI_CRED_USR $FORTI_CRED_PSW'
+                    sh 'echo "$HOST" $FORTI_CRED_USR $FORTI_CRED_PSW'
 
 
 
