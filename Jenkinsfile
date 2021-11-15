@@ -118,10 +118,11 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
+                    def WORKDIR = "${env.WORKSPACE}"
                     'docker build -f Dockerfile-forticlient . -t forti-docker'
                     sh 'echo ${FORTI_CRED_USR}'
                     sh 'echo ${FORTI_CRED_PSW}'
-                    println(env.WORKSPACE)
+                    println(WORKDIR)
                     sh 'echo ${env.WORKSPACE}'
                     echo '#########################################'
                     println(env.WORKSPACE)
