@@ -117,7 +117,7 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
-                    dockerFortiImage = docker.build('forti-' + env.BUILD_ID, '-f Dockerfile-forticlient ' + env.WORKSPACE)
+                    dockerFortiImage = docker.build('forticlientvpn', '-f Dockerfile-forticlient ' + env.WORKSPACE)
 //                      fortiImageName
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
@@ -134,7 +134,7 @@ pipeline {
         }
 
 
-/*
+
         stage("Build project PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -162,9 +162,6 @@ pipeline {
 //                 }
             }
         }
-*/
-
-
 
 
 
