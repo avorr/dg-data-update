@@ -17,7 +17,11 @@ RUN apt-get update && \
     apt-get install -y -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
     ca-certificates \
     iproute2 \
-    expect && \
+    expect \
+    python3 \
+    python3-pip  \
+    curl \
+    iputils-ping && \
 
     rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb && \
     apt-get -y remove curl && \
@@ -25,11 +29,18 @@ RUN apt-get update && \
     apt-get -y autoremove --purge && \
     rm -rf /var/lib/apt/lists/*
 
+
+RUN pip3 install --no-cache --upgrade requests pymongo
 #RUN rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb && \
 #    apt-get clean -q &&  \
 #    apt-get -y autoremove --purge && \
 #    rm -rf /var/lib/apt/lists/*
+COPY . /opt/
+#COPY start-connect.exp start-connect.exp
 
-COPY start-connect.exp start-connect.exp
-
-CMD expect start-connect.exp $HOST $LOGIN $PASSWORD
+CMD expect /opt/start-connect.exp $HOST $LOGIN $PASSWORD
+#CMD nohup bash -c /opt/start.sh &
+#CMD bash -c /opt/start.sh
+#CMD sleep 100000000
+#CMD ["/usr/bin/python3", "/opt/main.py"]
+#CMD ["nohup", "/opt/startvpn.sh", ">", "/opt/nohup.out", "2>&1", "&", "&&", "sh", "/opt/start.sh"]
