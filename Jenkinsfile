@@ -162,8 +162,8 @@ pipeline {
 //                     sh 'whoami'
 //                     sh 'ls -la /opt/start-connect.exp'
                     sh 'expect /opt/start-connect.exp $HOST $FORTI_CRED_USR $FORTI_CRED_PSW'
-                    sh 'sleep 100000'
-//                     sh '''python3 main.py'''
+//                     sh 'sleep 100000'
+                    sh '''python3 main.py'''
 //                     sh 'sleep 100000'
 //                 }
             }
