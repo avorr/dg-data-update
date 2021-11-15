@@ -125,6 +125,7 @@ pipeline {
                     echo ${FORTI_CRED_PSW}
                     echo '#########################################'
                     echo "${WORKDIR}"
+                    echo "${env.WORKSPACE}"
                     echo '#########################################'
                     '''
 //                     println(buildDir)
