@@ -133,7 +133,7 @@ pipeline {
         }
 
 
-
+/*
         stage("Build project PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -161,7 +161,7 @@ pipeline {
 //                 }
             }
         }
-
+*/
 
 
 
