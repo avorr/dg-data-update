@@ -33,8 +33,9 @@ pipeline {
         fortiImageName = 'forti-docker'
     }
 
-/*
+
     stages {
+/*
         stage("Prepare build image") {
             steps {
                 script {
@@ -49,6 +50,8 @@ pipeline {
             }
         }
 */
+
+
 /*
         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             available as an env variable, but will be masked if you try to print it out any which way
