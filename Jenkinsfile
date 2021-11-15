@@ -123,11 +123,8 @@ pipeline {
                     sh 'echo ${FORTI_CRED_USR}'
                     sh 'echo ${FORTI_CRED_PSW}'
                     println(WORKDIR)
-                    sh 'echo ${env.WORKSPACE}'
+                    sh 'echo ${WORKDIR}'
                     echo '#########################################'
-                    println(env.WORKSPACE)
-                    println(env.WORKSPACE)
-                    println(buildDir)
                     echo '#########################################'
 //                     println(buildDir)
 
