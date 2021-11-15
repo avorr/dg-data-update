@@ -7,13 +7,23 @@ from env import portal_info, fortiLogin, fortiPassword, HOST
 # from view_settings import visiableSetting
 
 if __name__ == '__main__':
-    print(portal_info)
+    # print(portal_info)
     print('######' * 100)
 
-    print(HOST)
+    # print(HOST)
     import os
 
-    os.system(f'expect /opt/start-connect.exp {HOST} {fortiLogin} "{fortiPassword}"')
+    foo = os.system(f'expect /opt/start-connect.exp {HOST} {fortiLogin} "{fortiPassword}"')
+
+
+
+    print(foo)
+    import time
+    time.sleep(100000000)
+
+
+
+
 
     # print(fortiLogin[:-1])
     # print(fortiLogin[-1:])
