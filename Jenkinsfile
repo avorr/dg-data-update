@@ -143,7 +143,7 @@ pipeline {
 //                     Dockerfile 'Dockerfile'
                     image fortiImageName
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD='${FORTI_CRED_PSW}' forti-docker"
-                    args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
+                    args "--rm --name docker-forticlient --privileged --net host --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
 //                     label "build-image"
                 }
