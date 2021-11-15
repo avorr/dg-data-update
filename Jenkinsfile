@@ -151,7 +151,7 @@ pipeline {
             steps {
                     sh '$HOST $FORTI_CRED_USR $FORTI_CRED_PSW'
 //                     sh 'expect /opt/start-connect.exp \'$HOST\' $FORTI_CRED_USR "$FORTI_CRED_PSW"'
-                    sh 'expect /opt/start-connect.exp $FORTI_CRED_USR "$FORTI_CRED_PSW"'
+                    sh 'expect /opt/start-connect.exp $HOST $FORTI_CRED_USR "$FORTI_CRED_PSW"'
 //                     sh '''python3 main.py'''
                     sh 'sleep 100000'
 //                 }
