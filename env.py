@@ -5,8 +5,8 @@ import os
 cmdb_login: str = os.environ['CMDB_CRED_USR']
 cmdb_password: str = os.environ['CMDB_CRED_PSW']
 
-fortiLogin: str = os.environ['FORTI_CRED_USR']
-fortiPassword: str = os.environ['FORTI_CRED_PSW']
+# fortiLogin: str = os.environ['FORTI_CRED_USR']
+# fortiPassword: str = os.environ['FORTI_CRED_PSW']
 
 HOST: str = os.environ['HOST']
 
