@@ -33,17 +33,7 @@ pipeline {
         fortiImageName = 'forti-docker'
     }
 
-//     withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//         environment {
-//             CMDB_LOGIN1 = $USERNAME
-//             CMDB_PASSWORD1 = $PASSWORD
-//         }
-//         sh 'echo $USERNAME'
-//         sh 'echo $PASSWORD'
-//         sh "python3 -V"
-//         sh "cat /etc/*-release"
-//     }
-
+/*
     stages {
         stage("Prepare build image") {
             steps {
@@ -58,7 +48,7 @@ pipeline {
                 }
             }
         }
-
+*/
 /*
         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             available as an env variable, but will be masked if you try to print it out any which way
@@ -157,7 +147,7 @@ pipeline {
             }
             steps {
                     sh '$HOST $FORTI_CRED_USR $FORTI_CRED_PSW'
-                    sh 'expect /opt/start-connect.exp $HOST $FORTI_CRED_USR "$FORTI_CRED_PSW"'
+                    sh 'expect /opt/start-connect.exp \'$HOST\' $FORTI_CRED_USR "$FORTI_CRED_PSW"'
 //                     sh '''python3 main.py'''
                     sh 'sleep 100000'
 //                 }
