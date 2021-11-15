@@ -35,7 +35,6 @@ pipeline {
 
 
     stages {
-/*
         stage("Prepare build image") {
             steps {
                 script {
@@ -49,8 +48,6 @@ pipeline {
                 }
             }
         }
-*/
-
 
 /*
         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -64,10 +61,7 @@ pipeline {
         }
 */
 
-
-
-/*
-        stage("Build project") {
+        stage("Build project PD15") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
@@ -93,11 +87,26 @@ pipeline {
 //                 }
             }
         }
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
         stage("PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
-//                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 FORTI_CRED = credentials('FORTI_CRED')
                 def WORKDIR = "${env.WORKSPACE}"
@@ -169,7 +178,7 @@ pipeline {
             }
         }
 
-
+*/
 
 
 /*

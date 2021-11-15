@@ -6,24 +6,20 @@ FROM ubuntu:20.04
 ENV TZ=Europe/Moscow
 
 
-RUN apt-get update && apt-get install curl -y && \
-    curl https://filestore.fortinet.com/forticlient/downloads/FortiClientFullVPNInstaller_6.4.0.0851.deb -o FortiClientFullVPNInstaller_6.4.0.0851.deb && \
-    apt-get install ./FortiClientFullVPNInstaller_6.4.0.0851.deb -y
+#RUN apt-get update && apt-get install curl -y && \
+#    curl https://filestore.fortinet.com/forticlient/downloads/FortiClientFullVPNInstaller_6.4.0.0851.deb -o FortiClientFullVPNInstaller_6.4.0.0851.deb && \
+#    apt-get install ./FortiClientFullVPNInstaller_6.4.0.0851.deb -y
 
 #RUN curl https://filestore.fortinet.com/forticlient/downloads/FortiClientFullVPNInstaller_6.4.0.0851.deb -o FortiClientFullVPNInstaller_6.4.0.0851.deb
 #RUN apt-get install ./FortiClientFullVPNInstaller_6.4.0.0851.deb -y
 
 RUN apt-get update && \
-    apt-get install -y -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
-    ca-certificates \
-    iproute2 \
-    expect \
+    apt-get install -y openfortivpn \
     python3 \
-    python3-pip  \
+    python3-pip \
     curl \
     iputils-ping && \
 
-    rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb && \
     apt-get -y remove curl && \
     apt-get clean -q &&  \
     apt-get -y autoremove --purge && \
@@ -36,6 +32,7 @@ RUN pip3 install --no-cache --upgrade requests pymongo
 #    apt-get -y autoremove --purge && \
 #    rm -rf /var/lib/apt/lists/*
 COPY . /opt/
+RUN cp /opt/config /etc/openfortivpn/config
 #COPY start-connect.exp start-connect.exp
 
 
@@ -47,4 +44,7 @@ COPY . /opt/
 
 
 
-CMD expect /opt/start-connect.exp $HOST $LOGIN $PASSWORD
+#CMD expect /opt/start-connect.exp $HOST $LOGIN $PASSWORD
+
+
+#CMD openfortivpn -c /etc/openfortivpn/config
