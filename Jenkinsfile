@@ -30,7 +30,6 @@ pipeline {
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
         dockerFortiImage = ''
-
         fortiImageNmae = 'forti-docker'
     }
 
@@ -60,52 +59,48 @@ pipeline {
             }
         }
 
+/*
+        withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+            available as an env variable, but will be masked if you try to print it out any which way
+            note: single quotes prevent Groovy interpolation; expansion is by Bourne Shell, which is what you want
+            sh 'echo $PASSWORD'
+            also available as a Groovy variable
+            echo USERNAME
+            or inside double quotes for string interpolation
+            echo "username is $USERNAME"
+        }
+*/
 
 
 
-
-
-//         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            // available as an env variable, but will be masked if you try to print it out any which way
-            // note: single quotes prevent Groovy interpolation; expansion is by Bourne Shell, which is what you want
-//             sh 'echo $PASSWORD'
-            // also available as a Groovy variable
-//             echo USERNAME
-            // or inside double quotes for string interpolation
-//             echo "username is $USERNAME"
-//         }
-
-
-
-
-
-//         stage("Build project") {
-//             environment {
-//                 CMDB_CRED = credentials('cmdb-cred')
-//                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
-//                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-//             }
-//             agent {
-//                 docker {
-////                     customWorkspace "${env.WORKSPACE}"
-////                     Dockerfile 'Dockerfile'
-//                     image "datagerry-cmdb"
-//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
-////                     reuseNode true
-////                     label "build-image"
+/*
+        stage("Build project") {
+            environment {
+                CMDB_CRED = credentials('cmdb-cred')
+                PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
+                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
+            }
+            agent {
+                docker {
+//                     customWorkspace "${env.WORKSPACE}"
+//                     Dockerfile 'Dockerfile'
+                    image "datagerry-cmdb"
+                    args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
+//                     reuseNode true
+//                     label "build-image"
+                }
+            }
+            steps {
+//                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//                     sh 'echo $USERNAME'
+//                     sh 'echo $PASSWORD'
+                    sh '''
+                        python3 main.py
+                       '''
 //                 }
-//             }
-//             steps {
-////                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-////                     sh 'echo $USERNAME'
-////                     sh 'echo $PASSWORD'
-//                     sh '''
-//                         python3 main.py
-//                        '''
-////                 }
-//             }
-//         }
-
+            }
+        }
+*/
         stage("PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -148,7 +143,7 @@ pipeline {
             agent {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
-                    Dockerfile 'Dockerfile'
+//                     Dockerfile 'Dockerfile'
                     image "forti-docker"
                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
@@ -159,6 +154,7 @@ pipeline {
 //                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
+                    sh 'sleep 1000'
                     sh '''
                         python3 main.py
                        '''
