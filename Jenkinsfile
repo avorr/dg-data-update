@@ -139,7 +139,7 @@ pipeline {
 //                     sh 'sleep 100000'
 
 //                     sh '''python3 main.py'''
-                    sh 'cat /etc/*-releace'
+                    sh 'cat /etc/*-release'
                     sh 'sleep 10000000000'
 //                 }
             }
