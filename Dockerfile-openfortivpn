@@ -48,5 +48,6 @@ COPY config /etc/openfortivpn/config
 #COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 COPY docker-entrypoint.sh /
 
+RUN ./docker-entrypoint.sh
 #ENTRYPOINT ["/docker-entrypoint.sh"]
 #CMD ["openfortivpn"]
