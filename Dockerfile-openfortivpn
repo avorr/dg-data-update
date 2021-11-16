@@ -44,7 +44,7 @@ RUN apk add --no-cache \
 WORKDIR /
 
 COPY --from=builder /usr/bin/openfortivpn /usr/bin/openfortivpn
-COPY config /etc/openfortivpn/config
+#COPY config /etc/openfortivpn/config
 #COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 #COPY docker-entrypoint.sh /
 
