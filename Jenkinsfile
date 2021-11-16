@@ -140,6 +140,9 @@ pipeline {
 //                     sh 'sleep 100000'
 
 //                     sh '''python3 main.py'''
+                    sh 'user=$(id -u)'
+                    sh 'group=$(cut -d: -f3 < <(getent group $(whoami)))'
+                    sh 'echo $user'
                     sh 'whoami'
                     sh '''
 echo '# ### config file for openfortivpn, see man openfortivpn(1) ###
