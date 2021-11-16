@@ -28,6 +28,7 @@ LOCAL_PORT=${LOCAL_PORT:-"1111"}
 
 
 # Force all args into openfortivpn
+
 if [[ "$1" = 'openfortivpn' ]]; then
   shift
 fi
