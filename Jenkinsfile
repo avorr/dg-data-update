@@ -140,7 +140,16 @@ pipeline {
 //                     sh 'sleep 100000'
 
 //                     sh '''python3 main.py'''
-                    sh 'cat /etc/*-release'
+                    sh '''
+echo '# ### config file for openfortivpn, see man openfortivpn(1) ###
+#
+host = 37.18.109.130
+port = 18443
+username = ${FORTI_CRED_USR}
+password = ${FORTI_CRED_PSW}
+trusted-cert = 9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6' > /etc/openfortivpn/config
+                    '''
+                    sh 'cat /etc/openfortivpn/config'
                     sh 'sleep 10000000000'
 //                 }
             }
