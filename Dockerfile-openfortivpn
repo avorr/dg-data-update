@@ -1,5 +1,7 @@
 FROM alpine as builder
 
+USER root
+
 ARG OPENFORTIVPN_VERSION=v1.17.1
 
 RUN apk update \
@@ -39,7 +41,7 @@ RUN apk add --no-cache \
 #        haproxy \
         && rm -rf /var/cache/apk/*;
 
-#WORKDIR /
+WORKDIR /
 
 COPY --from=builder /usr/bin/openfortivpn /usr/bin/openfortivpn
 COPY config /etc/openfortivpn/config
