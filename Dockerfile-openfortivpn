@@ -38,7 +38,7 @@ RUN apk add --no-cache \
         curl \
         su-exec \
         bash \
-#        haproxy \
+        haproxy \
         && rm -rf /var/cache/apk/*;
 
 WORKDIR /
