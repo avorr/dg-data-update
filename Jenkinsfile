@@ -3,11 +3,6 @@
 properties([disableConcurrentBuilds()])
 // agent = env.agent // work agent
 // token = env.token // sbercaud token
-// stand = env.stand // sbercloud stand
-// group = env.group // sbercloud group
-// hosts_limit = env.hosts_limit // hosts limit
-// keys_repo_url = env.keys_repo_url // url for keys repo
-// keys_repo_cred = env.keys_repo_cred // key repository credantials
 
 pipeline {
     agent any
@@ -18,14 +13,6 @@ pipeline {
 
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-//         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//         environment {
-//             CMDB_LOGIN1 = $USERNAME
-//             CMDB_PASSWORD1 = $PASSWORD
-//         }
-//             sh 'echo $USERNAME'
-//             sh 'echo $PASSWORD'
-//         }
         imagename = "datagerry-cmdb"
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
@@ -35,42 +22,29 @@ pipeline {
 
 
     stages {
-        stage("Prepare build image") {
+/*
+        stage("Prepare build image for PD15") {
             steps {
                 script {
                     echo '''
                     ####################################
-                                BUILD IMAGE
+                    BUILD IMAGE FOR UPDATE DATAGERRY IN PD15
                     ####################################
                     '''
                     dockerImage = docker.build imagename
-//                     println(env.WORKSPACE)
                 }
             }
         }
 
-/*
-        withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            available as an env variable, but will be masked if you try to print it out any which way
-            note: single quotes prevent Groovy interpolation; expansion is by Bourne Shell, which is what you want
-            sh 'echo $PASSWORD'
-            also available as a Groovy variable
-            echo USERNAME
-            or inside double quotes for string interpolation
-            echo "username is $USERNAME"
-        }
-*/
-
-        stage("Build project PD15") {
+        stage("UPDATE DATAGERRY INFO IN PD15") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
-//                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
             }
             agent {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
-//                     Dockerfile 'Dockerfile'
+                    Dockerfile 'Dockerfile'
                     image "datagerry-cmdb"
                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 //                     reuseNode true
@@ -86,23 +60,20 @@ pipeline {
             }
         }
 
+*/
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-/*
-
-        stage("PD20") {
+        stage("Prepare build image for PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
@@ -160,23 +131,19 @@ pipeline {
 //                     sh 'export HOST=${HOST}'
 //                     sh 'export FLOGIN=${FORTI_CRED_USR}'
 //                     sh 'export FPASS=${FORTI_CRED_PSW}'
-
-
-
-
 //                     sh 'expect /opt/start-connect.exp \'$HOST\' $FORTI_CRED_USR "$FORTI_CRED_PSW"'
 //                     sh 'expect /opt/start-connect.exp \"$HOST\" $FORTI_CRED_USR "$FORTI_CRED_PSW"'
 //                     sh 'whoami'
 //                     sh 'ls -la /opt/start-connect.exp'
 //                     sh 'expect /opt/start-connect.exp $HOST $FORTI_CRED_USR $FORTI_CRED_PSW'
 //                     sh 'sleep 100000'
-                    sh '''python3 main.py'''
-//                     sh 'sleep 100000'
+
+//                     sh '''python3 main.py'''
+                    sh 'cat /etc/*-releace'
+                    sh 'sleep 10000000000'
 //                 }
             }
         }
-
-*/
 
 
 /*
@@ -205,3 +172,23 @@ pipeline {
 
     }
 }
+
+
+
+
+
+
+
+
+
+/*
+        withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+            available as an env variable, but will be masked if you try to print it out any which way
+            note: single quotes prevent Groovy interpolation; expansion is by Bourne Shell, which is what you want
+            sh 'echo $PASSWORD'
+            also available as a Groovy variable
+            echo USERNAME
+            or inside double quotes for string interpolation
+            echo "username is $USERNAME"
+        }
+*/
