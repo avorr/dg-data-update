@@ -44,7 +44,7 @@ pipeline {
                     ####################################
                     '''
                     dockerImage = docker.build imagename
-                    println(env.WORKSPACE)
+//                     println(env.WORKSPACE)
                 }
             }
         }
