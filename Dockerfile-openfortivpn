@@ -49,4 +49,4 @@ COPY --from=builder /usr/bin/openfortivpn /usr/bin/openfortivpn
 #COPY docker-entrypoint.sh /
 
 #ENTRYPOINT ["/docker-entrypoint.sh"]
-#CMD ["openfortivpn"]
+CMD ["openfortivpn"]
