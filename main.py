@@ -10,7 +10,7 @@ if __name__ == '__main__':
     print('######' * 100)
     # all(map(PassportsVM, portal_info))
     all(map(PassportsOS, portal_info))
-    print('os' True)
+    print('os', True)
     if next(iter(portal_info)) == 'PD15':
         print('PD15', True)
         visiableSetting()
