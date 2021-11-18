@@ -3,11 +3,6 @@
 properties([disableConcurrentBuilds()])
 // agent = env.agent // work agent
 // token = env.token // sbercaud token
-// stand = env.stand // sbercloud stand
-// group = env.group // sbercloud group
-// hosts_limit = env.hosts_limit // hosts limit
-// keys_repo_url = env.keys_repo_url // url for keys repo
-// keys_repo_cred = env.keys_repo_cred // key repository credantials
 
 pipeline {
     agent any
@@ -135,7 +130,6 @@ pipeline {
         }
 
 
-
         stage("Build project PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -161,10 +155,6 @@ pipeline {
 //                     sh 'export HOST=${HOST}'
 //                     sh 'export FLOGIN=${FORTI_CRED_USR}'
 //                     sh 'export FPASS=${FORTI_CRED_PSW}'
-
-
-
-
 //                     sh 'expect /opt/start-connect.exp \'$HOST\' $FORTI_CRED_USR "$FORTI_CRED_PSW"'
 //                     sh 'expect /opt/start-connect.exp \"$HOST\" $FORTI_CRED_USR "$FORTI_CRED_PSW"'
 //                     sh 'whoami'
@@ -201,8 +191,5 @@ pipeline {
             }
         }
 */
-
-
-
     }
 }
