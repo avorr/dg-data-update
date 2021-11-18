@@ -286,6 +286,7 @@ def categorie_id(categorie_name: str, categorie_label: str, categorie_icon: str,
 
 
 def PassportsVM(portal_name: str) -> tuple:
+    print(portal_name)
     def sbercloud_api(api_name: str) -> dict:
         headers: dict = {
             'user-agent': 'CMDB',
@@ -304,7 +305,6 @@ def PassportsVM(portal_name: str) -> tuple:
                                        passports_categorie_id['public_id'])
     cloud_domains_info = sbercloud_api('domains')['stdout']
 
-    print(cloud_domains_info)
     domains_info = dict()
     for domain_info in cloud_domains_info['domains']:
         domains_info[domain_info['id']] = domain_info['name']
