@@ -286,8 +286,8 @@ def categorie_id(categorie_name: str, categorie_label: str, categorie_icon: str,
 
 
 def PassportsVM(portal_name: str) -> tuple:
-    print(portal_name)
     def sbercloud_api(api_name: str) -> dict:
+        """Func for work with Portal REST-API"""
         headers: dict = {
             'user-agent': 'CMDB',
             'Content-type': 'application/json',
@@ -607,7 +607,6 @@ def PassportsVM(portal_name: str) -> tuple:
         map(lambda bar: bar.get('public_id'), foo['results'])), cmdb_projects))
 
     all_objects = get_info_from_all_page('objects', cmdb_token)
-
 
     if not update_cmdb_projects:
         return all_objects
