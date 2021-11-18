@@ -285,7 +285,7 @@ def categorie_id(categorie_name: str, categorie_label: str, categorie_icon: str,
                     types=result['types'])
 
 
-def PassportsVM(portal_name: str):
+def PassportsVM(portal_name: str) -> tuple:
     def sbercloud_api(api_name: str) -> dict:
         headers: dict = {
             'user-agent': 'CMDB',
@@ -600,15 +600,16 @@ def PassportsVM(portal_name: str):
                     time.sleep(5)
                     create_object = objects(server, cmdb_token, new_type_id, user_id)
 
-    if not update_cmdb_projects:
-        return
-
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
 
     all_cmdb_types_id = reduce(lambda x, y: x + y, map(lambda foo: tuple(
         map(lambda bar: bar.get('public_id'), foo['results'])), cmdb_projects))
 
     all_objects = get_info_from_all_page('objects', cmdb_token)
+
+
+    if not update_cmdb_projects:
+        return all_objects
 
     for cmdb_project in update_cmdb_projects:
 
@@ -680,3 +681,5 @@ def PassportsVM(portal_name: str):
 
         print('####' * 3, 'UPDATE CHECKSUM')
         print(cmdb_api('PUT', f'types/{cmdb_project["type_id"]}', cmdb_token, get_info_cmdb_vcod['info']))
+
+    return all_objects

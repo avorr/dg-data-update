@@ -19,7 +19,7 @@ def json_read(json_object: dict):
     print(json.dumps(json_object, indent=4))
 
 
-def PassportsOS(portal_name: str):
+def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     cmdb_token, user_id = get_cmdb_token()
     all_categories = get_info_from_all_page('categories', cmdb_token)
 
@@ -62,6 +62,7 @@ def PassportsOS(portal_name: str):
         if not any(map(lambda x: any(
                 map(lambda y: y['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}", x['results'])),
                        cmdb_projects)):# and cluster['cluster'] == 'ocp.bootcampsdp.tech':
+
             data_type_template: dict = {
                 "fields": [
                     {
@@ -157,7 +158,9 @@ def PassportsOS(portal_name: str):
             }
 
             create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
+
             print(create_type)
+
             all_types_pages = get_info_from_all_page('types', cmdb_token)[0]['pager']['total_pages']
             new_all_types_pages = list()
             for page in range(1, all_types_pages + 1):
@@ -202,7 +205,7 @@ def PassportsOS(portal_name: str):
                 time.sleep(0.5)
 
 
-    all_objects = get_info_from_all_page('objects', cmdb_token)
+    # all_objects = get_info_from_all_page('objects', cmdb_token)
     # from objects import all_objects
 
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
@@ -257,7 +260,7 @@ def PassportsOS(portal_name: str):
                                 "views": 0,
                                 "comment": ""
                             }
-                            json_read(update_object_template)
+                            # json_read(update_object_template)
 
                             print(objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT'))
 
