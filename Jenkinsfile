@@ -166,7 +166,7 @@ pipeline {
                     sh '/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR $FORTI_CRED_PSW &>/tmp/fortilog.txt &'
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
                     sh 'cat /etc/*-release'
-                    sh 'python3 /opt/main.py'
+//                     sh 'python3 /opt/main.py'
                     sh 'sleep 10000000000'
 
 //                 }
