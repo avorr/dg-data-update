@@ -21,7 +21,8 @@ RUN apt-get update && \
     python3 \
     python3-pip  \
     curl \
-    iputils-ping && \
+    iputils-ping  \
+    libexpect-perl && \
 
     rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb && \
     apt-get -y remove curl && \

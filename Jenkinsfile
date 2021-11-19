@@ -17,7 +17,7 @@ pipeline {
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
         dockerFortiImage = ''
-        fortiImageName = 'openfortivpn-docker'
+        fortiImageName = 'forticlient-docker'
     }
 
 
@@ -89,7 +89,7 @@ pipeline {
                                 RUN SCRIPT IN PD20
                     ####################################
                     '''
-                    dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-openfortivpn ' + env.WORKSPACE)
+                    dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient ' + env.WORKSPACE)
 //                      fortiImageName
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
@@ -121,10 +121,10 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image fortiImageName
+                    args "--rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD='${FORTI_CRED_PSW}' forti-docker"
 //                     args "-u root:sudo --rm --name docker-forticlient --privileged --net host --env-file ${env.WORKSPACE}/.env_PD20"
 //                     args "-u 502 --rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
-                    args "--rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
 //                     label "build-image"
                 }
@@ -146,18 +146,22 @@ pipeline {
 //                     sh 'group=$(cut -d: -f3 < <(getent group $(whoami)))'
 //                     sh 'echo $user'
 //                     sh 'whoami'
-                    sh 'cat /etc/openfortivpn/config'
-                    sh '''
-echo '# ### config file for openfortivpn, see man openfortivpn(1) ###
-#
-host = 37.18.109.130
-port = 18443
-username = ${FORTI_CRED_USR}
-password = ${FORTI_CRED_PSW}
-trusted-cert = 9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6' > /etc/openfortivpn/config
-                    '''
-                    sh 'cat /etc/openfortivpn/config'
+//                     sh 'cat /etc/openfortivpn/config'
+//                     sh '''
+// echo '# ### config file for openfortivpn, see man openfortivpn(1) ###
+// #
+// host = 37.18.109.130
+// port = 18443
+// username = ${FORTI_CRED_USR}
+// password = ${FORTI_CRED_PSW}
+// trusted-cert = 9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6' > /etc/openfortivpn/config
+//                     '''
+//                     sh 'cat /etc/openfortivpn/config'
+//                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/dev/null &'
+                    sh '/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR $FORTI_CRED_PSW &>/dev/null &'
+                    sh 'cat /etc/*-release'
                     sh 'sleep 10000000000'
+
 //                 }
             }
         }
