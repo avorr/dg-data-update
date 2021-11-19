@@ -163,9 +163,10 @@ pipeline {
 //                     sh 'echo $LOGIN'
 //                     sh 'echo $PASSWORD'
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR $FORTI_CRED_PSW &>/dev/null &'
-                    sh '/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR $FORTI_CRED_PSW &>/tmp/fortilog.txt &'
+                    sh '/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR "$FORTI_CRED_PSW" &>/tmp/fortilog.txt &'
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
-                    sh 'cat /etc/*-release'
+//                     sh 'cat /etc/*-release'
+                    sh 'ping 172.20.15.87'
 //                     sh 'python3 /opt/main.py'
                     sh 'sleep 10000000000'
 
