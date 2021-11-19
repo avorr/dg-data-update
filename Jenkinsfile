@@ -121,7 +121,7 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image fortiImageName
-                    args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW}"
+                    args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW}"
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD='${FORTI_CRED_PSW}' forti-docker"
 //                     args "-u root:sudo --rm --name docker-forticlient --privileged --net host --env-file ${env.WORKSPACE}/.env_PD20"
 //                     args "-u 502 --rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
