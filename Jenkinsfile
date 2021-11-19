@@ -121,7 +121,8 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image fortiImageName
-                    args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=${env.HOST} -e LOGIN=${env.FORTI_CRED_USR} -e PASSWORD=${env.FORTI_CRED_PSW}"
+//                     args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=${env.HOST} -e LOGIN=${env.FORTI_CRED_USR} -e PASSWORD=${env.FORTI_CRED_PSW}"
+                    args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD='${FORTI_CRED_PSW}' forti-docker"
 //                     args "-u root:sudo --rm --name docker-forticlient --privileged --net host --env-file ${env.WORKSPACE}/.env_PD20"
 //                     args "-u 502 --rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
@@ -158,13 +159,14 @@ pipeline {
 //                     '''
 //                     sh 'cat /etc/openfortivpn/config'
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/dev/null &'
-                    sh 'echo $HOST'
-                    sh 'echo $LOGIN'
-                    sh 'echo $PASSWORD'
+//                     sh 'echo $HOST'
+//                     sh 'echo $LOGIN'
+//                     sh 'echo $PASSWORD'
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR $FORTI_CRED_PSW &>/dev/null &'
-//                     sh '/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR $FORTI_CRED_PSW &>/tmp/fortilog.txt &'
-                    sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
+                    sh '/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR $FORTI_CRED_PSW &>/tmp/fortilog.txt &'
+//                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
                     sh 'cat /etc/*-release'
+                    sh 'python3 /opt/main.py'
                     sh 'sleep 10000000000'
 
 //                 }
