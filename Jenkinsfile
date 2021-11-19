@@ -17,7 +17,7 @@ pipeline {
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
         dockerFortiImage = ''
-        fortiImageName = 'forticlient-docker'
+        fortiImageName = 'forticlient'
     }
 
 
