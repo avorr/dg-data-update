@@ -62,6 +62,7 @@ pipeline {
 
         stage("Build project") {
             environment {
+                PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
 //                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
