@@ -32,6 +32,9 @@ pipeline {
 
     stages {
         stage("Prepare build image") {
+            environment {
+                PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+            }
             steps {
                 script {
                     echo '''
