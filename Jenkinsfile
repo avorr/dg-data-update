@@ -9,6 +9,7 @@ pipeline {
     options {
 //         buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
         timestamps()
+        ansiColor('xterm')
     }
 
     environment {
