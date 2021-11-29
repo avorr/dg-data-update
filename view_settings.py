@@ -64,7 +64,8 @@ def visiableSetting():
             if type['render_meta']['sections'][0]['fields'][0] == 'name':
                 cmdb_projects_vm['items'].append(type['public_id'])
             elif type['render_meta']['sections'][0]['fields'][0] == 'namespace':
-                cmdb_projects_os['items'].append(type['public_id'])
+                print(type['render_meta']['sections'][0]['fields'])
+                # cmdb_projects_os['items'].append(type['public_id'])
 
 
     cmdb_users = get_info_from_all_page('users')
