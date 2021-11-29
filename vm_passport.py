@@ -640,6 +640,11 @@ def PassportsVM(portal_name: str) -> tuple:
                 if cmdb_type['fields'][16]['value'] == cloud_vm[16]['value'] and cmdb_type['fields'] != cloud_vm:
                     print(f"VM FOR UPDATE in {cmdb_project['type_id']}", cloud_vm)
 
+
+                    print('###'*30)
+                    print(int(time.mktime(time.strptime(cmdb_type['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000))
+                    print('###' * 30)
+
                     update_object_template: dict = {
                         "type_id": cmdb_project['type_id'],
                         "status": True,

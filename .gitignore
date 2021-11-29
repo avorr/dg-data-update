@@ -1,3 +1,4 @@
 config
 *.bcp
 creds.py
+debug.py
