@@ -640,18 +640,20 @@ def PassportsVM(portal_name: str) -> tuple:
                 if cmdb_type['fields'][16]['value'] == cloud_vm[16]['value'] and cmdb_type['fields'] != cloud_vm:
                     print(f"VM FOR UPDATE in {cmdb_project['type_id']}", cloud_vm)
 
+                    # print('###' * 30)
+                    # print(int(time.mktime(time.strptime(cmdb_type['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000))
+                    # print('###' * 30)
 
-                    print('###'*30)
-                    print(int(time.mktime(time.strptime(cmdb_type['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000))
-                    print('###' * 30)
+                    unixTime = lambda x: int(time.mktime(time.strptime(x, '%Y-%m-%dT%H:%M:%S.%f')) * 1000) if '.' in x \
+                        else int(time.mktime(time.strptime(x, '%Y-%m-%dT%H:%M:%S')) * 1000)
 
                     update_object_template: dict = {
                         "type_id": cmdb_project['type_id'],
                         "status": True,
                         "version": "1.0.1",
                         "creation_time": {
-                            "$date": int(time.mktime(
-                                time.strptime(cmdb_type['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
+                            # "$date": int(time.mktime(time.strptime(cmdb_type['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
+                            "$date": unixTime(cmdb_type['creation_time'])
                         },
                         "author_id": cmdb_type['author_id'],
                         "last_edit_time": {
