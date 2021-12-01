@@ -63,6 +63,7 @@ pipeline {
 //                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 TUZ_PID_PIDMSK = credentials('tuz_pid_pidmsk')
+                WORKSPACE = env.WORKSPACE
 
             }
             agent {
@@ -81,7 +82,7 @@ pipeline {
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 
 //                     args "--rm --env-file .env_PD20"
-                    args "--rm -v ${env.PWD}/*:/opt/"
+                    args "--rm -v ${env.WORKSPACE}/*:/opt/"
                 }
             }
             steps {
