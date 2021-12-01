@@ -31,7 +31,11 @@ pipeline {
 
 
     stages {
+
         stage("Prepare build image") {
+            agent {
+                label 'pkles-gt0000011-pd20'
+            }
 //             environment {
 //                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
 //             }
@@ -69,7 +73,7 @@ pipeline {
             }
             agent {
                 docker {
-                    label pkles-gt0000011-pd20
+                    label 'pkles-gt0000011-pd20'
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-cmdb"
