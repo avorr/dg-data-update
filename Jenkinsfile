@@ -74,13 +74,13 @@ pipeline {
                     registryCredentialsId env.TUZ_PID_PIDMSK
 //                     registryCredentialsId 'tuz_pid_pidmsk'
 //                     -v $WORKSPACE:/output -u root
-//                     customWorkspace "${env.WORKSPACE}"
+                    customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
 //                     image "datagerry-cmdb"
 //                     reuseNode true
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 
-                    args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
+                    args "--rm --env-file .env_PD20"
 //                     args "--rm --env-file .env_PD20"
                 }
             }
