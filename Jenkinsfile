@@ -63,7 +63,7 @@ pipeline {
 //                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 TUZ_PID_PIDMSK = credentials('tuz_pid_pidmsk')
-                WORKSPACE1 = ${env.WORKSPACE}
+                WORKSPACE1 = "${env.WORKSPACE}"
 
             }
             agent {
