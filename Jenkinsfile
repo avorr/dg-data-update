@@ -82,7 +82,7 @@ pipeline {
                     reuseNode true
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 
-                    args "--rm --env-file $(pwd)/.env_PD20"
+                    args "--rm --env-file '\$(pwd)'/.env_PD20"
 //                     args "--rm -v ${WORKSPACE1}/*:/opt/"
                 }
             }
