@@ -63,7 +63,7 @@ pipeline {
 //                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 TUZ_PID_PIDMSK = credentials('tuz_pid_pidmsk')
-                WORKSPACE = env.WORKSPACE
+                WORKSPACE1 = env.WORKSPACE
 
             }
             agent {
@@ -75,7 +75,7 @@ pipeline {
                     registryCredentialsId env.TUZ_PID_PIDMSK
 //                     registryCredentialsId 'tuz_pid_pidmsk'
 //                     -v $WORKSPACE:/output -u root
-                    customWorkspace "${env.WORKSPACE}"
+                    customWorkspace "${env.WORKSPACE1}"
 //                     Dockerfile 'Dockerfile'
 //                     image "datagerry-cmdb"
 //                     reuseNode true
