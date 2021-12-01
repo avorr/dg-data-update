@@ -62,6 +62,7 @@ pipeline {
                 CMDB_CRED = credentials('cmdb-cred')
 //                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
+                TUZ_PID_PITMSK = credentials('tuz_pid_pidmsk')
             }
             agent {
                 docker {
@@ -69,14 +70,17 @@ pipeline {
 
                     image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
                     registryUrl 'https://base.sw.sbc.space'
-                    registryCredentialsId 'tuz_pid_pidmsk'
+                    registryCredentialsId $TUZ_PID_PITMSK
+//                     registryCredentialsId 'tuz_pid_pidmsk'
+//                     -v $WORKSPACE:/output -u root
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
 //                     image "datagerry-cmdb"
-//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
-                    args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
+//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 
+//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
+                    args "--rm --env-file .env_PD20"
                 }
             }
             steps {
