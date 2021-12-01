@@ -64,6 +64,12 @@ pipeline {
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 TUZ_PID_PIDMSK = credentials('tuz_pid_pidmsk')
 //                 WORKSPACE1 = "${env.WORKSPACE}"
+                DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
+
+                PORTAL_URL_PD20 = 'https://portal.gostech.novalocal/api/v1/'
+                OS_METRICS_PD20 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
+
+
 
             }
             agent {
@@ -82,7 +88,8 @@ pipeline {
                     reuseNode true
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 
-                    args "--rm --env-file '\$(pwd)'/.env_PD20"
+//                     args "--rm --env-file '\$(pwd)'/.env_PD20"
+                    args "--rm -e DATA_GERRY_CMDB_URL=${DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${PORTAL_URL_PD20} -e OS_METRICS_PD20=${OS_METRICS_PD20}"
 //                     args "--rm -v ${WORKSPACE1}/*:/opt/"
                 }
             }
