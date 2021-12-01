@@ -79,8 +79,8 @@ pipeline {
 //                     reuseNode true
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 
-//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
-                    args "--rm --env-file .env_PD20"
+                    args "--rm --env-file ${WORKSPACE}/.env_PD20"
+//                     args "--rm --env-file .env_PD20"
                 }
             }
             steps {
