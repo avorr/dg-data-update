@@ -5,7 +5,7 @@ properties([disableConcurrentBuilds()])
 // token = env.token // sbercaud token
 
 pipeline {
-    agent "pkles-gt0000011-pd20"
+    agent label
     options {
 //         buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
         timestamps()
