@@ -82,7 +82,7 @@ pipeline {
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 
 //                     args "--rm --env-file .env_PD20"
-                    args "--rm -v WORKSPACE1/*:/opt/"
+                    args "--rm -v ${WORKSPACE1}/*:/opt/"
                 }
             }
             steps {
