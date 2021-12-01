@@ -70,7 +70,7 @@ pipeline {
 
                     image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
                     registryUrl 'https://base.sw.sbc.space'
-                    registryCredentialsId ${env.TUZ_PID_PIDMSK}
+                    registryCredentialsId env.TUZ_PID_PIDMSK
 //                     registryCredentialsId 'tuz_pid_pidmsk'
 //                     -v $WORKSPACE:/output -u root
 //                     customWorkspace "${env.WORKSPACE}"
