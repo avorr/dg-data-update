@@ -14,14 +14,6 @@ pipeline {
 
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-//         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//         environment {
-//             CMDB_LOGIN1 = $USERNAME
-//             CMDB_PASSWORD1 = $PASSWORD
-//         }
-//             sh 'echo $USERNAME'
-//             sh 'echo $PASSWORD'
-//         }
         imagename = "datagerry-cmdb"
 //         registryCredential = 'yenigul-dockerhub'
         dockerImage = ''
@@ -31,7 +23,7 @@ pipeline {
 
 
     stages {
-
+/*
         stage("Prepare build image") {
             agent {
                 label 'pkles-gt0000011-pd20'
@@ -51,7 +43,7 @@ pipeline {
                 }
             }
         }
-
+*/
 /*
         withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             available as an env variable, but will be masked if you try to print it out any which way
@@ -74,9 +66,13 @@ pipeline {
             agent {
                 docker {
                     label 'pkles-gt0000011-pd20'
+
+                    image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
+                    registryUrl 'https://base.sw.sbc.space'
+                    registryCredentialsId 'tuz_pid_pidmsk'
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
-                    image "datagerry-cmdb"
+//                     image "datagerry-cmdb"
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
@@ -87,6 +83,7 @@ pipeline {
 //                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
+
                     sh 'python3 main.py'
 //                 }
             }
