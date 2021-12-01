@@ -69,13 +69,14 @@ pipeline {
             }
             agent {
                 docker {
+                    label pkles-gt0000011-pd20
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile 'Dockerfile'
                     image "datagerry-cmdb"
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
-//                     label "build-image"
+
                 }
             }
             steps {
