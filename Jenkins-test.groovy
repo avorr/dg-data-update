@@ -39,6 +39,7 @@ pipeline {
                     '''
 //                     dockerImage = docker.build imagename
                     println(env.WORKSPACE)
+                    sh 'echo $(pwd)'
                 }
             }
         }
