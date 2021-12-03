@@ -73,14 +73,6 @@ pipeline {
 
             }
 
-            steps {
-                script {
-                    sh """echo ${env.DATA_GERRY_CMDB_URL} ${env.PORTAL_URL_PD20} ${env.OS_METRICS_PD20} ${env.WORKSPACE}"""
-                }
-
-            }
-
-            /*
 
 
 
@@ -102,7 +94,7 @@ pipeline {
 
 //                     args "--rm --env-file '\$(pwd)'/.env_PD20"
 //                     args '-u root:sudo -it --rm -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v /${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo'
-                    args '-e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v /${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo'
+                    args '-e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v ${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo'
 //                     args "--rm -v ${WORKSPACE1}/*:/opt/"
                 }
             }
@@ -116,8 +108,6 @@ pipeline {
                     sh 'python3 main.py'
 //                 }
             }
-
-            */
         }
 
 
