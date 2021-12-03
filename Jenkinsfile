@@ -72,6 +72,15 @@ pipeline {
 
 
             }
+
+            steps {
+                sh """echo ${env.DATA_GERRY_CMDB_URL} ${env.PORTAL_URL_PD20} ${env.OS_METRICS_PD20} ${env.WORKSPACE}"""
+            }
+
+            /*
+
+
+
             agent {
                 docker {
 //                     label 'pkles-gt0000011-pd20'
