@@ -25,7 +25,7 @@ pipeline {
     stages {
         stage("Prepare build image") {
             agent {
-                label 'pkles-gt0000011-pd20'
+                label none
             }
 //             environment {
 //                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
