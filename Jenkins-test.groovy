@@ -24,9 +24,9 @@ pipeline {
 
     stages {
         stage("Prepare build image") {
-            agent {
-                label none
-            }
+//             agent {
+//                 label none
+//             }
 //             environment {
 //                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
 //             }
