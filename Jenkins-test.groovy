@@ -5,7 +5,8 @@
 // token = env.token // sbercaud token
 
 pipeline {
-    agent none
+//     agent none
+    agent any
     options {
 //         buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
         timestamps()
