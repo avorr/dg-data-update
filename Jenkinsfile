@@ -98,6 +98,7 @@ pipeline {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
                     sh 'env'
+
                     sh 'sleep 10000000'
                     sh 'python3 main.py'
 //                 }
