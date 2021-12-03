@@ -41,7 +41,7 @@ pipeline {
 //                     dockerImage = docker.build imagename
                     println(env.WORKSPACE)
                     sh 'echo $(pwd)'
-                    sh 'echo ${env.WORKSPACE}'
+                    sh 'echo "${env.WORKSPACE}"'
                 }
             }
         }
