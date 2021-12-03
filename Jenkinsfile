@@ -89,7 +89,7 @@ pipeline {
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 
 //                     args "--rm --env-file '\$(pwd)'/.env_PD20"
-                    args "--rm -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
+                    args "--rm -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v ${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo"
 //                     args "--rm -v ${WORKSPACE1}/*:/opt/"
                 }
             }
@@ -97,7 +97,8 @@ pipeline {
 //                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
-
+                    sh 'env'
+                    sh 'sleep 10000000'
                     sh 'python3 main.py'
 //                 }
             }
