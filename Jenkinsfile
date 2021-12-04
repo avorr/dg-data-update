@@ -62,7 +62,7 @@ pipeline {
                 CMDB_CRED = credentials('cmdb-cred')
 //                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-                TUZ_PID_PIDMSK = credentials('tuz_pid_pidmsk')
+                TUZ_PID_PIDMSK = credentials('pidmsk')
 //                 WORKSPACE1 = "${env.WORKSPACE}"
                 DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
                 PATHDIR = '/Users/user/.jenkins/workspace/datagerry-cmdb'
@@ -82,10 +82,10 @@ pipeline {
                     image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
                     registryUrl 'https://base.sw.sbc.space'
 
-//                     registryCredentialsId env.TUZ_PID_PIDMSK
+                    registryCredentialsId env.TUZ_PID_PIDMSK
 
 //                     registryCredentialsId 'tuz_pid_pidmsk'
-                    registryCredentialsId 'pidmsk'
+//                     registryCredentialsId 'pidmsk'
 //                     -v $WORKSPACE:/output -u root
 //                     customWorkspace "${env.WORKSPACE1}"
 //                     Dockerfile 'Dockerfile'
