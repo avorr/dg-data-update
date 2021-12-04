@@ -102,7 +102,7 @@ pipeline {
 
 //                     args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
 //                     args '-v ${env.WORKSPACE}:/opt/ --env-file ${PWD}/.env_PD15'
-                    args "-u root --privileged -v ${env.WORKSPACE}:/opt/ -v '${env.WORKSPACE}'/centos.repo:/etc/yum.repos.d/"
+                    args "-u root --privileged -v ${env.WORKSPACE}:/opt/"
 //                     args '-v ${env.WORKSPACE}:/opt/ --env-file ${env.WORKSPACE}/.env_PD15'
                     reuseNode true
 
@@ -115,6 +115,7 @@ pipeline {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
 //                     sh 'env'
+                    sh 'mv centos.repo /etc/yum.repos.d/'
                     sh 'sleep 10000000'
                     sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
                           yum update
