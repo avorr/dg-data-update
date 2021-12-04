@@ -76,7 +76,8 @@ pipeline {
 
             agent {
                 docker {
-                    label 'pkles-gt0000011-pd20'
+//                     label 'pkles-gt0000011-pd20'
+                    label 'pkles-gt0000369'
 
                     image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
                     registryUrl 'https://base.sw.sbc.space'
