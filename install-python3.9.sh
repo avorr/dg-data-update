@@ -6,4 +6,4 @@ tar -xf Python-3.9.9.tar.xz
 cd Python-3.9.9
 yum -y install gcc make > /dev/null && yum clean all > /dev/null
 ./configure --enable-optimizations > /dev/null
-make altinstall > /dev/null
+make altinstall > /dev/null || true
