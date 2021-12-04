@@ -115,6 +115,9 @@ pipeline {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
                     sh 'env'
+                    sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
+                       yum update
+                    '''
 
                     sh 'sleep 10000000'
                     sh 'python3 main.py'
