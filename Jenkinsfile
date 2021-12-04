@@ -117,9 +117,16 @@ pipeline {
 //                     sh 'env'
                     sh 'mv centos.repo /etc/yum.repos.d/'
                     sh 'sleep 10000000'
-                    sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
-                          yum update
-
+//                     sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
+//                           yum update
+//                        '''
+                    sh '''curl -O https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz
+                          yum -y install gcc
+                          yum clean all
+                          cd Python-3.9.9
+                          ./configure
+                          make
+                          make install
                        '''
 
                     sh 'sleep 10000000'
