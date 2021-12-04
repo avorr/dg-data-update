@@ -116,7 +116,7 @@ pipeline {
 //                     sh 'echo $PASSWORD'
 //                     sh 'env'
                     sh 'mv centos.repo /etc/yum.repos.d/'
-                    sh 'sleep 10000000'
+//                     sh 'sleep 10000000'
 //                     sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
 //                           yum update
 //                        '''
