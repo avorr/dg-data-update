@@ -84,7 +84,8 @@ pipeline {
 
 //                     registryCredentialsId env.TUZ_PID_PIDMSK
 
-                    registryCredentialsId 'tuz_pid_pidmsk'
+//                     registryCredentialsId 'tuz_pid_pidmsk'
+                    registryCredentialsId 'pidmsk'
 //                     -v $WORKSPACE:/output -u root
 //                     customWorkspace "${env.WORKSPACE1}"
 //                     Dockerfile 'Dockerfile'
