@@ -120,14 +120,14 @@ pipeline {
 //                     sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
 //                           yum update
 //                        '''
-                    sh '''curl -O https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz
-                          yum -y install gcc
-                          yum clean all
-                          cd Python-3.9.9
-                          ./configure
-                          make
-                          make install
-                       '''
+                    sh 'curl -vk -O https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz'
+                    sh 'yum -y install gcc'
+                    sh  'yum clean all'
+                    sh  'cd Python-3.9.9'
+                    sh './configure'
+                    sh 'make'
+                    sh 'make install'
+
 
                     sh 'sleep 10000000'
                     sh 'python3 main.py'
