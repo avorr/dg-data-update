@@ -60,15 +60,16 @@ pipeline {
             environment {
 //                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
                 CMDB_CRED = credentials('cmdb-cred')
-//                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
-                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 TUZ_PID_PIDMSK = credentials('pidmsk')
-//                 WORKSPACE1 = "${env.WORKSPACE}"
                 DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
-//                 PATHDIR = '/Users/user/.jenkins/workspace/datagerry-cmdb'
+
+                PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
+                PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev/api/v1/'
+                OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
+
+                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 PORTAL_URL_PD20 = 'https://portal.gostech.novalocal/api/v1/'
                 OS_METRICS_PD20 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
-
             }
 
 
@@ -99,8 +100,8 @@ pipeline {
 //                     args "-e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v $(pwd)/centos.repo:/etc/yum.repos.d/centos.repo"
 //                     args "-v ${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
 
-                    args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
-//                     args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo --env-file ${env.WORKSPACE}/.env_PD15"
+//                     args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
+                    args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo --env-file \"${env.WORKSPACE}/.env_PD15\""
 
 //                     args "-v ${PATHDIR}/centos.repo:/etc/yum.repos.d/centos.repo"
 //                     args "--rm -v ${WORKSPACE1}/*:/opt/"
