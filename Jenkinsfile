@@ -91,7 +91,7 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE1}"
 //                     Dockerfile 'Dockerfile'
 //                     image "datagerry-cmdb"
-//                     reuseNode true
+                    reuseNode true
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
 //                     args "--rm --env-file ${env.PWD}/.env_PD15"
 
@@ -101,7 +101,7 @@ pipeline {
 //                     args "-v ${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
 
 //                     args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
-                    args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo --env-file \"${env.WORKSPACE}/.env_PD15\""
+                    args '-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo --env-file "${env.WORKSPACE}/.env_PD15"'
 
 //                     args "-v ${PATHDIR}/centos.repo:/etc/yum.repos.d/centos.repo"
 //                     args "--rm -v ${WORKSPACE1}/*:/opt/"
