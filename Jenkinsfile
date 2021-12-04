@@ -115,9 +115,10 @@ pipeline {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
 //                     sh 'env'
+                    sh 'mv centos.repo /etc/yum.repos.d/'
                     sh 'bash install-python3.9.sh'
                     sleep 1000000
-                    sh 'mv centos.repo /etc/yum.repos.d/'
+
 //                     sh 'sleep 10000000'
 //                     sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
 //                           yum update
