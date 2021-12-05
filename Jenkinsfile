@@ -8,7 +8,7 @@ properties([disableConcurrentBuilds()])
 pipeline {
     agent none
     options {
-//         buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
+        buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
         timestamps()
         ansiColor('xterm')
     }
@@ -24,39 +24,6 @@ pipeline {
 
 
     stages {
-/*
-        stage("Prepare build image") {
-            agent {
-                label 'pkles-gt0000011-pd20'
-            }
-//             environment {
-//                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-//             }
-            steps {
-                script {
-                    echo '''
-                    ####################################
-                                BUILD IMAGE
-                    ####################################
-                    '''
-                    dockerImage = docker.build imagename
-//                     println(env.WORKSPACE)
-                }
-            }
-        }
-*/
-/*
-        withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            available as an env variable, but will be masked if you try to print it out any which way
-            note: single quotes prevent Groovy interpolation; expansion is by Bourne Shell, which is what you want
-            sh 'echo $PASSWORD'
-            also available as a Groovy variable
-            echo USERNAME
-            or inside double quotes for string interpolation
-            echo "username is $USERNAME"
-        }
-*/
-
         stage("Update CMDB Info Portal-PD20") {
             environment {
 //                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
@@ -70,45 +37,18 @@ pipeline {
 
             agent {
                 docker {
-//                     label 'pkles-gt0000011-pd20'
                     label 'pkles-gt0000369'
-
                     image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
                     registryUrl 'https://base.sw.sbc.space'
-
                     registryCredentialsId env.TUZ_PID_PIDMSK
-
-//                     registryCredentialsId 'tuz_pid_pidmsk'
-//                     registryCredentialsId 'pidmsk'
-//                     -v $WORKSPACE:/output -u root
-//                     customWorkspace "${env.WORKSPACE1}"
-//                     Dockerfile 'Dockerfile'
-//                     image "datagerry-cmdb"
-
-//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
-//                     args "--rm --env-file ${env.PWD}/.env_PD15"
-
-//                     args "--rm --env-file '\$(pwd)'/.env_PD20"
-//                     args '-u root:sudo -it --rm -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v /${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo'
-//                     args "-e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v $(pwd)/centos.repo:/etc/yum.repos.d/centos.repo"
-//                     args "-v ${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
-
-//                     args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
-//                     args '-v ${env.WORKSPACE}:/opt/ --env-file ${PWD}/.env_PD15'
                     args "-u root --privileged -v ${env.WORKSPACE}:/opt/"
-//                     args '-v ${env.WORKSPACE}:/opt/ --env-file ${env.WORKSPACE}/.env_PD15'
                     reuseNode true
-
-//                     args "-v ${PATHDIR}/centos.repo:/etc/yum.repos.d/centos.repo"
-//                     args "--rm -v ${WORKSPACE1}/*:/opt/"
                 }
             }
             steps {
                     sh 'bash install-python3.9.sh'
                     sh 'python3.9 main.py'
                     sh 'sleep 1000000'
-
-//                 }
             }
         }
 
@@ -130,32 +70,9 @@ pipeline {
 
                     image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
                     registryUrl 'https://base.sw.sbc.space'
-
                     registryCredentialsId env.TUZ_PID_PIDMSK
-
-//                     registryCredentialsId 'tuz_pid_pidmsk'
-//                     registryCredentialsId 'pidmsk'
-//                     -v $WORKSPACE:/output -u root
-//                     customWorkspace "${env.WORKSPACE1}"
-//                     Dockerfile 'Dockerfile'
-//                     image "datagerry-cmdb"
-
-//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
-//                     args "--rm --env-file ${env.PWD}/.env_PD15"
-
-//                     args "--rm --env-file '\$(pwd)'/.env_PD20"
-//                     args '-u root:sudo -it --rm -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v /${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo'
-//                     args "-e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v $(pwd)/centos.repo:/etc/yum.repos.d/centos.repo"
-//                     args "-v ${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
-
-//                     args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
-//                     args '-v ${env.WORKSPACE}:/opt/ --env-file ${PWD}/.env_PD15'
                     args "-u root --privileged -v ${env.WORKSPACE}:/opt/"
-//                     args '-v ${env.WORKSPACE}:/opt/ --env-file ${env.WORKSPACE}/.env_PD15'
                     reuseNode true
-
-//                     args "-v ${PATHDIR}/centos.repo:/etc/yum.repos.d/centos.repo"
-//                     args "--rm -v ${WORKSPACE1}/*:/opt/"
                 }
             }
             steps {
@@ -163,11 +80,10 @@ pipeline {
                     sh 'python3.9 main.py'
                     sh 'sleep 1000000'
 
-//                 }
             }
         }
-
-
+    }
+}
     
 
 
@@ -270,11 +186,6 @@ pipeline {
                 sh 'env'
             }
         }
-*/
-    }
-}
-
-/*
 pipeline{
     agent { dockerfile true }
     stages {
