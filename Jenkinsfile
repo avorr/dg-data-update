@@ -57,7 +57,7 @@ pipeline {
         }
 */
 
-        stage("Build project") {
+        stage("Update CMDB Info Portal-PD20") {
             environment {
 //                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
                 CMDB_CRED = credentials('cmdb-cred')
