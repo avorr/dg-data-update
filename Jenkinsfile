@@ -1,6 +1,7 @@
 #!groovy
+
 //variables from jenkins
-// properties([disableConcurrentBuilds()])
+properties([disableConcurrentBuilds()])
 // agent = env.agent // work agent
 // token = env.token // sbercaud token
 
@@ -62,18 +63,10 @@ pipeline {
                 CMDB_CRED = credentials('cmdb-cred')
                 TUZ_PID_PIDMSK = credentials('pidmsk')
                 DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
-
                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                 PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev/api/v1/'
                 OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
-
-                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-                PORTAL_URL_PD20 = 'https://portal.gostech.novalocal/api/v1/'
-                OS_METRICS_PD20 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
             }
-
-
-
 
             agent {
                 docker {
@@ -111,39 +104,68 @@ pipeline {
                 }
             }
             steps {
-//                 withCredentials([usernamePassword(credentialsId: 'cmdb-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//                     sh 'echo $USERNAME'
-//                     sh 'echo $PASSWORD'
-//                     sh 'env'
                     sh 'bash install-python3.9.sh'
                     sh 'python3.9 main.py'
                     sh 'sleep 1000000'
-
-
-//                     sh 'sleep 10000000'
-//                     sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
-//                           yum update
-//                        '''
-//                     sh 'curl -vk -O https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz'
-//                     sh 'mv Python-3.*/* .'
-
-//                     sh 'yum -y install gcc'
-//                     sh  'yum clean all'
-//                     sh  'yum -y install gcc make > /dev/null && yum clean all > /dev/null'
-//                     sh  'cd Python-3.9.9'
-//                     sh './configure'
-//                     sh 'Python-3.9.9/configure --enable-optimizations > /dev/null'
-//                     sh 'make'
-//                     sh 'make install'
-
-
-//                     sh 'sleep 10000000'
-                    sh 'python3.9 main.py'
 
 //                 }
             }
         }
 
+        stage("Update CMDB Info Portal-PD20") {
+            environment {
+//                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+                CMDB_CRED = credentials('cmdb-cred')
+                TUZ_PID_PIDMSK = credentials('pidmsk')
+                DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
+
+                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
+                PORTAL_URL_PD20 = 'https://portal.gostech.novalocal/api/v1/'
+                OS_METRICS_PD20 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
+            }
+
+            agent {
+                docker {
+                    label 'pkles-gt0000011-pd20'
+
+                    image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
+                    registryUrl 'https://base.sw.sbc.space'
+
+                    registryCredentialsId env.TUZ_PID_PIDMSK
+
+//                     registryCredentialsId 'tuz_pid_pidmsk'
+//                     registryCredentialsId 'pidmsk'
+//                     -v $WORKSPACE:/output -u root
+//                     customWorkspace "${env.WORKSPACE1}"
+//                     Dockerfile 'Dockerfile'
+//                     image "datagerry-cmdb"
+
+//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD15"
+//                     args "--rm --env-file ${env.PWD}/.env_PD15"
+
+//                     args "--rm --env-file '\$(pwd)'/.env_PD20"
+//                     args '-u root:sudo -it --rm -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v /${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo'
+//                     args "-e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20} -v $(pwd)/centos.repo:/etc/yum.repos.d/centos.repo"
+//                     args "-v ${env.WORKSPACE}/centos.repo:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
+
+//                     args "-v ${env.WORKSPACE}:/etc/yum.repos.d/centos.repo -e DATA_GERRY_CMDB_URL=${env.DATA_GERRY_CMDB_URL} -e PORTAL_URL_PD20=${env.PORTAL_URL_PD20} -e OS_METRICS_PD20=${env.OS_METRICS_PD20}"
+//                     args '-v ${env.WORKSPACE}:/opt/ --env-file ${PWD}/.env_PD15'
+                    args "-u root --privileged -v ${env.WORKSPACE}:/opt/"
+//                     args '-v ${env.WORKSPACE}:/opt/ --env-file ${env.WORKSPACE}/.env_PD15'
+                    reuseNode true
+
+//                     args "-v ${PATHDIR}/centos.repo:/etc/yum.repos.d/centos.repo"
+//                     args "--rm -v ${WORKSPACE1}/*:/opt/"
+                }
+            }
+            steps {
+                    sh 'bash install-python3.9.sh'
+                    sh 'python3.9 main.py'
+                    sh 'sleep 1000000'
+
+//                 }
+            }
+        }
 
 
     
