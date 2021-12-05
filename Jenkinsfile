@@ -48,7 +48,6 @@ pipeline {
             steps {
                     sh 'bash install-python3.9.sh'
                     sh 'python3.9 main.py'
-                    sh 'sleep 1000000'
             }
         }
 
@@ -78,7 +77,6 @@ pipeline {
             steps {
                     sh 'bash install-python3.9.sh'
                     sh 'python3.9 main.py'
-                    sh 'sleep 1000000'
 
             }
         }
