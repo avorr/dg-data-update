@@ -115,29 +115,28 @@ pipeline {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
 //                     sh 'env'
-                    sh 'mv centos.repo /etc/yum.repos.d/'
                     sh 'bash install-python3.9.sh'
-                    sleep 1000000
+
 
 //                     sh 'sleep 10000000'
 //                     sh '''cat centos.repo >> /etc/yum.repos.d/redhat.repo
 //                           yum update
 //                        '''
-                    sh 'curl -vk -O https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz'
-                    sh 'mv Python-3.*/* .'
+//                     sh 'curl -vk -O https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz'
+//                     sh 'mv Python-3.*/* .'
 
 //                     sh 'yum -y install gcc'
 //                     sh  'yum clean all'
-                    sh  'yum -y install gcc make > /dev/null && yum clean all > /dev/null'
+//                     sh  'yum -y install gcc make > /dev/null && yum clean all > /dev/null'
 //                     sh  'cd Python-3.9.9'
 //                     sh './configure'
-                    sh 'Python-3.9.9/configure --enable-optimizations > /dev/null'
-                    sh 'make'
-                    sh 'make install'
+//                     sh 'Python-3.9.9/configure --enable-optimizations > /dev/null'
+//                     sh 'make'
+//                     sh 'make install'
 
 
-                    sh 'sleep 10000000'
-                    sh 'python3 main.py'
+//                     sh 'sleep 10000000'
+                    sh 'python3.9 main.py'
 
 //                 }
             }
