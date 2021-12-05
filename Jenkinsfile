@@ -115,7 +115,6 @@ pipeline {
 //                     sh 'echo $USERNAME'
 //                     sh 'echo $PASSWORD'
 //                     sh 'env'
-                    sh 'sleep 1000000'
                     sh 'bash install-python3.9.sh'
                     sh 'sleep 1000000'
 
@@ -138,7 +137,7 @@ pipeline {
 
 
 //                     sh 'sleep 10000000'
-                    sh 'python3.9 main.py'
+
 
 //                 }
             }
