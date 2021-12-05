@@ -24,9 +24,9 @@ pipeline {
 
 
     stages {
+        /*
         stage("Update CMDB Info Portal-PD15") {
             environment {
-//                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
                 CMDB_CRED = credentials('cmdb-cred')
                 TUZ_PID_PIDMSK = credentials('pidmsk')
                 DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
@@ -50,7 +50,7 @@ pipeline {
                     sh 'python3.9 main.py'
             }
         }
-
+        */
         stage("Update CMDB Info Portal-PD20") {
             environment {
 //                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
@@ -75,6 +75,7 @@ pipeline {
                 }
             }
             steps {
+                    sh 'sleep 1000000000'
                     sh 'bash install-python3.9.sh'
                     sh 'python3.9 main.py'
 
