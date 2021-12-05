@@ -24,7 +24,7 @@ pipeline {
 
 
     stages {
-        /*
+//         /*
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -47,10 +47,12 @@ pipeline {
             }
             steps {
                     sh 'bash install-python3.9.sh'
+                    sh 'sleep 10000000'
                     sh 'python3.9 main.py'
             }
         }
-        */
+//         */
+        /*
         stage("Update CMDB Info Portal-PD20") {
             environment {
 //                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
@@ -81,5 +83,6 @@ pipeline {
 
             }
         }
+        */
     }
 }
