@@ -41,7 +41,7 @@ pipeline {
                     image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
                     registryUrl 'https://base.sw.sbc.space'
                     registryCredentialsId env.TUZ_PID_PIDMSK
-                    args "-u root --privileged -v ${env.WORKSPACE}:/opt/"
+                    args "-u root --privileged -v ${env.WORKSPACE}:/opt/DataGerry-Autocomplete"
 //                     args "-v ${env.WORKSPACE}:/opt/"
                     reuseNode true
                 }
