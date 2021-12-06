@@ -56,7 +56,7 @@ pipeline {
 
             }
         }
-
+/*
         stage("Update CMDB Info Portal-PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -85,7 +85,7 @@ pipeline {
             }
         }
     }
-
+*/
     post {
         always {
             echo '##############################################################'
