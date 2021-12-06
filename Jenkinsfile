@@ -46,9 +46,9 @@ pipeline {
                 }
             }
             steps {
-                    sh 'bash install-python3.9.sh'
-//                     sh 'sleep 10000000'
-                    sh 'python3.9 main.py'
+//                     sh 'bash install-python3.9.sh'
+                    sh 'sleep 10000000'
+//                     sh 'python3.9 main.py'
             }
         }
 //         */
