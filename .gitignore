@@ -1,6 +1,3 @@
-config
 *.bcp
 creds.py
 debug.py
-allObjects.py
-allLabels.py
