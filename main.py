@@ -10,6 +10,8 @@ if __name__ == '__main__':
     print(portal_info)
     print('########' * 30)
 
+    exit()
+
     all_objects = max(map(PassportsVM, portal_info))
 
     # all(map(PassportsOS, portal_info, all_objects))
