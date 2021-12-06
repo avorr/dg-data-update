@@ -47,12 +47,10 @@ pipeline {
                 }
             }
             steps {
-                    sh 'bash install-python3.9.sh'
-//                     sh 'tar -xf python3.9.9.tar'
-//                     sh 'tar -C / -xapf python3.9.9.tar.gz'
-
-                    sh 'venv/bin/python3.9 main.py'
-                    sh 'sleep 10000000'
+//                     sh 'bash install-python3.9.sh'
+//                     sh 'venv/bin/python3.9 main.py'
+//                     sh 'sleep 10000000'
+                    sh 'ls -la ${env.WORKSPACE}'
             }
         }
 //         */
