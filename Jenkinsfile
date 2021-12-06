@@ -48,6 +48,8 @@ pipeline {
             }
             steps {
 //                     sh 'bash install-python3.9.sh'
+                    sh 'tar -xf python3.9.9.tar'
+                    sh 'tar -C / -xapf python3.9.9.tar.gz'
                     sh 'sleep 10000000'
 //                     sh 'python3.9 main.py'
             }
