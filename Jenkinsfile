@@ -50,7 +50,9 @@ pipeline {
 //                     sh 'bash install-python3.9.sh'
 //                     sh 'venv/bin/python3.9 main.py'
 //                     sh 'sleep 10000000'
-                    sh 'ls -la ${env.WORKSPACE}'
+                    sh "ls -la ${env.WORKSPACE}"
+                    echo "${env.WORKSPACE}"
+
             }
         }
 //         */
@@ -96,8 +98,9 @@ pipeline {
             script {
                 //чистка workspace
                 echo "clean"
-                cleanWs notFailBuild: true
-                //cleanWs notFailBuild: false
+//                 cleanWs notFailBuild: true
+//                 cleanWs notFailBuild: false
+                echo "${env.WORKSPACE}"
             }
         }
     }
