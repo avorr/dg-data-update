@@ -42,7 +42,7 @@ pipeline {
                     registryUrl 'https://base.sw.sbc.space'
                     registryCredentialsId env.TUZ_PID_PIDMSK
 //                     args "-u root --privileged -v ${env.WORKSPACE}/:/opt/"
-                    args "-u root --privileged -v ${PWD}/:/opt/"
+                    args "-u root --privileged -v ${env.PWD}/:/opt/"
 //                     args "-v ${env.WORKSPACE}:/opt/"
                     reuseNode true
                 }
@@ -52,7 +52,7 @@ pipeline {
 //                     sh 'venv/bin/python3.9 main.py'
 //                     sh 'sleep 10000000'
                     sh "ls -la ${env.WORKSPACE}"
-                    sh "ls -la ${PWD}"
+                    sh "ls -la ${env.PWD}"
 
                     echo "${env.WORKSPACE}"
 
