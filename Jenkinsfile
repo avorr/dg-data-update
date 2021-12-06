@@ -52,6 +52,8 @@ pipeline {
 //                     sh 'venv/bin/python3.9 main.py'
 //                     sh 'sleep 10000000'
                     sh "ls -la ${env.WORKSPACE}"
+                    sh "ls -la ${PWD}"
+
                     echo "${env.WORKSPACE}"
 
             }
