@@ -87,15 +87,16 @@ pipeline {
         */
 
         post {
-        always {
-            echo '##############################################################'
-            echo '#################### Clean Work Space ########################'
-            echo '##############################################################'
-            script {
-                //чистка workspace
-                echo "clean"
-                cleanWs notFailBuild: true
-                //cleanWs notFailBuild: false
+            always {
+                echo '##############################################################'
+                echo '#################### Clean Work Space ########################'
+                echo '##############################################################'
+                script {
+                    //чистка workspace
+                    echo "clean"
+                    cleanWs notFailBuild: true
+                    //cleanWs notFailBuild: false
+                }
             }
         }
     }
