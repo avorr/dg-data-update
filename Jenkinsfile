@@ -8,7 +8,7 @@ properties([disableConcurrentBuilds()])
 pipeline {
     agent none
     options {
-        buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
         timestamps()
         ansiColor('xterm')
     }
@@ -24,7 +24,6 @@ pipeline {
 
 
     stages {
-//         /*
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -41,28 +40,25 @@ pipeline {
                     image 'base.sw.sbc.space/base/redhat/rhel7:4.5-433'
                     registryUrl 'https://base.sw.sbc.space'
                     registryCredentialsId env.TUZ_PID_PIDMSK
-//                     args "-u root --privileged -v ${env.WORKSPACE}/:/opt/"
-                    args "-u root --privileged -v ${env.PWD}/:/opt/"
+                    args "-u root --privileged -v ${env.WORKSPACE}:/opt/"
+//                     args "-u root --privileged -v ${env.PWD}/:/opt/"
 //                     args "-v ${env.WORKSPACE}:/opt/"
                     reuseNode true
                 }
             }
             steps {
-//                     sh 'bash install-python3.9.sh'
-//                     sh 'venv/bin/python3.9 main.py'
+                    sh 'bash install-python3.9.sh'
+                    sh 'venv/bin/python3.9 main.py'
 //                     sh 'sleep 10000000'
-                    sh "ls -la ${env.WORKSPACE}"
-                    sh "ls -la ${env.PWD}"
-
-                    echo "${env.WORKSPACE}"
+//                     sh "ls -la ${env.WORKSPACE}"
+//                     sh "ls -la ${env.PWD}"
+//                     echo "${env.WORKSPACE}"
 
             }
         }
-//         */
-        /*
+
         stage("Update CMDB Info Portal-PD20") {
             environment {
-//                 PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
                 CMDB_CRED = credentials('cmdb-cred')
                 TUZ_PID_PIDMSK = credentials('pidmsk')
                 DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
@@ -84,13 +80,10 @@ pipeline {
                 }
             }
             steps {
-                    sh 'sleep 1000000000'
                     sh 'bash install-python3.9.sh'
-                    sh 'python3.9 main.py'
-
+                    sh 'venv/bin/python3.9 main.py'
             }
         }
-        */
     }
 
     post {
@@ -99,11 +92,11 @@ pipeline {
             echo '#################### Clean Work Space ########################'
             echo '##############################################################'
             script {
-                //чистка workspace
                 echo "clean"
 //                 cleanWs notFailBuild: true
 //                 cleanWs notFailBuild: false
-                echo "${env.WORKSPACE}"
+                cleanWs()
+                echo env.WORKSPACE
             }
         }
     }
