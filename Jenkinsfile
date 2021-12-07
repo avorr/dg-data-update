@@ -15,11 +15,11 @@ pipeline {
 
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-        imagename = "datagerry-cmdb"
+//         imagename = "datagerry-cmdb"
 //         registryCredential = 'yenigul-dockerhub'
-        dockerImage = ''
-        dockerFortiImage = ''
-        fortiImageName = 'forti-docker'
+//         dockerImage = ''
+//         dockerFortiImage = ''
+//         fortiImageName = 'forti-docker'
     }
 
 
@@ -95,8 +95,8 @@ pipeline {
                 echo "clean"
 //                 cleanWs notFailBuild: true
 //                 cleanWs notFailBuild: false
-                cleanWs()
-                echo env.WORKSPACE
+//                 cleanWs()
+//                 echo env.WORKSPACE
             }
         }
     }

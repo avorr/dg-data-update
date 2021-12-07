@@ -2,6 +2,8 @@
 
 import os
 
+# from creds import *
+
 cmdb_login: str = os.environ['CMDB_CRED_USR']
 cmdb_password: str = os.environ['CMDB_CRED_PSW']
 
