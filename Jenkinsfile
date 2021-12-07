@@ -84,8 +84,8 @@ pipeline {
                     sh 'venv/bin/python3.9 main.py'
             }
         }
-    }
 */
+    }
     post {
         always {
             echo '##############################################################'
