@@ -96,6 +96,12 @@ pipeline {
 
         stage("Update CMDB Info Portal-PD20") {
             environment {
+                DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
+
+                PORTAL_URL_PD20 = "https://portal.gostech.novalocal/api/v1/"
+                OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+
+
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 fortivpn_cred = credentials('fortivpn_cred')
@@ -108,7 +114,8 @@ pipeline {
 //                     Dockerfile "Dockerfile-forticlient"
                     image fortiImageName
 //                     args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=${env.HOST} -e LOGIN=${env.fortivpn_cred_USR} -e PASSWORD=${env.fortivpn_cred_PSW}"
-                    args "-u root:sudo --rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
+//                     args "-u root:sudo --rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
+                    args "-u root:sudo --rm --name forticlient --privileged"
 //                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${fortivpn_cred_USR} -e PASSWORD='${fortivpn_cred_PSW}' forti-docker"
 //                     args "-u root:sudo --rm --name docker-forticlient --privileged --net host --env-file ${env.WORKSPACE}/.env_PD20"
 //                     args "-u 502 --rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
@@ -123,7 +130,7 @@ pipeline {
 //                     sh "screen -dm /opt/perl-run-fortivpn.pl $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW' &>/tmp/fortilog.txt &"
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
 //                     sh "ping p-pprb-iamservice.foms.novalocal"
-
+                    sh "env"
                     sh "screen -dm /opt/launch-fortivpn.exp $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW'"
                     sh "ping 172.20.18.36"
                     sh "sleep 10000000000"
