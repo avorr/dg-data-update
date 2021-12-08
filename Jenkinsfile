@@ -63,7 +63,7 @@ pipeline {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-                FORTI_CRED = credentials('FORTI_CRED')
+                fortivpn_cred = credentials('fortivpn_cred')
                 def WORKDIR = "${env.WORKSPACE}"
             }
 
@@ -79,11 +79,11 @@ pipeline {
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
 //                     '''
-//                     sh 'docker run --rm --name docker-forticlient --privileged --net host --env-file ${WORKDIR}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD="${FORTI_CRED_PSW}" forti-docker'
+//                     sh 'docker run --rm --name docker-forticlient --privileged --net host --env-file ${WORKDIR}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${fortivpn_cred_USR} -e PASSWORD="${fortivpn_cred_PSW}" forti-docker'
 //                     sh 'sleep 1000000'
 //                     docker ps -aq -f "name=docker-forticlient"
 //                     docker exec -it $(docker ps -aq -f "name=docker-forticlient") /usr/bin/python3 /opt/main.py
-//                     sh "docker run -it --rm --name docker-forticlient --privileged --net host --env-file \"${env.WORKSPACE}\"/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW} forti-docker"
+//                     sh "docker run -it --rm --name docker-forticlient --privileged --net host --env-file \"${env.WORKSPACE}\"/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${fortivpn_cred_USR} -e PASSWORD=${fortivpn_cred_PSW} forti-docker"
 //                     sh 'docker exec -it $(docker ps -aq -f "name=docker-forticlient") /usr/bin/python3 /opt/main.py'
 //                     dockerImage = docker.build imagename
                 }
@@ -96,7 +96,7 @@ pipeline {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-                FORTI_CRED = credentials('FORTI_CRED')
+                fortivpn_cred = credentials('fortivpn_cred')
                 HOST = "37.18.109.130:18443"
             }
             agent {
@@ -104,9 +104,9 @@ pipeline {
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile "Dockerfile-forticlient"
                     image fortiImageName
-//                     args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=${env.HOST} -e LOGIN=${env.FORTI_CRED_USR} -e PASSWORD=${env.FORTI_CRED_PSW}"
+//                     args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=${env.HOST} -e LOGIN=${env.fortivpn_cred_USR} -e PASSWORD=${env.fortivpn_cred_PSW}"
                     args "-u root:sudo --rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
-//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD='${FORTI_CRED_PSW}' forti-docker"
+//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${fortivpn_cred_USR} -e PASSWORD='${fortivpn_cred_PSW}' forti-docker"
 //                     args "-u root:sudo --rm --name docker-forticlient --privileged --net host --env-file ${env.WORKSPACE}/.env_PD20"
 //                     args "-u 502 --rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
@@ -115,13 +115,13 @@ pipeline {
             }
             steps {
 //                     sh "screen -dm ./start.pl"
-//                     sh "/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW' &>/tmp/fortilog.txt &"
+//                     sh "/opt/perl-run-fortivpn.pl $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW' &>/tmp/fortilog.txt &"
 //                     sh "apt update && apt -y install screen"
-//                     sh "screen -dm /opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW' &>/tmp/fortilog.txt &"
+//                     sh "screen -dm /opt/perl-run-fortivpn.pl $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW' &>/tmp/fortilog.txt &"
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
 //                     sh "ping p-pprb-iamservice.foms.novalocal"
 
-                    sh "screen -dm /opt/launch-fortivpn.exp $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW'"
+                    sh "screen -dm /opt/launch-fortivpn.exp $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW'"
                     sh "ping 172.20.18.36"
                     sh "sleep 10000000000"
 
