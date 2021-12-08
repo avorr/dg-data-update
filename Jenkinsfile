@@ -60,7 +60,7 @@ pipeline {
         */
 
         stage("Prepare build image for PD20") {
-            agent { label 'pkles-gt0000369' }
+            agent { label "pkles-gt0000369" }
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
@@ -103,6 +103,7 @@ pipeline {
             }
             agent {
                 docker {
+                    label "pkles-gt0000369"
 //                     customWorkspace "${env.WORKSPACE}"
 //                     Dockerfile "Dockerfile-forticlient"
                     image fortiImageName
@@ -112,7 +113,7 @@ pipeline {
 //                     args "-u root:sudo --rm --name docker-forticlient --privileged --net host --env-file ${env.WORKSPACE}/.env_PD20"
 //                     args "-u 502 --rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
 //                     reuseNode true
-//                     label "build-image"
+
                 }
             }
             steps {
