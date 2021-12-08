@@ -15,10 +15,10 @@ pipeline {
 
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-//         imagename = "datagerry-cmdb"
+        imagename = "datagerry-cmdb"
 //         registryCredential = 'yenigul-dockerhub'
-//         dockerImage = ''
-//         dockerFortiImage = ''
+        dockerImage = ''
+        dockerFortiImage = ''
         fortiImageName = 'forti-docker'
     }
 
