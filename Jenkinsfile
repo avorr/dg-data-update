@@ -56,6 +56,44 @@ pipeline {
 
             }
         }
+
+
+        stage("Update CMDB Info Portal-PD15") {
+            environment {
+                CMDB_CRED = credentials('cmdb-cred')
+                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
+                FORTI_CRED = credentials('FORTI_CRED')
+                HOST = "37.18.109.130:18443"
+            }
+            agent {
+                docker {
+//                     customWorkspace "${env.WORKSPACE}"
+//                     Dockerfile 'Dockerfile'
+                    image fortiImageName
+//                     args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=${env.HOST} -e LOGIN=${env.FORTI_CRED_USR} -e PASSWORD=${env.FORTI_CRED_PSW}"
+                    args "-u root:sudo --rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
+//                     args "--rm --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD='${FORTI_CRED_PSW}' forti-docker"
+//                     args "-u root:sudo --rm --name docker-forticlient --privileged --net host --env-file ${env.WORKSPACE}/.env_PD20"
+//                     args "-u 502 --rm --name docker-forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
+//                     reuseNode true
+//                     label "build-image"
+                }
+            }
+            steps {
+//                     sh "screen -dm ./start.pl"
+//                     sh "/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW' &>/tmp/fortilog.txt &"
+                    sh "apt update && apt -y install screen"
+//                     sh "screen -dm /opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW' &>/tmp/fortilog.txt &"
+                    sh "screen -dm /opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW'"
+//                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
+//                     sh "ping p-pprb-iamservice.foms.novalocal"
+                    sh "ping 172.20.18.36"
+                    sh "sleep 10000000000"
+
+//                 }
+            }
+        }
+
 /*
         stage("Update CMDB Info Portal-PD20") {
             environment {
