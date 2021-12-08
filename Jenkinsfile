@@ -131,7 +131,7 @@ pipeline {
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
 //                     sh "ping p-pprb-iamservice.foms.novalocal"
                     sh "env"
-                    sh "screen -dm /opt/launch-fortivpn.exp $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW'"
+                    sh "screen -dm ./launch-fortivpn.exp $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW'"
                     sh "ping 172.20.18.36"
                     sh "sleep 10000000000"
 

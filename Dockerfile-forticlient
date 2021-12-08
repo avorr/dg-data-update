@@ -37,7 +37,15 @@ RUN pip3 install --no-cache --upgrade requests pymongo
 #    apt-get clean -q &&  \
 #    apt-get -y autoremove --purge && \
 #    rm -rf /var/lib/apt/lists/*
-COPY . /opt/
+
+
+
+#COPY . /opt/
+
+
+
+
+
 #COPY start-connect.exp start-connect.exp
 
 #CMD nohup bash -c /opt/start.sh &
