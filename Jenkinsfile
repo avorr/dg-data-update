@@ -102,7 +102,7 @@ pipeline {
             agent {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
-                    Dockerfile "Dockerfile-forticlient"
+//                     Dockerfile "Dockerfile-forticlient"
                     image fortiImageName
 //                     args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=${env.HOST} -e LOGIN=${env.FORTI_CRED_USR} -e PASSWORD=${env.FORTI_CRED_PSW}"
                     args "-u root:sudo --rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
