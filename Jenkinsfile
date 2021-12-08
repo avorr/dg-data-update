@@ -65,7 +65,7 @@ pipeline {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
                 fortivpn_cred = credentials('fortivpn_cred')
-                def WORKDIR = "${env.WORKSPACE}"
+//                 def WORKDIR = "${env.WORKSPACE}"
             }
 
             steps {
@@ -75,8 +75,8 @@ pipeline {
                         Build VPN-Image for Update Cmdb-Info-PD20
                         ####################################
                         '''
-//                     dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient ' + env.WORKSPACE)
-                    dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient')
+                    dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient ' + env.WORKSPACE)
+//                     dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient')
 //                      fortiImageName
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
