@@ -74,7 +74,8 @@ pipeline {
                         Build VPN-Image for Update Cmdb-Info-PD20
                         ####################################
                         '''
-                    dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient ' + env.WORKSPACE)
+//                     dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient ' + env.WORKSPACE)
+                    dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient')
 //                      fortiImageName
 //                     sh '''#!/bin/bash
 //                     docker build -f Dockerfile-forticlient . -t forti-docker
