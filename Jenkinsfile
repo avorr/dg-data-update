@@ -19,11 +19,12 @@ pipeline {
 //         registryCredential = 'yenigul-dockerhub'
 //         dockerImage = ''
 //         dockerFortiImage = ''
-//         fortiImageName = 'forti-docker'
+        fortiImageName = 'forti-docker'
     }
 
 
     stages {
+    /*
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -56,9 +57,10 @@ pipeline {
 
             }
         }
+        */
 
 
-        stage("Update CMDB Info Portal-PD15") {
+        stage("Update CMDB Info Portal-PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
@@ -68,7 +70,7 @@ pipeline {
             agent {
                 docker {
 //                     customWorkspace "${env.WORKSPACE}"
-//                     Dockerfile 'Dockerfile'
+                    Dockerfile "Dockerfile-forticlient"
                     image fortiImageName
 //                     args "--rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20 -e HOST=${env.HOST} -e LOGIN=${env.FORTI_CRED_USR} -e PASSWORD=${env.FORTI_CRED_PSW}"
                     args "-u root:sudo --rm --name forticlient --privileged --env-file ${env.WORKSPACE}/.env_PD20"
@@ -82,11 +84,12 @@ pipeline {
             steps {
 //                     sh "screen -dm ./start.pl"
 //                     sh "/opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW' &>/tmp/fortilog.txt &"
-                    sh "apt update && apt -y install screen"
+//                     sh "apt update && apt -y install screen"
 //                     sh "screen -dm /opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW' &>/tmp/fortilog.txt &"
-                    sh "screen -dm /opt/perl-run-fortivpn.pl $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW'"
 //                     sh '/opt/perl-run-fortivpn.pl $HOST $LOGIN $PASSWORD &>/tmp/fortilog.txt &'
 //                     sh "ping p-pprb-iamservice.foms.novalocal"
+
+                    sh "screen -dm /opt/launch-fortivpn.exp $HOST $FORTI_CRED_USR '$FORTI_CRED_PSW'"
                     sh "ping 172.20.18.36"
                     sh "sleep 10000000000"
 
