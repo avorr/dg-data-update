@@ -60,6 +60,7 @@ pipeline {
         */
 
         stage("Prepare build image for PD20") {
+            agent { label 'pkles-gt0000369' }
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
