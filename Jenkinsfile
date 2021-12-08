@@ -59,6 +59,38 @@ pipeline {
         }
         */
 
+        stage("Prepare build image for PD20") {
+            environment {
+                CMDB_CRED = credentials('cmdb-cred')
+                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
+                FORTI_CRED = credentials('FORTI_CRED')
+                def WORKDIR = "${env.WORKSPACE}"
+            }
+
+            steps {
+                script {
+                    echo '''
+                        ####################################
+                        Build VPN-Image for Update Cmdb-Info-PD20
+                        ####################################
+                        '''
+                    dockerFortiImage = docker.build(fortiImageName, '-f Dockerfile-forticlient ' + env.WORKSPACE)
+//                      fortiImageName
+//                     sh '''#!/bin/bash
+//                     docker build -f Dockerfile-forticlient . -t forti-docker
+//                     '''
+//                     sh 'docker run --rm --name docker-forticlient --privileged --net host --env-file ${WORKDIR}/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD="${FORTI_CRED_PSW}" forti-docker'
+//                     sh 'sleep 1000000'
+//                     docker ps -aq -f "name=docker-forticlient"
+//                     docker exec -it $(docker ps -aq -f "name=docker-forticlient") /usr/bin/python3 /opt/main.py
+//                     sh "docker run -it --rm --name docker-forticlient --privileged --net host --env-file \"${env.WORKSPACE}\"/.env_PD20 -e HOST=37.18.109.130:18443 -e LOGIN=${FORTI_CRED_USR} -e PASSWORD=${FORTI_CRED_PSW} forti-docker"
+//                     sh 'docker exec -it $(docker ps -aq -f "name=docker-forticlient") /usr/bin/python3 /opt/main.py'
+//                     dockerImage = docker.build imagename
+                }
+            }
+        }
+
+
 
         stage("Update CMDB Info Portal-PD20") {
             environment {
