@@ -26,7 +26,7 @@ pipeline {
 //                 }
 //             }
 
-            when { equals expected: true, actual: Deploy }
+//             when { equals expected: true, actual: Deploy }
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
                 TUZ_PID_PIDMSK = credentials('pidmsk')
