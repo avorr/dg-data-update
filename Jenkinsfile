@@ -42,7 +42,7 @@ pipeline {
                     sh 'venv/bin/python3.9 main.py'
             }
         }
-
+/*
         stage("Update CMDB Info Portal-PD20") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -67,8 +67,8 @@ pipeline {
                     sh 'venv/bin/python3.9 main.py'
             }
         }
+*/
 
-/*
         stage("Update CMDB Info Portal-PD20") {
             environment {
                 DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
@@ -76,25 +76,24 @@ pipeline {
                 OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 CMDB_CRED = credentials('cmdb-cred')
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-                HOST = "37.18.109.130:18443"
+                FORTI_VPN_HOST = "37.18.109.130:18443"
             }
             agent {
                 docker {
                     label "pkles-gt0000369"
-                    reuseNode true
                     image "ubuntu:20.04"
                     args "-u root --privileged"
+                    reuseNode true
                 }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
                     sh "./prepare-image-pd20.sh"
-                    sh "screen -dm ./launch-fortivpn.exp ${HOST} ${FORTI_USERNAME} '${FORTI_PASSWORD}'"
+                    sh "screen -dm ./launch-fortivpn.exp ${FORTI_VPN_HOST} ${FORTI_USERNAME} '${FORTI_PASSWORD}'"
                     sh "python3 main.py"
                 }
             }
         }
-*/
     }
 
     post {
