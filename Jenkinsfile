@@ -24,6 +24,7 @@ pipeline {
 
 
     stages {
+    /*
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -57,11 +58,7 @@ pipeline {
             }
         }
 
-
-
-
-        /*
-
+*/
 
 
 
@@ -138,7 +135,7 @@ pipeline {
 //                     sh "ping p-pprb-iamservice.foms.novalocal"
                     sh "env"
                     sh "screen -dm ./launch-fortivpn.exp $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW'"
-                    sh "ping 172.20.18.36"
+                    sh "ping login.gostech.novalocal"
                     sh "sleep 10000000000"
 
 //                 }
