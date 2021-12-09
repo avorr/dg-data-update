@@ -135,7 +135,7 @@ pipeline {
 //                     sh "ping p-pprb-iamservice.foms.novalocal"
                     sh "env"
                     sh "screen -dm ./launch-fortivpn.exp $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW'"
-                    sh "ping login.gostech.novalocal"
+                    sh "ping 172.20.8.16"
                     sh "sleep 10000000000"
 
 //                 }
