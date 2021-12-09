@@ -24,7 +24,7 @@ pipeline {
 
 
     stages {
-    /*
+
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -58,7 +58,7 @@ pipeline {
             }
         }
 
-*/
+
 
 /*
 
