@@ -24,7 +24,6 @@ pipeline {
 
 
     stages {
-    /*
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 CMDB_CRED = credentials('cmdb-cred')
@@ -57,7 +56,14 @@ pipeline {
 
             }
         }
-        */
+
+
+
+
+        /*
+
+
+
 
         stage("Prepare build image for PD20") {
             agent { label "pkles-gt0000369" }
