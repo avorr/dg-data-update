@@ -15,18 +15,3 @@ screen
 tar -xf python3.9.9.tar
 tar -C / -xapf python3.9.9.tar.gz
 tar -xf venv.tar.gz
-
-#pip3 install --no-cache --upgrade requests
-#vim \
-#curl \
-
-#python3 \
-#python3-pip  \
-
-#libexpect-perl
-
-#rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb
-#apt-get -y remove curl
-#apt-get clean -q
-#apt-get -y autoremove --purge
-#rm -rf /var/lib/apt/lists/*
