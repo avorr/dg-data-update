@@ -9,7 +9,7 @@ if __name__ == '__main__':
     print('########' * 30)
     print(portal_info)
     print('########' * 30)
-    exit()
+    # exit()
     all_objects = max(map(PassportsVM, portal_info))
     # all(map(PassportsOS, portal_info, all_objects))
     tuple(PassportsOS(foo, all_objects) for foo in portal_info)
