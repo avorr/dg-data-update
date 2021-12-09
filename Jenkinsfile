@@ -142,7 +142,7 @@ pipeline {
 
                     sh "./prepare-image-pd20.sh"
                     sh "screen -dm ./launch-fortivpn.exp $HOST $fortivpn_cred_USR '$fortivpn_cred_PSW'"
-                    sh "venv/bin/python3.9 main.py"
+                    sh "python3 main.py"
 //                     sh "ping 172.20.8.16"
 //                     sh "sleep 10000000000"
 
