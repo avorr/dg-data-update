@@ -9,11 +9,14 @@
   apt-get install -y -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
   ca-certificates \
   iproute2 \
+  python3 \
   expect \
-  iputils-ping \
   screen
+  pip3 install --no-cache --upgrade requests
+
+#  iputils-ping \
 } &> /dev/null
 
-tar -xf python3.9.9.tar
-tar -C / -xapf python3.9.9.tar.gz
-tar -xf venv.tar.gz
+#tar -xf python3.9.9.tar
+#tar -C / -xapf python3.9.9.tar.gz
+#tar -xf venv.tar.gz
