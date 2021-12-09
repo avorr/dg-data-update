@@ -10,6 +10,7 @@
   ca-certificates \
   iproute2 \
   python3 \
+  python3-pip \
   expect \
   screen
   pip3 install --no-cache --upgrade requests
