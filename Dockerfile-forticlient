@@ -1,17 +1,11 @@
 FROM ubuntu:20.04
 
-#ENV LOGIN=
-#ENV HOST=
-#ENV PASSWORD=
 ENV TZ=Europe/Moscow
 
 
 RUN apt-get update && apt-get install curl -y && \
     curl https://filestore.fortinet.com/forticlient/downloads/FortiClientFullVPNInstaller_6.4.0.0851.deb -o FortiClientFullVPNInstaller_6.4.0.0851.deb && \
     apt-get install ./FortiClientFullVPNInstaller_6.4.0.0851.deb -y
-
-#RUN curl https://filestore.fortinet.com/forticlient/downloads/FortiClientFullVPNInstaller_6.4.0.0851.deb -o FortiClientFullVPNInstaller_6.4.0.0851.deb
-#RUN apt-get install ./FortiClientFullVPNInstaller_6.4.0.0851.deb -y
 
 RUN apt-get update && \
     apt-get install -y -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
@@ -24,8 +18,9 @@ RUN apt-get update && \
     vim \
     curl \
     iputils-ping  \
-    libexpect-perl && \
+    libexpect-perl
 
+RUN pip3 install --no-cache --upgrade requests pymongo && \
     rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb && \
     apt-get -y remove curl && \
     apt-get clean -q &&  \
@@ -33,20 +28,13 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-RUN pip3 install --no-cache --upgrade requests pymongo
+
 #RUN rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb && \
 #    apt-get clean -q &&  \
 #    apt-get -y autoremove --purge && \
 #    rm -rf /var/lib/apt/lists/*
 
-
-
 #COPY . /opt/
-
-
-
-
-
 #COPY start-connect.exp start-connect.exp
 
 #CMD nohup bash -c /opt/start.sh &
