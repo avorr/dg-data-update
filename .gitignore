@@ -2,3 +2,6 @@
 creds.py
 debug.py
 .env_PD*
+allObjects.py
+allLabels.py
+dev.py
