@@ -640,7 +640,6 @@ def PassportsVM(portal_name: str) -> tuple:
                     time.sleep(5)
                     create_object = objects(server, cmdb_token, new_type_id, user_id, tags=portalTags)
 
-    return
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
 
     all_cmdb_types_id = reduce(lambda x, y: x + y, map(lambda foo: tuple(
@@ -674,7 +673,6 @@ def PassportsVM(portal_name: str) -> tuple:
                       objects(server, 'token', cmdb_project['type_id'], user_id, 'GET_TEMPLATE').get('fields'),
                       vm_list['stdout']['servers']))
 
-        return
         for cloud_vm in cloud_project_vm:
 
             if not any(map(lambda x: x['fields'][16]['value'] == cloud_vm[16]['value'], cmdb_type_objects)):
