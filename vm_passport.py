@@ -29,7 +29,7 @@ def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict =
 
 
 def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
-            template: bool = False) -> dict:
+            template: bool = False, tags: list = []) -> dict:
     if method == 'PUT':
         return cmdb_api(method, f'object/{vm_info["public_id"]}', cmdb_token, vm_info)
 
@@ -131,6 +131,30 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
     conversion_ports_to_string = lambda x, foo='port_range_max', bar='port_range_min': \
         f"{x['protocol']} {x[foo]}" if x[foo] == x[bar] else f"{x['protocol']} {x[bar]}-{x[foo]}"
 
+    # def getTagName(vmTagIds: list) -> list:
+    #     if vm_info['tag_ids']:
+    #         for vmTag in vmTagIds:
+    #             for tag in tags:
+    #                 vmTagNames = list()
+    #                 if tag['id'] == vmTag:
+    #                     vmTagNames.append(tag['tag_name'])
+    #             return ' \n'.join(vmTagNames)
+    #     else:
+    #         return ''
+
+    def getTagNames(vm_info: list) -> list:
+        if vm_info['tag_ids']:
+            vmTagNames = list()
+            for vmTag in vm_info['tag_ids']:
+                for tag in tags:
+                    if tag['id'] == vmTag:
+                        vmTagNames.append(tag['tag_name'])
+            if len(vmTagNames) == 1:
+                return vmTagNames[0]
+            return ' \n'.join(vmTagNames)
+        else:
+            return ''
+
     vm_object_template: dict = {
         "status": True,
         "type_id": type_id,
@@ -180,6 +204,10 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
             {
                 "name": "public-ip",
                 "value": check_public_ip('public_ip', vm_info)
+            },
+            {
+                "name": "tags",
+                "value": getTagNames(vm_info)
             },
             {
                 "name": "zone",
@@ -326,7 +354,7 @@ def PassportsVM(portal_name: str) -> tuple:
         cloud_projects_with_check_sum = dict()
         # print(number_of_tread(len(cloud_projects)))
         # with ThreadPoolExecutor(max_workers=number_of_tread(len(cloud_projects))) as executor:
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        with ThreadPoolExecutor(max_workers=3) as executor:
             for project in executor.map(get_vcod_check_sum, cloud_projects):
                 cloud_projects_with_check_sum[project['info']['name']] = dict(id=project['info']['id'],
                                                                               domain_id=project['info']['domain_id'],
@@ -349,6 +377,9 @@ def PassportsVM(portal_name: str) -> tuple:
                  check_sum=baz['render_meta']['sections'][0].get('label')), bar['results'])), foo)) if foo else foo
 
     cmdb_vcod_check_sum = cmdb_vcod_check_sum(cmdb_projects)
+    # print(cmdb_vcod_check_sum)
+    # return
+    # from cmdb_vcod_check_sum import cmdb_vcod_check_sum
 
     update_cmdb_projects = list()
 
@@ -374,6 +405,7 @@ def PassportsVM(portal_name: str) -> tuple:
     print('VCOD WHERE WERE CHANGES', len(update_cmdb_projects))
 
     # all_types_pages = get_info_from_all_page('categories', cmdb_token)[0]['pager']['total_pages']
+    portalTags = sbercloud_api('dict/tags')['stdout']['tags']
 
     for project in all_projects:
         if not any(map(lambda x: any(map(lambda y: y['name'] == all_projects[project]['id'], x['results'])),
@@ -438,6 +470,11 @@ def PassportsVM(portal_name: str) -> tuple:
                     },
                     {
                         "type": "text",
+                        "name": "tags",
+                        "label": "tags"
+                    },
+                    {
+                        "type": "text",
                         "name": "zone",
                         "label": "zone"
                     },
@@ -492,6 +529,7 @@ def PassportsVM(portal_name: str) -> tuple:
                                 "summary-vm-info",
                                 "local-ip",
                                 "public-ip",
+                                "tags",
                                 "zone",
                                 "ingress-ports",
                                 "egress-ports",
@@ -518,6 +556,7 @@ def PassportsVM(portal_name: str) -> tuple:
                             "additional-disk",
                             "local-ip",
                             "public-ip",
+                            "tags",
                             "state",
                             "creation-date"
                         ]
@@ -596,17 +635,23 @@ def PassportsVM(portal_name: str) -> tuple:
             for server in vm_list['stdout']['servers']:
                 print(server)
                 try:
-                    create_object = objects(server, cmdb_token, new_type_id, user_id)
+                    create_object = objects(server, cmdb_token, new_type_id, user_id, tags=portalTags)
                 except:
                     time.sleep(5)
-                    create_object = objects(server, cmdb_token, new_type_id, user_id)
+                    create_object = objects(server, cmdb_token, new_type_id, user_id, tags=portalTags)
 
+    return
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
 
     all_cmdb_types_id = reduce(lambda x, y: x + y, map(lambda foo: tuple(
         map(lambda bar: bar.get('public_id'), foo['results'])), cmdb_projects))
 
     all_objects = get_info_from_all_page('objects', cmdb_token)
+
+    # from allObjects import allObjects as all_objects
+
+    # print(all_objects)
+    # return
 
     if not update_cmdb_projects:
         return all_objects
@@ -629,11 +674,12 @@ def PassportsVM(portal_name: str) -> tuple:
                       objects(server, 'token', cmdb_project['type_id'], user_id, 'GET_TEMPLATE').get('fields'),
                       vm_list['stdout']['servers']))
 
+        return
         for cloud_vm in cloud_project_vm:
 
             if not any(map(lambda x: x['fields'][16]['value'] == cloud_vm[16]['value'], cmdb_type_objects)):
                 print('VM FOR CREATE', cloud_vm)
-                print(objects(cloud_vm, cmdb_token, cmdb_project['type_id'], user_id, 'POST_NEW_VM'))
+                print(objects(cloud_vm, cmdb_token, cmdb_project['type_id'], user_id, 'POST_NEW_VM', tags=portalTags))
 
             for cmdb_type in cmdb_type_objects:
 
@@ -667,7 +713,8 @@ def PassportsVM(portal_name: str) -> tuple:
                         "comment": ""
                     }
 
-                    print(objects(update_object_template, cmdb_token, cmdb_project['type_id'], user_id, 'PUT'))
+                    print(objects(update_object_template, cmdb_token, cmdb_project['type_id'], user_id, 'PUT',
+                                  tags=portalTags))
 
         for object in filter(lambda x: x[1][16]['value'] not in map(lambda x: x[16]['value'], cloud_project_vm),
                              map(lambda y: (y.get('public_id'), y.get('fields')), cmdb_type_objects)):

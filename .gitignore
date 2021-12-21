@@ -5,3 +5,4 @@ debug.py
 allObjects.py
 allLabels.py
 dev.py
+cmdb_vcod_check_sum.py
