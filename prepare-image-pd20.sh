@@ -9,7 +9,6 @@
   apt-get install -y -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
   ca-certificates \
   iproute2 \
-  iputils-ping \
   python3 \
   python3-pip \
   expect \
