@@ -91,7 +91,7 @@ pipeline {
                     sh "./prepare-image-pd20.sh"
                     sh "screen -dm ./launch-fortivpn.exp ${FORTI_VPN_HOST} ${FORTI_USERNAME} '${FORTI_PASSWORD}'"
 //                     sh "sleep 5"
-                    sh "ping 172.20.16.159"
+//                     sh "ping 172.20.16.159"
                     sh "python3 main.py"
                 }
             }
