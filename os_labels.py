@@ -21,7 +21,8 @@ def json_read(json_object: dict):
     print(json.dumps(json_object, indent=4))
 
 
-def LabelsOS(portal_name: str, clusters: tuple = (), all_objects: tuple = ()) -> None:
+# def LabelsOS(portal_name: str, clusters: tuple = (), all_objects: tuple = ()) -> None:
+def LabelsOS(portal_name: str, all_objects: tuple) -> None:
     """main func for autocomplete labels in DataGerry"""
 
     def CreateLabels(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
@@ -349,7 +350,7 @@ def LabelsOS(portal_name: str, clusters: tuple = (), all_objects: tuple = ()) ->
                 print(create_object)
                 time.sleep(0.1)
 
-    all_objects = get_info_from_all_page('objects', cmdb_token)
+    # all_objects = get_info_from_all_page('objects', cmdb_token)
 
     # from allObjects import allObjects as all_objects
 
