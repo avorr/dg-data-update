@@ -175,8 +175,8 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
 
             print(new_type_id, 'new type id')
 
-            os_portal_categorie_id = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
-                                                  os_passports_categorie_id['public_id'], all_categories)
+            # os_portal_categorie_id = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
+            #                                       os_passports_categorie_id['public_id'], all_categories)
             data_cat_template: dict = {
                 "public_id": os_portal_categorie_id['public_id'],
                 "name": os_portal_categorie_id['name'],
@@ -232,6 +232,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                     if os_namespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdb_namespaces):
                         print('NAMESPACE FOR CREATE', os_namespace['namespace'])
                         create_namespace = objects(os_namespace, cmdb_token, cmdb_cluster['public_id'], user_id, 'NAMESPACE')
+                        time.sleep(0.1)
                         print(create_namespace)
 
                     for cmdb_ns in cmdb_namespaces:
@@ -261,10 +262,11 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                                 "comment": ""
                             }
                             # json_read(update_object_template)
-
+                            time.sleep(0.1)
                             print(objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT'))
 
                 for cmdb_ns in cmdb_namespaces:
                     if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
                         print('OBJECT for Delete', cmdb_ns['fields'][0]['value'])
                         print(cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token))
+                        time.sleep(0.1)

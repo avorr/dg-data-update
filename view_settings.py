@@ -109,6 +109,7 @@ def visiableSetting():
                                     "fields.additional-disk",
                                     "fields.local-ip",
                                     "fields.public-ip",
+                                    "fields.tags",
                                     "fields.state",
                                     "fields.creation-date",
                                     "actions"
@@ -172,6 +173,7 @@ def visiableSetting():
                                                 "fields.additional-disk",
                                                 "fields.local-ip",
                                                 "fields.public-ip",
+                                                "fields.tags",
                                                 "fields.state",
                                                 "fields.creation-date",
                                                 "actions"
@@ -277,6 +279,7 @@ def visiableSetting():
                                             "fields.additional-disk",
                                             "fields.local-ip",
                                             "fields.public-ip",
+                                            "fields.tags",
                                             "fields.state",
                                             "fields.creation-date",
                                             "actions"
