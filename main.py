@@ -13,8 +13,9 @@ if __name__ == '__main__':
     # exit()
 
     all_objects = max(map(PassportsVM, portal_info))
+    # from allObjects import allObjects as all_objects
     # all(map(PassportsOS, portal_info, all_objects))
-    # tuple(PassportsOS(foo, all_objects) for foo in portal_info)
+    tuple(PassportsOS(foo, all_objects) for foo in portal_info)
     tuple(LabelsOS(foo, all_objects) for foo in portal_info)
 
     if next(iter(portal_info)) == 'PD15':
