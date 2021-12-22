@@ -342,6 +342,7 @@ def PassportsVM(portal_name: str) -> tuple:
         if not any(map(lambda x: any(map(lambda y: y['name'] == f'domain_id--{d_id}', x['results'])), all_categories)):
             create_categorie(f'domain_id--{d_id}', domains_info[d_id], 'far fa-folder-open', cmdb_token,
                              portal_categorie_id['public_id'])
+            time.sleep(0.1)
 
     cloud_projects = sbercloud_api('projects')['stdout']
 
@@ -390,18 +391,20 @@ def PassportsVM(portal_name: str) -> tuple:
                 update_cmdb_projects.append(dict(type_id=cmdb_vcod['type_id'], vcod_id=cmdb_vcod['vcod_id']))
 
     ###### DELETE ALL
-    for type_for_delete in cmdb_vcod_check_sum:
-        # print(portal_name, 'DELETE', type_for_delete['type_id'])
-        # print(cmdb_api('DELETE', f"types/{type_for_delete['type_id']}", cmdb_token))
-        # time.sleep(0.5)
-        pass
+    # for type_for_delete in cmdb_vcod_check_sum:
+    #     print(portal_name, 'DELETE', type_for_delete['type_id'])
+    #     print(cmdb_api('DELETE', f"types/{type_for_delete['type_id']}", cmdb_token))
+    #     time.sleep(0.5)
+
     # print('ALL VCOD', len(cmdb_vcod_check_sum))
 
     #### Delete vcods for update
-    for type_for_delete in update_cmdb_projects:
-        print(portal_name, 'UPDATE', type_for_delete)
-        # print(cmdb_api('DELETE', f"types/{type_for_delete['type_id']}", cmdb_token))
-        pass
+
+    # for type_for_delete in update_cmdb_projects:
+    # print(portal_name, 'UPDATE', type_for_delete)
+    # print(cmdb_api('DELETE', f"types/{type_for_delete['type_id']}", cmdb_token))
+    # pass
+
     print('VCOD WHERE WERE CHANGES', len(update_cmdb_projects))
 
     # all_types_pages = get_info_from_all_page('categories', cmdb_token)[0]['pager']['total_pages']
@@ -409,7 +412,8 @@ def PassportsVM(portal_name: str) -> tuple:
 
     for project in all_projects:
         if not any(map(lambda x: any(map(lambda y: y['name'] == all_projects[project]['id'], x['results'])),
-                       cmdb_projects)):  # and 'gt-common-admins' in project:  # and project in ('gt-foms-prod-jump', 'gt-foms-prod-fortigate'): # cmdb_projects)) and project == 'gt-rosim-dev-customer':
+                       cmdb_projects)):  # and 'gt-common-admins' in project:
+            # and project in ('gt-foms-prod-jump', 'gt-foms-prod-fortigate'): # cmdb_projects)) and project == 'gt-rosim-dev-customer':
 
             data_type_template: dict = {
                 "fields": [
@@ -634,6 +638,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
             for server in vm_list['stdout']['servers']:
                 print(server)
+                time.sleep(0.1)
                 try:
                     create_object = objects(server, cmdb_token, new_type_id, user_id, tags=portalTags)
                 except:
@@ -677,6 +682,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
             if not any(map(lambda x: x['fields'][16]['value'] == cloud_vm[16]['value'], cmdb_type_objects)):
                 print('VM FOR CREATE', cloud_vm)
+                time.sleep(0.1)
                 print(objects(cloud_vm, cmdb_token, cmdb_project['type_id'], user_id, 'POST_NEW_VM', tags=portalTags))
 
             for cmdb_type in cmdb_type_objects:
@@ -711,6 +717,7 @@ def PassportsVM(portal_name: str) -> tuple:
                         "comment": ""
                     }
 
+                    time.sleep(0.1)
                     print(objects(update_object_template, cmdb_token, cmdb_project['type_id'], user_id, 'PUT',
                                   tags=portalTags))
 
