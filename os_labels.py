@@ -316,9 +316,9 @@ def LabelsOS(portal_name: str, all_objects: tuple) -> None:
 
             print(new_type_id, 'new type id')
 
-            os_portal_categorie_id = categorie_id(f'OS-Labels-{portal_name}', f'OS-Labels-{portal_name}',
-                                                  'far fa-folder-open',
-                                                  os_passports_categorie_id['public_id'], all_categories)
+            # os_portal_categorie_id = categorie_id(f'OS-Labels-{portal_name}', f'OS-Labels-{portal_name}',
+            #                                       'far fa-folder-open',
+            #                                       os_passports_categorie_id['public_id'], all_categories)
 
             # print(os_portal_categorie_id)
 

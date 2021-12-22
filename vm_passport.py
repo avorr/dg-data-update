@@ -637,7 +637,7 @@ def PassportsVM(portal_name: str) -> tuple:
             vm_list = sbercloud_api(f"servers?project_id={all_projects[project]['id']}")
 
             for server in vm_list['stdout']['servers']:
-                print(server)
+                # print(server)
                 time.sleep(0.1)
                 try:
                     create_object = objects(server, cmdb_token, new_type_id, user_id, tags=portalTags)
