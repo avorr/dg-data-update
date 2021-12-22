@@ -165,12 +165,6 @@ def LabelsOS(portal_name: str, all_objects: tuple) -> None:
     allLabels = getOsLabels(clusters)
 
 
-    print('####' * 100)
-    for i in allLabels:
-        print(i)
-    print('####' * 100)
-
-
     # print(allLabels)
     # return
     # from allLabels import allLabels
