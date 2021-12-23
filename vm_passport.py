@@ -363,6 +363,26 @@ def PassportsVM(portal_name: str) -> tuple:
                                                                               checksum=project['checksum'])
         return cloud_projects_with_check_sum
 
+    def deleteAll():
+        # cmdb_projects = get_info_from_all_page('types', cmdb_token)
+        cmdb_categories = get_info_from_all_page('categories', cmdb_token)
+
+        for i in cmdb_categories:
+            # print(i['results'])
+            for k in i['results']:
+                # print(k['public_id'])
+                print(cmdb_api('DELETE', f"categories/{k['public_id']}", cmdb_token))
+                time.sleep(0.5)
+
+        # print(list(map(lambda x: list(map(lambda y: y['public_id'], x['results'])), cmdb_projects)))
+        ##### DELETE ALL
+        # for type_for_delete in range(1, 135):
+        #     print(portal_name, 'DELETE', type_for_delete)
+        #     print(cmdb_api('DELETE', f"types/{type_for_delete}", cmdb_token))
+        #     time.sleep(0.5)
+        # return
+
+
     all_projects = get_check_sum_cloud_projects(cloud_projects['projects'])
 
     print(len(all_projects))
