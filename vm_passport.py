@@ -700,14 +700,14 @@ def PassportsVM(portal_name: str) -> tuple:
 
         for cloud_vm in cloud_project_vm:
 
-            if not any(map(lambda x: x['fields'][16]['value'] == cloud_vm[16]['value'], cmdb_type_objects)):
+            if not any(map(lambda x: x['fields'][17]['value'] == cloud_vm[17]['value'], cmdb_type_objects)):
                 print('VM FOR CREATE', cloud_vm)
                 time.sleep(0.1)
                 print(objects(cloud_vm, cmdb_token, cmdb_project['type_id'], user_id, 'POST_NEW_VM', tags=portalTags))
 
             for cmdb_type in cmdb_type_objects:
 
-                if cmdb_type['fields'][16]['value'] == cloud_vm[16]['value'] and cmdb_type['fields'] != cloud_vm:
+                if cmdb_type['fields'][17]['value'] == cloud_vm[17]['value'] and cmdb_type['fields'] != cloud_vm:
                     print(f"VM FOR UPDATE in {cmdb_project['type_id']}", cloud_vm)
 
                     # print('###' * 30)
@@ -741,7 +741,7 @@ def PassportsVM(portal_name: str) -> tuple:
                     print(objects(update_object_template, cmdb_token, cmdb_project['type_id'], user_id, 'PUT',
                                   tags=portalTags))
 
-        for object in filter(lambda x: x[1][16]['value'] not in map(lambda x: x[16]['value'], cloud_project_vm),
+        for object in filter(lambda x: x[1][17]['value'] not in map(lambda x: x[17]['value'], cloud_project_vm),
                              map(lambda y: (y.get('public_id'), y.get('fields')), cmdb_type_objects)):
             print('OBJECT for DElete', object)
             print(cmdb_api('DELETE', f"object/{object[0]}", cmdb_token))
