@@ -382,7 +382,6 @@ def PassportsVM(portal_name: str) -> tuple:
         #     time.sleep(0.5)
         # return
 
-
     all_projects = get_check_sum_cloud_projects(cloud_projects['projects'])
 
     print(len(all_projects))
@@ -695,7 +694,8 @@ def PassportsVM(portal_name: str) -> tuple:
 
         cloud_project_vm = \
             tuple(map(lambda server:
-                      objects(server, 'token', cmdb_project['type_id'], user_id, 'GET_TEMPLATE').get('fields'),
+                      objects(server, 'token', cmdb_project['type_id'], user_id, 'GET_TEMPLATE', tags=portalTags).get(
+                          'fields'),
                       vm_list['stdout']['servers']))
 
         for cloud_vm in cloud_project_vm:
