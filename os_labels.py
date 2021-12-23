@@ -352,7 +352,9 @@ def LabelsOS(portal_name: str, all_objects: tuple) -> None:
                 print(create_object)
                 time.sleep(0.1)
 
-    # all_objects = get_info_from_all_page('objects', cmdb_token)
+    all_objects = None
+
+    all_objects = get_info_from_all_page('objects', cmdb_token)
 
     # from allObjects import allObjects as all_objects
 
