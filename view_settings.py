@@ -24,7 +24,6 @@ def visiableSetting():
         return json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
                                            data=json.dumps(payload)).content)
 
-
     def get_cmdb_token() -> str:
         from env import cmdb_login, cmdb_password
         auth_payload: dict = {
@@ -36,11 +35,9 @@ def visiableSetting():
         user_info = cmdb_api('POST', 'auth/login', payload=auth_payload)
         return user_info['token'], user_info['user']['public_id']
 
-
     cmdb_token, id_user = get_cmdb_token()
 
     number_of_tread = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
-
 
     def get_info_from_all_page(cmdb_item: str) -> tuple:
         numbers_of_pages = cmdb_api('GET', f"{cmdb_item}/", cmdb_token)['pager']['total_pages']
@@ -54,10 +51,10 @@ def visiableSetting():
                 full_info.append(page_info)
         return tuple(full_info)
 
-
     cmdb_projects = get_info_from_all_page('types')
     cmdb_projects_vm = dict(type='vm', items=list())
     cmdb_projects_os = dict(type='os', items=list())
+    cmdb_projects_label = dict(type='label', items=list())
 
     for item in cmdb_projects:
         for type in item['results']:
@@ -65,19 +62,57 @@ def visiableSetting():
                 cmdb_projects_vm['items'].append(type['public_id'])
             elif type['render_meta']['sections'][0]['fields'][1] == 'limits.cpu-hard':
                 cmdb_projects_os['items'].append(type['public_id'])
-
+            elif type['render_meta']['sections'][0]['fields'][3] == 'SUBSYSTEM':
+                cmdb_projects_label['items'].append(type['public_id'])
 
     cmdb_users = get_info_from_all_page('users')
     cmdb_users = reduce(lambda x, y: x + y,
                         map(lambda foo: tuple(map(lambda bar: bar['public_id'], foo['results'])), cmdb_users))
-# cmdb_users = (35, 19, 13, 9, 17)
+    # cmdb_users = (35, 19, 13, 9, 17)
+    # cmdb_users = (17,)
 
     connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
     cluster = MongoClient(connection_sring)
 
     db = cluster['cmdb']
 
-# users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
+    # exLabels = {
+    #     _id: ObjectId('61c3b6efbdb9a797864deb01'),
+    #     setting_type: 'APPLICATION',
+    #     resource: 'framework-object-type-98',
+    #     user_id: 17,
+    #     payloads: [
+    #         {
+    #             id: 'table-objects-type',
+    #             tableStates: [],
+    #             currentState: {
+    #                 name: '',
+    #                 page: 1,
+    #                 pageSize: 500,
+    #                 sort: {
+    #                     name: 'public_id',
+    #                     order: -1
+    #                 },
+    #                 visibleColumns: [
+    #                     'fields.namespace',
+    #                     'fields.name',
+    #                     'fields.app',
+    #                     'fields.SUBSYSTEM',
+    #                     'fields.deployment',
+    #                     'fields.deploymentconfig',
+    #                     'fields.deployDate',
+    #                     'fields.distribVersion',
+    #                     'fields.version',
+    #                     'fields.security.istio.io/tlsMode',
+    #                     'fields.jenkinsDeployUser',
+    #                     'actions'
+    #                 ]
+    #             }
+    #         }
+    #     ]
+    # }
+
+    # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
     for user_id in cmdb_users:
 
         users_settings = db.get_collection('management.users.settings')
@@ -88,7 +123,6 @@ def visiableSetting():
             viewSettings.append(settings)
         del visibleSettings
 
-
         def visibleSettings(projects: list):
             viewSettingsForCreate = list()
             for cmdb_type in projects['items']:
@@ -96,7 +130,7 @@ def visiableSetting():
 
                     if f'framework-object-type-{cmdb_type}' == settings['resource']:
                         if 'currentState' in settings['payloads'][0]:
-                            if 'fields.name' in settings['payloads'][0]['currentState']["visibleColumns"]:
+                            if 'fields.additional-disk' in settings['payloads'][0]['currentState']["visibleColumns"]:
 
                                 visibleColumnsVm = [
                                     "fields.name",
@@ -118,7 +152,8 @@ def visiableSetting():
                                 foo = set(settings['payloads'][0]['currentState']["visibleColumns"])
                                 bar = set(visibleColumnsVm)
 
-                                if (foo - bar) or (bar - foo) or settings['payloads'][0]['currentState']['pageSize'] != 200:
+                                if (foo - bar) or (bar - foo) or settings['payloads'][0]['currentState'][
+                                    'pageSize'] != 200:
                                     settings['payloads'][0]['currentState']['pageSize'] = 200
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visibleColumnsVm
                                     update_view_settings = users_settings.update_one({"_id": settings['_id']},
@@ -126,7 +161,7 @@ def visiableSetting():
                                     print(update_view_settings.raw_result)
                                     time.sleep(0.5)
 
-                            elif 'fields.namespace' in settings['payloads'][0]['currentState']["visibleColumns"]:
+                            elif 'fields.limits.cpu-hard' in settings['payloads'][0]['currentState']["visibleColumns"]:
 
                                 visibleColumnsOs = [
                                     "fields.namespace",
@@ -142,14 +177,49 @@ def visiableSetting():
                                 baz = set(settings['payloads'][0]['currentState']["visibleColumns"])
                                 zip = set(visibleColumnsOs)
 
-                                if (baz - zip) or (zip - baz) or settings['payloads'][0]['currentState']['pageSize'] != 50:
+                                if (baz - zip) or (zip - baz) or settings['payloads'][0]['currentState'][
+                                    'pageSize'] != 50:
                                     settings['payloads'][0]['currentState']['pageSize'] = 50
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visibleColumnsOs
                                     update_view_settings = users_settings.update_one({"_id": settings['_id']},
                                                                                      {"$set": settings})
                                     print(update_view_settings.raw_result)
+                                del baz, zip
+
+                            elif 'fields.SUBSYSTEM' in settings['payloads'][0]['currentState']["visibleColumns"]:
+                                # print(settings['payloads'][0]['currentState']["visibleColumns"])
+
+                                visibleColumnsLabel = [
+                                    'fields.namespace',
+                                    'fields.name',
+                                    'fields.app',
+                                    'fields.SUBSYSTEM',
+                                    'fields.deployment',
+                                    'fields.deploymentconfig',
+                                    'fields.deployDate',
+                                    'fields.distribVersion',
+                                    'fields.version',
+                                    'fields.security.istio.io/tlsMode',
+                                    'fields.jenkinsDeployUser',
+                                    'actions'
+                                ]
+
+                                bat = set(settings['payloads'][0]['currentState']["visibleColumns"])
+                                quux = set(visibleColumnsLabel)
+
+                                if (bat - quux) or (quux - bat) or settings['payloads'][0]['currentState'][
+                                    'pageSize'] != 500:
+                                    settings['payloads'][0]['currentState']['pageSize'] = 500
+                                    settings['payloads'][0]['currentState']["visibleColumns"] = visibleColumnsLabel
+                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
+                                                                                     {"$set": settings})
+                                    print(update_view_settings.raw_result)
+                                del bat, quux
+
+
                         else:
                             if projects['type'] == 'vm':
+                                print('######'*100, '\nTHIS BLOCK IS WORKING\n', '######'*100)
                                 payloads_vm = [
                                     {
                                         "id": "table-objects-type",
@@ -183,6 +253,7 @@ def visiableSetting():
                                 ]
                                 settings['payloads'] = payloads_vm
                             elif projects['type'] == 'os':
+                                print('######' * 100, '\nTHIS BLOCK IS WORKING\n', '######' * 100)
                                 payloads_os = [
                                     {
                                         "id": "table-objects-type",
@@ -209,7 +280,42 @@ def visiableSetting():
                                     }
                                 ]
                                 settings['payloads'] = payloads_os
-                            update_view_settings = users_settings.update_one({"_id": settings['_id']}, {"$set": settings})
+
+                            elif projects['type'] == 'label':
+                                print('######' * 100, '\nTHIS BLOCK IS WORKING\n', '######' * 100)
+                                payloads_label = [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 500,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                'fields.namespace',
+                                                'fields.name',
+                                                'fields.app',
+                                                'fields.SUBSYSTEM',
+                                                'fields.deployment',
+                                                'fields.deploymentconfig',
+                                                'fields.deployDate',
+                                                'fields.distribVersion',
+                                                'fields.version',
+                                                'fields.security.istio.io/tlsMode',
+                                                'fields.jenkinsDeployUser',
+                                                'actions'
+                                            ]
+                                        }
+                                    }
+                                ]
+                                settings['payloads'] = payloads_label
+
+                            update_view_settings = users_settings.update_one({"_id": settings['_id']},
+                                                                             {"$set": settings})
                             print(update_view_settings.raw_result)
 
                 if f'framework-object-type-{cmdb_type}' not in map(lambda x: x['resource'], viewSettings):
@@ -293,6 +399,49 @@ def visiableSetting():
                         settings_view_vm['user_id'] = user_id
                         viewSettingsForCreate.append(settings_view_vm)
 
+                    elif projects['type'] == 'label':
+
+                        settings_view_label = {
+                            "setting_type": "APPLICATION",
+                            "resource": "framework-object-type-1009",
+                            "user_id": 17,
+                            "payloads": [
+                                {
+                                    "id": "table-objects-type",
+                                    "tableStates": [],
+                                    "currentState": {
+                                        "name": "",
+                                        "page": 1,
+                                        "pageSize": 500,
+                                        "sort": {
+                                            "name": "public_id",
+                                            "order": -1
+                                        },
+                                        "visibleColumns": [
+                                            "fields.namespace",
+                                            "fields.name",
+                                            "fields.app",
+                                            "fields.SUBSYSTEM",
+                                            "fields.deployment",
+                                            "fields.deploymentconfig",
+                                            "fields.deployDate",
+                                            "fields.distribVersion",
+                                            "fields.version",
+                                            "fields.security.istio.io/tlsMode",
+                                            "fields.jenkinsDeployUser",
+                                            "actions"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+
+                        # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
+
+                        settings_view_label['resource'] = f"framework-object-type-{cmdb_type}"
+                        settings_view_label['user_id'] = user_id
+                        viewSettingsForCreate.append(settings_view_label)
+
             if viewSettingsForCreate:
                 create_view_settings = users_settings.insert_many(viewSettingsForCreate)
                 for new_object in create_view_settings.inserted_ids:
@@ -300,3 +449,8 @@ def visiableSetting():
 
         visibleSettings(cmdb_projects_vm)
         visibleSettings(cmdb_projects_os)
+        visibleSettings(cmdb_projects_label)
+
+
+if __name__ == '__main__':
+    visiableSetting()

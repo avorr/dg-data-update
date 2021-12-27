@@ -3,6 +3,7 @@
 import json
 import time
 import requests
+import datetime
 from functools import reduce
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
@@ -202,53 +203,63 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
             for namespace in cluster['info']:
                 create_object = objects(namespace, cmdb_token, new_type_id, user_id, 'NAMESPACE')
                 print(create_object)
-                time.sleep(0.5)
+                time.sleep(0.1)
 
 
     # all_objects = get_info_from_all_page('objects', cmdb_token)
     # from objects import all_objects
 
+    # from pymongo import MongoClient
+    # connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
+    # cluster = MongoClient(connection_sring)
+    # db = cluster['cmdb']
+    # bdObjects = db.get_collection('framework.objects')
+    #
+    # all_objects = tuple(bdObjects.find({}))
+    from allObjects import all_objects
+    
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
     all_cmdb_cluster_types = reduce(lambda x, y: x + y,
-                                    map(lambda x_inner: tuple(
-                                        filter(lambda y_inner: f'os-cluster-{portal_name}--' in y_inner['name'], x_inner['results'])),
+                                    map(lambda z: tuple(
+                                        filter(lambda f: f'os-cluster-{portal_name}--' in f['name'], z['results'])),
                                         cmdb_projects))
 
     for cmdb_cluster in all_cmdb_cluster_types:
         for cluster in os_info:
             if cmdb_cluster['label'] == cluster['cluster']:
+                # print(cmdb_cluster['label'], cluster['cluster'])
 
-                cmdb_namespaces = tuple(filter(lambda f: f['type_id'] == cmdb_cluster['public_id'],
-                                               reduce(lambda x, y: x + y, map(lambda z: tuple(
-                                                   map(lambda j: dict(public_id=j.get('public_id'),
-                                                                      type_id=j.get('type_id'),
-                                                                      author_id=j.get('author_id'),
-                                                                      fields=j.get('fields'),
-                                                                      creation_time=j.get('creation_time')),
-                                                       z['results'])), all_objects))))
-
-
+                # cmdb_namespaces = tuple(filter(lambda f: f['type_id'] == cmdb_cluster['public_id'],
+                #                                reduce(lambda x, y: x + y, map(lambda z: tuple(
+                #                                    map(lambda j: dict(public_id=j.get('public_id'),
+                #                                                       type_id=j.get('type_id'),
+                #                                                       author_id=j.get('author_id'),
+                #                                                       fields=j.get('fields'),
+                #                                                       creation_time=j.get('creation_time')),
+                #                                        z['results'])), all_objects))))
+                cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
                 for os_namespace in cluster['info']:
                     if os_namespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdb_namespaces):
                         print('NAMESPACE FOR CREATE', os_namespace['namespace'])
-                        create_namespace = objects(os_namespace, cmdb_token, cmdb_cluster['public_id'], user_id, 'NAMESPACE')
+                        # objects(os_namespace, cmdb_token, cmdb_cluster['public_id'], user_id, 'NAMESPACE')
                         time.sleep(0.1)
-                        print(create_namespace)
 
                     for cmdb_ns in cmdb_namespaces:
                         ns_template = objects(os_namespace, cmdb_token, cmdb_cluster['public_id'], user_id,
                                               'NAMESPACE', template=True)
                         if cmdb_ns['fields'][0]['value'] == os_namespace['namespace'] and cmdb_ns['fields'] != \
                                 ns_template['fields']:
-                            print(f"NAMESPACE FOR UPDATE in {cmdb_ns['type_id']}", os_namespace['namespace'])
+
+                            # unixTime = lambda x: int(datetime.datetime.timestamp(x) * 1000)
+                            # print(unixTime(cmdb_ns['creation_time']))
 
                             update_object_template: dict = {
                                 "type_id": cmdb_ns['type_id'],
                                 "status": True,
                                 "version": "1.0.1",
                                 "creation_time": {
-                                    "$date": int(time.mktime(
-                                        time.strptime(cmdb_ns['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
+                                    # "$date": int(time.mktime(time.strptime(cmdb_ns['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
+                                    "$date": int(datetime.datetime.timestamp(cmdb_ns['creation_time']) * 1000)
                                 },
                                 "author_id": cmdb_ns['author_id'],
                                 "last_edit_time": {
@@ -261,12 +272,14 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                                 "views": 0,
                                 "comment": ""
                             }
+
                             # json_read(update_object_template)
                             time.sleep(0.1)
-                            print(objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT'))
+                            print(f"UPDATE NAMESPACE in {cmdb_ns['type_id']}", os_namespace['namespace'])
+                            objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT')
 
                 for cmdb_ns in cmdb_namespaces:
                     if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
-                        print('OBJECT for Delete', cmdb_ns['fields'][0]['value'])
-                        print(cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token))
+                        print('DELETE NAMESPACE', cmdb_ns['fields'][0]['value'])
+                        cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token)
                         time.sleep(0.1)
