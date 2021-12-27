@@ -2,7 +2,5 @@
 creds.py
 debug.py
 .env_PD*
-allObjects.py
-allLabels.py
 dev.py
-cmdb_vcod_check_sum.py
+test.py

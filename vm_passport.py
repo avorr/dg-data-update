@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 
-import json
 import time
+import json
 import hashlib
+import datetime
 import requests
 from functools import reduce
+# from pymongo import MongoClient
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -119,11 +121,10 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
     check_public_ip = lambda x, y: y[x]['address'] if x in y else ''
     if 'security_groups' in vm_info:
         for rule in vm_info['security_groups']:
-            all_ports = tuple(
-                filter(lambda x, y='protocol': x[y] and x[y] != 'icmp' if x[y] else x[y], rule['rules']))
-            ingress_ports = tuple(filter(lambda x: x['direction'] == 'ingress', all_ports))
+            all_ports = tuple(filter(lambda x, y='protocol': x[y] and x[y] != 'icmp' if x[y] else x[y], rule['rules']))
+            ingress_ports = tuple(filter(lambda x: x['direction'] == 'ingress' if 'direction' in x else '', all_ports))
             ingress_ports = tuple(map(lambda x: defaultdict(str, x), ingress_ports))
-            egress_ports = tuple(filter(lambda x: x['direction'] == 'egress', all_ports))
+            egress_ports = tuple(filter(lambda x: x['direction'] == 'egress' if 'direction' in x else '', all_ports))
             egress_ports = tuple(map(lambda x: defaultdict(str, x), egress_ports))
     else:
         ingress_ports = egress_ports = ''
@@ -155,6 +156,7 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
         else:
             return ''
 
+    checkCreationDate = lambda x: x[:10] if x != None else ''
     vm_object_template: dict = {
         "status": True,
         "type_id": type_id,
@@ -235,7 +237,8 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
             },
             {
                 "name": "creation-date",
-                "value": vm_info['order_created_at'][:10]
+                "value": checkCreationDate(vm_info['order_created_at'])
+                # "value": lambda x=vm_info['order_created_at']: x[:10] if x != None else x == ''
             }
         ]
     }
@@ -244,7 +247,6 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
 
     # print(response.status_code)
     # print(response.json())
-
     return cmdb_api(method, 'object/', cmdb_token, vm_object_template)
     # try:
     #     return cmdb_api('POST', 'object/', cmdb_token, vm_object_template)
@@ -363,43 +365,32 @@ def PassportsVM(portal_name: str) -> tuple:
                                                                               checksum=project['checksum'])
         return cloud_projects_with_check_sum
 
+    cmdb_projects = get_info_from_all_page('types', cmdb_token)
     def deleteAll():
-        # cmdb_projects = get_info_from_all_page('types', cmdb_token)
-        cmdb_categories = get_info_from_all_page('categories', cmdb_token)
+        for deleteCmdbProjects in cmdb_projects:
+            for deleteCmdbType in deleteCmdbProjects['results']:
+                print('DELETE CMDB TYPE',cmdb_api('DELETE', f"types/{deleteCmdbType['public_id']}", cmdb_token))
+                time.sleep(0.1)
 
-        for i in cmdb_categories:
-            # print(i['results'])
-            for k in i['results']:
-                # print(k['public_id'])
-                print(cmdb_api('DELETE', f"categories/{k['public_id']}", cmdb_token))
-                time.sleep(0.5)
+        for categories in all_categories:
+            for categoriesId in categories['results']:
+                print('DELETE CMDB CATEGORIE', cmdb_api('DELETE', f"categories/{categoriesId['public_id']}", cmdb_token))
+                time.sleep(0.1)
 
-        # print(list(map(lambda x: list(map(lambda y: y['public_id'], x['results'])), cmdb_projects)))
-        ##### DELETE ALL
-        # for type_for_delete in range(1, 135):
-        #     print(portal_name, 'DELETE', type_for_delete)
-        #     print(cmdb_api('DELETE', f"types/{type_for_delete}", cmdb_token))
-        #     time.sleep(0.5)
-        # return
 
     all_projects = get_check_sum_cloud_projects(cloud_projects['projects'])
-
-    print(len(all_projects))
+    # from all_projects import all_projects
 
     del cloud_projects
 
-    cmdb_projects = get_info_from_all_page('types', cmdb_token)
-
     cmdb_vcod_check_sum = lambda foo: reduce(lambda x, y: x + y, map(lambda bar: tuple(
-        map(lambda baz:
-            dict(vcod_id=baz.get('name'),
-                 type_id=baz.get('public_id'),
-                 check_sum=baz['render_meta']['sections'][0].get('label')), bar['results'])), foo)) if foo else foo
+        map(lambda baz: dict(vcod_id=baz.get('name'),
+                             type_id=baz.get('public_id'),
+                             check_sum=baz['render_meta']['sections'][0].get('label')),
+            bar['results'])), foo)) if foo else foo
 
     cmdb_vcod_check_sum = cmdb_vcod_check_sum(cmdb_projects)
-    # print(cmdb_vcod_check_sum)
-    # return
-    # from cmdb_vcod_check_sum import cmdb_vcod_check_sum
+    # from checksum import cmdb_vcod_check_sum
 
     update_cmdb_projects = list()
 
@@ -408,12 +399,6 @@ def PassportsVM(portal_name: str) -> tuple:
             if all_projects[os_project]['id'] == cmdb_vcod['vcod_id'] and all_projects[os_project]['checksum'] != \
                     cmdb_vcod['check_sum']:
                 update_cmdb_projects.append(dict(type_id=cmdb_vcod['type_id'], vcod_id=cmdb_vcod['vcod_id']))
-
-    ###### DELETE ALL
-    # for type_for_delete in cmdb_vcod_check_sum:
-    #     print(portal_name, 'DELETE', type_for_delete['type_id'])
-    #     print(cmdb_api('DELETE', f"types/{type_for_delete['type_id']}", cmdb_token))
-    #     time.sleep(0.5)
 
     # print('ALL VCOD', len(cmdb_vcod_check_sum))
 
@@ -428,6 +413,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     # all_types_pages = get_info_from_all_page('categories', cmdb_token)[0]['pager']['total_pages']
     portalTags = sbercloud_api('dict/tags')['stdout']['tags']
+    # from tags import portalTags
 
     for project in all_projects:
         if not any(map(lambda x: any(map(lambda y: y['name'] == all_projects[project]['id'], x['results'])),
@@ -660,6 +646,7 @@ def PassportsVM(portal_name: str) -> tuple:
                 time.sleep(0.1)
                 try:
                     create_object = objects(server, cmdb_token, new_type_id, user_id, tags=portalTags)
+                    print('CREATE OBJECT IN %s' % new_type_id, create_object)
                 except:
                     time.sleep(5)
                     create_object = objects(server, cmdb_token, new_type_id, user_id, tags=portalTags)
@@ -669,37 +656,53 @@ def PassportsVM(portal_name: str) -> tuple:
     all_cmdb_types_id = reduce(lambda x, y: x + y, map(lambda foo: tuple(
         map(lambda bar: bar.get('public_id'), foo['results'])), cmdb_projects))
 
-    all_objects = get_info_from_all_page('objects', cmdb_token)
-
+    # all_objects = get_info_from_all_page('objects', cmdb_token)
     # from allObjects import allObjects as all_objects
 
-    # print(all_objects)
-    # return
+    # connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
+    # cluster = MongoClient(connection_sring)
+    # db = cluster['cmdb']
+    # bdObjects = db.get_collection('framework.objects')
+    # all_objects = tuple(bdObjects.find({}))
+
+    from allObjects import all_objects
 
     if not update_cmdb_projects:
         return all_objects
-
+    # update_cmdb_projects = [update_cmdb_projects[0]]
     for cmdb_project in update_cmdb_projects:
 
         vm_list = sbercloud_api(f"servers?project_id={cmdb_project['vcod_id']}")
 
-        cmdb_type_objects = tuple(filter(lambda f, k='type_id': f[k] == cmdb_project[k],
-                                         reduce(lambda x, y: x + y, map(lambda z: tuple(
-                                             map(lambda j: dict(public_id=j.get('public_id'),
-                                                                type_id=j.get('type_id'),
-                                                                author_id=j.get('author_id'),
-                                                                fields=j.get('fields'),
-                                                                creation_time=j.get('creation_time')),
-                                                 z['results'])), all_objects))))
+        cmdb_type_objects = tuple(filter(lambda x: x['type_id'] == cmdb_project['type_id'], all_objects))
+
+        # cmdb_type_objects = tuple(filter(lambda f: f['type_id'] == cmdb_project['type_id'],
+        #                                  reduce(lambda x, y: x + y, map(lambda z: tuple(
+        #                                      map(lambda j: dict(public_id=j.get('public_id'),
+        #                                                         type_id=j.get('type_id'),
+        #                                                         author_id=j.get('author_id'),
+        #                                                         fields=j.get('fields'),
+        #                                                         creation_time=j.get('creation_time')),
+        #                                          z['results'])), all_objects))))
+
+        # cmdb_type_objects = tuple(filter(lambda f, k='type_id': f[k] == cmdb_project[k],
+        #                                  reduce(lambda x, y: x + y, map(lambda z: tuple(
+        #                                      map(lambda j: dict(public_id=j.get('public_id'),
+        #                                                         type_id=j.get('type_id'),
+        #                                                         author_id=j.get('author_id'),
+        #                                                         fields=j.get('fields'),
+        #                                                         creation_time=j.get('creation_time')),
+        #                                          z['results'])), all_objects))))
+
+        # print(vm_list['stdout']['servers'])
+        # return
 
         cloud_project_vm = \
             tuple(map(lambda server:
-                      objects(server, 'token', cmdb_project['type_id'], user_id, 'GET_TEMPLATE', tags=portalTags).get(
-                          'fields'),
-                      vm_list['stdout']['servers']))
+                      objects(server, 'token', cmdb_project['type_id'], user_id,
+                              'GET_TEMPLATE', tags=portalTags).get('fields'), vm_list['stdout']['servers']))
 
         for cloud_vm in cloud_project_vm:
-
             if not any(map(lambda x: x['fields'][17]['value'] == cloud_vm[17]['value'], cmdb_type_objects)):
                 print('VM FOR CREATE', cloud_vm)
                 time.sleep(0.1)
@@ -714,8 +717,9 @@ def PassportsVM(portal_name: str) -> tuple:
                     # print(int(time.mktime(time.strptime(cmdb_type['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000))
                     # print('###' * 30)
 
-                    unixTime = lambda x: int(time.mktime(time.strptime(x, '%Y-%m-%dT%H:%M:%S.%f')) * 1000) if '.' in x \
-                        else int(time.mktime(time.strptime(x, '%Y-%m-%dT%H:%M:%S')) * 1000)
+                    # unixTime = lambda x: int(time.mktime(time.strptime(x, '%Y-%m-%dT%H:%M:%S.%f')) * 1000) if '.' in x \
+                    #     else int(time.mktime(time.strptime(x, '%Y-%m-%dT%H:%M:%S')) * 1000)
+                    unixTime = lambda x: int(datetime.datetime.timestamp(x) * 1000)
 
                     update_object_template: dict = {
                         "type_id": cmdb_project['type_id'],
@@ -743,8 +747,8 @@ def PassportsVM(portal_name: str) -> tuple:
 
         for object in filter(lambda x: x[1][17]['value'] not in map(lambda x: x[17]['value'], cloud_project_vm),
                              map(lambda y: (y.get('public_id'), y.get('fields')), cmdb_type_objects)):
-            print('OBJECT for DElete', object)
-            print(cmdb_api('DELETE', f"object/{object[0]}", cmdb_token))
+            print('Delete object', object)
+            cmdb_api('DELETE', f"object/{object[0]}", cmdb_token)
 
         get_info_cmdb_vcod = max(map(lambda x: tuple(
             filter(lambda y: y['name'] == cmdb_project['vcod_id'], x['results'])), cmdb_projects))[0]
