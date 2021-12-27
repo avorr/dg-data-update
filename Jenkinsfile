@@ -69,7 +69,7 @@ pipeline {
         }
 */
 
-        stage("Update CMDB Info Portal-PD20") {
+        stage("Update CMDB Info Portal-PD15/PD20") {
             environment {
                 DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
                 PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev/api/v1/'

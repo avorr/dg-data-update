@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-#{
+{
   apt-get update
   apt-get install curl -y
   curl https://filestore.fortinet.com/forticlient/downloads/FortiClientFullVPNInstaller_6.4.0.0851.deb -o FortiClientFullVPNInstaller_6.4.0.0851.deb
@@ -16,7 +16,7 @@
   pip3 install --no-cache --upgrade requests pymongo
 
 
-#} &> /dev/null
+} &> /dev/null
 
 #  iputils-ping \
 #tar -xf python3.9.9.tar
