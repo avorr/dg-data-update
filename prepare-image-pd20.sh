@@ -13,7 +13,7 @@
   python3-pip \
   expect \
   screen
-  pip3 install --no-cache --upgrade requests
+  pip3 install --no-cache --upgrade requests pymongo
 
 
 #} &> /dev/null
