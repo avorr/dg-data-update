@@ -10,17 +10,17 @@ from os_labels import LabelsOS
 if __name__ == '__main__':
 
 
-    from allPprb3Version import allPprb3WfVersions
+    # from allPprb3Version import allPprb3WfVersions
 
 
-    for i in allPprb3WfVersions:
+    # for i in allPprb3WfVersions:
         # print(i['pprb3gServers'])
-        for ii in i['pprb3gServers']:
-            if type(ii['wf_info']) is dict:
-                print(ii['wf_info'])
-                print(type(ii['wf_info']))
+        # for ii in i['pprb3gServers']:
+        #     if type(ii['wf_info']) is dict:
+        #         print(ii['wf_info'])
+        #         print(type(ii['wf_info']))
+    # exit()
 
-    exit()
     # from allObjects import allObjects
     # from vm_passport import json_read
     # json_read(allObjects[1]['results'][0])
