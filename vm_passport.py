@@ -357,7 +357,7 @@ def PassportsVM(portal_name: str) -> tuple:
         cloud_projects_with_check_sum = dict()
         # print(number_of_tread(len(cloud_projects)))
         # with ThreadPoolExecutor(max_workers=number_of_tread(len(cloud_projects))) as executor:
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=1) as executor:
             for project in executor.map(get_vcod_check_sum, cloud_projects):
                 cloud_projects_with_check_sum[project['info']['name']] = dict(id=project['info']['id'],
                                                                               domain_id=project['info']['domain_id'],
