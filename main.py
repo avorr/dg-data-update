@@ -1,13 +1,26 @@
 #!/usr/bin/python3
 
 import sys
-# from env import portal_info
+from env import portal_info
 from vm_passport import PassportsVM
 from os_passport import PassportsOS
 from os_labels import LabelsOS
 # sys.argv = ['', 'PD15']
 
 if __name__ == '__main__':
+
+
+    from allPprb3Version import allPprb3WfVersions
+
+
+    for i in allPprb3WfVersions:
+        # print(i['pprb3gServers'])
+        for ii in i['pprb3gServers']:
+            if type(ii['wf_info']) is dict:
+                print(ii['wf_info'])
+                print(type(ii['wf_info']))
+
+    exit()
     # from allObjects import allObjects
     # from vm_passport import json_read
     # json_read(allObjects[1]['results'][0])
