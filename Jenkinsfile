@@ -112,6 +112,7 @@ pipeline {
             echo '##############################################################'
             script {
                 echo "clean"
+
 //                 cleanWs notFailBuild: true
 //                 cleanWs notFailBuild: false
 //                 cleanWs()
