@@ -4,3 +4,5 @@ debug.py
 .env_PD*
 dev.py
 test.py
+allObjects.py
+allPprb3Version.py

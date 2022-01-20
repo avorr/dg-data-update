@@ -334,7 +334,6 @@ def PassportsVM(portal_name: str) -> tuple:
     portal_categorie_id = categorie_id(portal_name, portal_name, 'fas fa-folder-open', cmdb_token, all_categories,
                                        passports_categorie_id['public_id'])
     cloud_domains_info = sbercloud_api('domains')['stdout']
-
     domains_info = dict()
     for domain_info in cloud_domains_info['domains']:
         domains_info[domain_info['id']] = domain_info['name']
