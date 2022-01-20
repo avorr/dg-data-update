@@ -16,6 +16,7 @@ from vm_passport import get_info_from_all_page
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+
 def json_read(json_object: dict):
     print(json.dumps(json_object, indent=4))
 
@@ -24,8 +25,10 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     cmdb_token, user_id = get_cmdb_token()
     all_categories = get_info_from_all_page('categories', cmdb_token)
 
-    os_passports_categorie_id = categorie_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdb_token, all_categories)
-    os_portal_categorie_id = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open', cmdb_token, all_categories,
+    os_passports_categorie_id = categorie_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdb_token,
+                                             all_categories)
+    os_portal_categorie_id = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open', cmdb_token,
+                                          all_categories,
                                           os_passports_categorie_id['public_id'])
 
     def get_os_info() -> dict:
@@ -52,17 +55,17 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     for item in os_info:
         for info in item['info']:
             for metric in cluster_info['data']['result']:
-                if item['cluster'] == metric['metric']['cluster'] and info['namespace'] == metric['metric'][
-                    'namespace']:
+                if item['cluster'] == metric['metric']['cluster'] and \
+                        info['namespace'] == metric['metric']['namespace']:
                     info['info'].append((metric['metric']['resource'], metric['metric']['type'], metric['value']))
-
 
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
 
     for cluster in os_info:
         if not any(map(lambda x: any(
-                map(lambda y: y['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}", x['results'])),
-                       cmdb_projects)):# and cluster['cluster'] == 'ocp.bootcampsdp.tech':
+                map(lambda y: y['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                    x['results'])),
+                       cmdb_projects)):  # and cluster['cluster'] == 'ocp.bootcampsdp.tech':
 
             data_type_template: dict = {
                 "fields": [
@@ -205,7 +208,6 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 print(create_object)
                 time.sleep(0.1)
 
-
     # all_objects = get_info_from_all_page('objects', cmdb_token)
     # from objects import all_objects
 
@@ -217,7 +219,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     #
     # all_objects = tuple(bdObjects.find({}))
     from allObjects import all_objects
-    
+
     cmdb_projects = get_info_from_all_page('types', cmdb_token)
     all_cmdb_cluster_types = reduce(lambda x, y: x + y,
                                     map(lambda z: tuple(
@@ -249,7 +251,6 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                                               'NAMESPACE', template=True)
                         if cmdb_ns['fields'][0]['value'] == os_namespace['namespace'] and cmdb_ns['fields'] != \
                                 ns_template['fields']:
-
                             # unixTime = lambda x: int(datetime.datetime.timestamp(x) * 1000)
                             # print(unixTime(cmdb_ns['creation_time']))
 
