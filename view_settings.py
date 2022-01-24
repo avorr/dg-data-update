@@ -58,7 +58,7 @@ def visiableSetting():
 
     for item in cmdb_projects:
         for type in item['results']:
-            if type['render_meta']['sections'][0]['fields'][0] == 'name':
+            if type['render_meta']['sections'][0]['fields'][2] == 'os-type':
                 cmdb_projects_vm['items'].append(type['public_id'])
             elif type['render_meta']['sections'][0]['fields'][1] == 'limits.cpu-hard':
                 cmdb_projects_os['items'].append(type['public_id'])
