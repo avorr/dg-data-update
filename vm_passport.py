@@ -250,9 +250,10 @@ def objects(vmInfo: dict, cmdb_token: str, type_id: str, author_id: int, method:
     if method == 'GET_TEMPLATE':
         return vmObjectTemplate
 
+    return cmdbApi(method, 'object/', cmdb_token, vmObjectTemplate)
+
     # print(response.status_code)
     # print(response.json())
-    return cmdbApi(method, 'object/', cmdb_token, vmObjectTemplate)
     # try:
     #     return cmdbApi('POST', 'object/', cmdb_token, vmObjectTemplate)
     # except:
@@ -378,7 +379,7 @@ def PassportsVM(portalName: str) -> tuple:
         cloudProjectsWithCheckSum = dict()
         # print(numberOfTread(len(cloudProjects)))
         # with ThreadPoolExecutor(max_workers=numberOfTread(len(cloudProjects))) as executor:
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        with ThreadPoolExecutor(max_workers=3) as executor:
             for project in executor.map(getVcodCheckSum, cloudProjects):
                 cloudProjectsWithCheckSum[project['info']['name']] = dict(id=project['info']['id'],
                                                                           domain_id=project['info']['domain_id'],
@@ -392,12 +393,10 @@ def PassportsVM(portalName: str) -> tuple:
         for deleteCmdbProjects in cmdbProjects:
             for deleteCmdbType in deleteCmdbProjects['results']:
                 print('DELETE CMDB TYPE', cmdbApi('DELETE', f"types/{deleteCmdbType['public_id']}", cmdbToken))
-                time.sleep(0.1)
 
         for categories in allCategories:
             for categoriesId in categories['results']:
                 print('DELETE CMDB CATEGORIE', cmdbApi('DELETE', f"categories/{categoriesId['public_id']}", cmdbToken))
-                time.sleep(0.1)
 
     allProjects = checkSumCloudProjects(cloudProjects['projects'])
     # from allProjects import allProjects
@@ -732,9 +731,9 @@ def PassportsVM(portalName: str) -> tuple:
 
         for cloudVm in cloudProjectVm:
             if not any(map(lambda x: x['fields'][17]['value'] == cloudVm[17]['value'], cmdbTypeObjects)):
-                print('VM FOR CREATE', cloudVm)
-                time.sleep(0.1)
-                print(objects(cloudVm, cmdbToken, cmdbProject['type_id'], userId, 'POST_NEW_VM', tags=portalTags))
+                # print('VM FOR CREATE', cloudVm)
+                # time.sleep(0.1)
+                objects(cloudVm, cmdbToken, cmdbProject['type_id'], userId, 'POST_NEW_VM', tags=portalTags)
 
             for cmdb_type in cmdbTypeObjects:
 
