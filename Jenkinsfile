@@ -72,12 +72,15 @@ pipeline {
         stage("Update CMDB Info Portal-PD15/PD20") {
             environment {
                 DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
+
                 PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev/api/v1/'
                 OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
+                PPRB3_VERSIONS_PD15 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
 
                 PORTAL_URL_PD20 = "https://portal.gostech.novalocal/api/v1/"
                 OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+                PPRB3_VERSIONS_PD20 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
 
                 CMDB_CRED = credentials('cmdb-cred')
