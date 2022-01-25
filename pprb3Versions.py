@@ -9,11 +9,11 @@ from functools import reduce
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from env import portal_info
-from vm_passport import cmdb_api
+from vm_passport import cmdbApi
 # from vm_passport import objects
 from vm_passport import categorie_id
-from vm_passport import get_cmdb_token
-from vm_passport import get_info_from_all_page
+from vm_passport import getCmdbToken
+from vm_passport import getInfoFromAllPage
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -29,7 +29,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     def CreateObject(versionInfo: dict, cmdbToken: str, type_id: str, author_id: int, method: str = 'POST',
                      template: bool = False) -> dict:
         if method == 'PUT':
-            # return cmdb_api(method, f'object/{versionInfo["public_id"]}', cmdbToken, versionInfo)
+            # return cmdbApi(method, f'object/{versionInfo["public_id"]}', cmdbToken, versionInfo)
             print(f'object/{versionInfo["public_id"]}')
 
         def getLabel(labels: dict, label: str) -> str:
@@ -105,12 +105,12 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
         if template:
             return labelObjectTemplate
 
-        return cmdb_api('POST', 'object/', cmdbToken, labelObjectTemplate)
+        return cmdbApi('POST', 'object/', cmdbToken, labelObjectTemplate)
 
     # cmdbToken, userId = get_cmdbToken()
     cmdbToken = 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZSI6IkRBVEFHRVJSWSJ9LCJpYXQiOjE2NDI5NzE4MDQsImV4cCI6MTY0MzA1NTgwNCwiREFUQUdFUlJZIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOnsidXNlciI6eyJwdWJsaWNfaWQiOjEwfX19fQ.AxayswC7Je7Dx-ZMr5NCsGWPlOiSp1qcmlQ9MJYKn_CtCvHcRbb1TNb8_2-lBJT_Kbf_t-Ud2jcb1RN6xMioNXUUpNIj1Lu1U5VRAVRE3_aKzBrNy85t0nYUcTB4aIA8whtHPvU1rWtI4XgDM36ry_XB407mG5_3Y70b9yqKKz_NXUhcDiGp1zbgoDfiYlx12672OcVUcrxzRU6jOrKlzddT3YQkn7fU0N6JPhjIukAAcPgY6cs4pQ5A2Jo6WQj5lFsW7wnn4nD8sOJ4-0OPllOoNAdw9wckm035cmIIpdGnrKWgXS7lXYRGaw1mfXBXCJKbqABfyGcVc5qgSdmOew'
     userId = 10
-    all_categories = get_info_from_all_page('categories', cmdbToken)
+    all_categories = getInfoFromAllPage('categories', cmdbToken)
 
     os_passports_categorie_id = categorie_id('pprb3-app-versions', 'Pprb3 App Versions', 'fas fa-server', cmdbToken,
                                              all_categories)
@@ -144,7 +144,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     # return
     # from allLabels import allLabels
 
-    cmdb_projects = get_info_from_all_page('types', cmdbToken)
+    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
     for stand in allPprb3Verions['info']:
         if not any(map(lambda x: any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
                                          x['results'])), cmdb_projects)) and stand['modules_version']:
@@ -228,13 +228,13 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 "label": stand['project_name'],
                 "description": f'pprb3 versions {stand["project_id"]}'
             }
-            create_type = cmdb_api('POST', 'types/', cmdbToken, data_type_template)
+            create_type = cmdbApi('POST', 'types/', cmdbToken, data_type_template)
             print(create_type)
-            all_types_pages = get_info_from_all_page('types', cmdbToken)[0]['pager']['total_pages']
+            all_types_pages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
 
             new_all_types_pages = list()
             for page in range(1, all_types_pages + 1):
-                response_page = cmdb_api('GET', f'types/?page={page}', cmdbToken)
+                response_page = cmdbApi('GET', f'types/?page={page}', cmdbToken)
                 new_all_types_pages.append(response_page)
 
             newTypeId = None
@@ -259,7 +259,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
             if newTypeId == None:
                 return
             data_cat_template['types'].append(newTypeId)
-            put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdbToken,
+            put_type_in_catigories = cmdbApi('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdbToken,
                                               data_cat_template)
 
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
@@ -276,7 +276,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     return
 
     # all_objects = None
-    # all_objects = get_info_from_all_page('objects', cmdbToken)
+    # all_objects = getInfoFromAllPage('objects', cmdbToken)
 
     # connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
     # cluster = MongoClient(connection_sring)
@@ -287,7 +287,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     # from allObjects import allObjects as all_objects
     from allObjects import all_objects
 
-    cmdb_projects = get_info_from_all_page('types', cmdbToken)
+    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
 
     allTypesLabels = reduce(lambda x, y: x + y, map(lambda foo: tuple(
         filter(lambda bar: f'os-labels-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
@@ -338,7 +338,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 for cmdbLabel in cmdb_namespaces:
                     if cmdbLabel['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
                         print('DELETE LABEL <--->', cmdbLabel['fields'][1]['value'])
-                        cmdb_api('DELETE', f"object/{cmdbLabel['public_id']}", cmdbToken)
+                        cmdbApi('DELETE', f"object/{cmdbLabel['public_id']}", cmdbToken)
                         time.sleep(0.1)
 
 

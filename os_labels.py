@@ -9,11 +9,11 @@ from pymongo import MongoClient
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from env import portal_info
-from vm_passport import cmdb_api
+from vm_passport import cmdbApi
 # from vm_passport import objects
 from vm_passport import categorie_id
-from vm_passport import get_cmdb_token
-from vm_passport import get_info_from_all_page
+from vm_passport import getCmdbToken
+from vm_passport import getInfoFromAllPage
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -29,7 +29,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     def CreateLabels(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
                      template: bool = False) -> dict:
         if method == 'PUT':
-            # return cmdb_api(method, f'object/{labels_info["public_id"]}', cmdb_token, labels_info)
+            # return cmdbApi(method, f'object/{labels_info["public_id"]}', cmdb_token, labels_info)
             print(f'object/{labels_info["public_id"]}')
 
 
@@ -116,13 +116,13 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
         if template:
             return labelObjectTemplate
 
-        return cmdb_api('POST', 'object/', cmdb_token, labelObjectTemplate)
+        return cmdbApi('POST', 'object/', cmdb_token, labelObjectTemplate)
 
         # print(response.status_code)
         # print(response.json())
 
-    cmdb_token, user_id = get_cmdb_token()
-    all_categories = get_info_from_all_page('categories', cmdb_token)
+    cmdb_token, user_id = getCmdbToken()
+    all_categories = getInfoFromAllPage('categories', cmdb_token)
 
     os_passports_categorie_id = categorie_id('os-app-labels', 'OS App Labels', 'fas fa-tags', cmdb_token,
                                              all_categories)
@@ -165,7 +165,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     # return
     # from allLabels import allLabels
 
-    cmdb_projects = get_info_from_all_page('types', cmdb_token)
+    cmdb_projects = getInfoFromAllPage('types', cmdb_token)
 
     for cluster in allLabels:
         if not any(map(lambda x: any(
@@ -293,15 +293,15 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 "description": f'openshift labels {cluster["cluster"]}'
             }
 
-            create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
+            create_type = cmdbApi('POST', 'types/', cmdb_token, data_type_template)
 
             print(create_type)
 
-            all_types_pages = get_info_from_all_page('types', cmdb_token)[0]['pager']['total_pages']
+            all_types_pages = getInfoFromAllPage('types', cmdb_token)[0]['pager']['total_pages']
 
             new_all_types_pages = list()
             for page in range(1, all_types_pages + 1):
-                response_page = cmdb_api('GET', f'types/?page={page}', cmdb_token)
+                response_page = cmdbApi('GET', f'types/?page={page}', cmdb_token)
                 new_all_types_pages.append(response_page)
 
             new_type_id = None
@@ -335,7 +335,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             data_cat_template['types'].append(new_type_id)
 
-            put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdb_token,
+            put_type_in_catigories = cmdbApi('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdb_token,
                                               data_cat_template)
 
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
@@ -349,7 +349,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 time.sleep(0.1)
 
     # all_objects = None
-    # all_objects = get_info_from_all_page('objects', cmdb_token)
+    # all_objects = getInfoFromAllPage('objects', cmdb_token)
 
     # connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
     # cluster = MongoClient(connection_sring)
@@ -360,7 +360,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     # from allObjects import allObjects as all_objects
     from allObjects import all_objects
 
-    cmdb_projects = get_info_from_all_page('types', cmdb_token)
+    cmdb_projects = getInfoFromAllPage('types', cmdb_token)
 
     allTypesLabels = reduce(lambda x, y: x + y, map(lambda foo: tuple(
         filter(lambda bar: f'os-labels-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
@@ -411,7 +411,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 for cmdbLabel in cmdb_namespaces:
                     if cmdbLabel['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
                         print('DELETE LABEL <--->', cmdbLabel['fields'][1]['value'])
-                        cmdb_api('DELETE', f"object/{cmdbLabel['public_id']}", cmdb_token)
+                        cmdbApi('DELETE', f"object/{cmdbLabel['public_id']}", cmdb_token)
                         time.sleep(0.1)
 
                 # print(tmpField[1]['value'])
@@ -571,4 +571,4 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 # for cmdb_ns in cmdb_namespaces:
                 #     if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
                 #         print('OBJECT for Delete', cmdb_ns['fields'][0]['value'])
-                #         print(cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token))
+                #         print(cmdbApi('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token))

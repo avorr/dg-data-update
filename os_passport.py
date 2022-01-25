@@ -8,11 +8,11 @@ from functools import reduce
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from env import portal_info
-from vm_passport import cmdb_api
+from vm_passport import cmdbApi
 from vm_passport import objects
 from vm_passport import categorie_id
-from vm_passport import get_cmdb_token
-from vm_passport import get_info_from_all_page
+from vm_passport import getCmdbToken
+from vm_passport import getInfoFromAllPage
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -22,8 +22,8 @@ def json_read(json_object: dict):
 
 
 def PassportsOS(portal_name: str, all_objects: tuple) -> None:
-    cmdb_token, user_id = get_cmdb_token()
-    all_categories = get_info_from_all_page('categories', cmdb_token)
+    cmdb_token, user_id = getCmdbToken()
+    all_categories = getInfoFromAllPage('categories', cmdb_token)
 
     os_passports_categorie_id = categorie_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdb_token,
                                              all_categories)
@@ -59,7 +59,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                         info['namespace'] == metric['metric']['namespace']:
                     info['info'].append((metric['metric']['resource'], metric['metric']['type'], metric['value']))
 
-    cmdb_projects = get_info_from_all_page('types', cmdb_token)
+    cmdb_projects = getInfoFromAllPage('types', cmdb_token)
 
     for cluster in os_info:
         if not any(map(lambda x: any(
@@ -161,14 +161,14 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 "description": f'openshift cluster {cluster["cluster"]}'
             }
 
-            create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
+            create_type = cmdbApi('POST', 'types/', cmdb_token, data_type_template)
 
             print(create_type)
 
-            all_types_pages = get_info_from_all_page('types', cmdb_token)[0]['pager']['total_pages']
+            all_types_pages = getInfoFromAllPage('types', cmdb_token)[0]['pager']['total_pages']
             new_all_types_pages = list()
             for page in range(1, all_types_pages + 1):
-                response_page = cmdb_api('GET', f'types/?page={page}', cmdb_token)
+                response_page = cmdbApi('GET', f'types/?page={page}', cmdb_token)
                 new_all_types_pages.append(response_page)
 
             new_type_id = None
@@ -198,7 +198,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
 
             data_cat_template['types'].append(new_type_id)
 
-            put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdb_token,
+            put_type_in_catigories = cmdbApi('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdb_token,
                                               data_cat_template)
             print('put_type_in_catigories', put_type_in_catigories)
             print('data_cat_template', data_cat_template)
@@ -208,7 +208,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 print(create_object)
                 time.sleep(0.1)
 
-    # all_objects = get_info_from_all_page('objects', cmdb_token)
+    # all_objects = getInfoFromAllPage('objects', cmdb_token)
     # from objects import all_objects
 
     # from pymongo import MongoClient
@@ -220,7 +220,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     # all_objects = tuple(bdObjects.find({}))
     from allObjects import all_objects
 
-    cmdb_projects = get_info_from_all_page('types', cmdb_token)
+    cmdb_projects = getInfoFromAllPage('types', cmdb_token)
     all_cmdb_cluster_types = reduce(lambda x, y: x + y,
                                     map(lambda z: tuple(
                                         filter(lambda f: f'os-cluster-{portal_name}--' in f['name'], z['results'])),
@@ -282,5 +282,5 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 for cmdb_ns in cmdb_namespaces:
                     if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
                         print('DELETE NAMESPACE', cmdb_ns['fields'][0]['value'])
-                        cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token)
+                        cmdbApi('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token)
                         time.sleep(0.1)
