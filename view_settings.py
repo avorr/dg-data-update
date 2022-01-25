@@ -15,7 +15,7 @@ def json_read(json_object: dict):
     print(json.dumps(json_object, indent=4))
 
 def visiableSetting():
-    def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict = '') -> dict:
+    def cmdbApi(method: str, api_method: str = '', token: str = '', payload: dict = '') -> dict:
         cmdb_api_url: str = "https://cmdb.common.gos-tech.xyz/rest/"
         headers_cmdb_api: dict = {
             'Content-Type': 'application/json',
@@ -24,26 +24,26 @@ def visiableSetting():
         return json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
                                            data=json.dumps(payload)).content)
 
-    def get_cmdb_token() -> str:
+    def getCmdbToken() -> str:
         from env import cmdb_login, cmdb_password
         auth_payload: dict = {
             "user_name": cmdb_login,
             "password": cmdb_password
         }
-        # check_cmdb_auth = cmdb_api('GET', 'users/')
+        # check_cmdb_auth = cmdbApi('GET', 'users/')
         # print(check_cmdb_auth)
-        user_info = cmdb_api('POST', 'auth/login', payload=auth_payload)
+        user_info = cmdbApi('POST', 'auth/login', payload=auth_payload)
         return user_info['token'], user_info['user']['public_id']
 
-    cmdb_token, id_user = get_cmdb_token()
+    cmdb_token, id_user = getCmdbToken()
 
     number_of_tread = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
 
-    def get_info_from_all_page(cmdb_item: str) -> tuple:
-        numbers_of_pages = cmdb_api('GET', f"{cmdb_item}/", cmdb_token)['pager']['total_pages']
+    def getInfoFromAllPage(cmdb_item: str) -> tuple:
+        numbers_of_pages = cmdbApi('GET', f"{cmdb_item}/", cmdb_token)['pager']['total_pages']
 
         def get_info_from_one_page(page_number: int):
-            return cmdb_api('GET', f'{cmdb_item}/?page={page_number}', cmdb_token)
+            return cmdbApi('GET', f'{cmdb_item}/?page={page_number}', cmdb_token)
 
         full_info = list()
         with ThreadPoolExecutor(max_workers=number_of_tread(numbers_of_pages)) as executor:
@@ -51,7 +51,7 @@ def visiableSetting():
                 full_info.append(page_info)
         return tuple(full_info)
 
-    cmdb_projects = get_info_from_all_page('types')
+    cmdb_projects = getInfoFromAllPage('types')
     cmdb_projects_vm = dict(type='vm', items=list())
     cmdb_projects_os = dict(type='os', items=list())
     cmdb_projects_label = dict(type='label', items=list())
@@ -65,7 +65,7 @@ def visiableSetting():
             elif type['render_meta']['sections'][0]['fields'][3] == 'SUBSYSTEM':
                 cmdb_projects_label['items'].append(type['public_id'])
 
-    cmdb_users = get_info_from_all_page('users')
+    cmdb_users = getInfoFromAllPage('users')
     cmdb_users = reduce(lambda x, y: x + y,
                         map(lambda foo: tuple(map(lambda bar: bar['public_id'], foo['results'])), cmdb_users))
     # cmdb_users = (35, 19, 13, 9, 17)
