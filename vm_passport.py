@@ -398,8 +398,6 @@ def PassportsVM(portalName: str) -> tuple:
             for categoriesId in categories['results']:
                 print('DELETE CMDB CATEGORIE', cmdbApi('DELETE', f"categories/{categoriesId['public_id']}", cmdbToken))
                 time.sleep(0.1)
-    deleteAll()
-    return
 
     allProjects = checkSumCloudProjects(cloudProjects['projects'])
     # from allProjects import allProjects
