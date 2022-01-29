@@ -3,6 +3,7 @@
 import os
 import json
 
+from creds import *
 def jsonRead(json_object: dict):
     print(json.dumps(json_object, indent=4))
 

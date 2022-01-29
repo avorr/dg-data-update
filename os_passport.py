@@ -22,14 +22,14 @@ def json_read(json_object: dict):
 
 
 def PassportsOS(portal_name: str, all_objects: tuple) -> None:
-    cmdb_token, user_id = getCmdbToken()
-    all_categories = getInfoFromAllPage('categories', cmdb_token)
+    cmdbToken, userId = getCmdbToken()
+    all_categories = getInfoFromAllPage('categories', cmdbToken)
 
-    os_passports_categorie_id = categorie_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdb_token,
+    osPassportsCategorieId = categorie_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdbToken,
                                              all_categories)
-    os_portal_categorie_id = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open', cmdb_token,
+    osPortalCategorieId = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open', cmdbToken,
                                           all_categories,
-                                          os_passports_categorie_id['public_id'])
+                                          osPassportsCategorieId['public_id'])
 
     def get_os_info() -> dict:
         return json.loads(requests.request("GET", portal_info[portal_name]['metrics']).content)
@@ -59,7 +59,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                         info['namespace'] == metric['metric']['namespace']:
                     info['info'].append((metric['metric']['resource'], metric['metric']['type'], metric['value']))
 
-    cmdb_projects = getInfoFromAllPage('types', cmdb_token)
+    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
 
     for cluster in os_info:
         if not any(map(lambda x: any(
@@ -107,7 +107,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 ],
                 "active": True,
                 "version": "1.0.0",
-                "author_id": user_id,
+                "author_id": userId,
                 "render_meta": {
                     # "icon": "fas fa-clipboard-list",
                     "icon": "fas fa-dharmachakra",
@@ -161,54 +161,54 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 "description": f'openshift cluster {cluster["cluster"]}'
             }
 
-            create_type = cmdbApi('POST', 'types/', cmdb_token, data_type_template)
+            createType = cmdbApi('POST', 'types/', cmdbToken, data_type_template)
 
-            print(create_type)
+            print(createType)
 
-            all_types_pages = getInfoFromAllPage('types', cmdb_token)[0]['pager']['total_pages']
-            new_all_types_pages = list()
-            for page in range(1, all_types_pages + 1):
-                response_page = cmdbApi('GET', f'types/?page={page}', cmdb_token)
-                new_all_types_pages.append(response_page)
+            allTypesPages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
+            newAllTypesPages = list()
+            for page in range(1, allTypesPages + 1):
+                responsePage = cmdbApi('GET', f'types/?page={page}', cmdbToken)
+                newAllTypesPages.append(responsePage)
 
-            new_type_id = None
-            for new_types in new_all_types_pages:
-                for new_item in new_types['results']:
-                    if new_item['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}":
-                        new_type_id = new_item['public_id']
+            newTypeId = None
+            for newTypes in newAllTypesPages:
+                for newItem in newTypes['results']:
+                    if newItem['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}":
+                        newTypeId = newItem['public_id']
 
-            print(new_type_id, 'new type id')
+            print(newTypeId, 'new type id')
 
-            # os_portal_categorie_id = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
-            #                                       os_passports_categorie_id['public_id'], all_categories)
-            data_cat_template: dict = {
-                "public_id": os_portal_categorie_id['public_id'],
-                "name": os_portal_categorie_id['name'],
-                "label": os_portal_categorie_id['label'],
+            # osPortalCategorieId = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
+            #                                       osPassportsCategorieId['public_id'], all_categories)
+            dataCatTemplate: dict = {
+                "public_id": osPortalCategorieId['public_id'],
+                "name": osPortalCategorieId['name'],
+                "label": osPortalCategorieId['label'],
                 "meta": {
                     "icon": "far fa-folder-open",
                     "order": None
                 },
-                "parent": os_passports_categorie_id['public_id'],
-                "types": os_portal_categorie_id['types']
+                "parent": osPassportsCategorieId['public_id'],
+                "types": osPortalCategorieId['types']
             }
             #
-            if new_type_id == None:
+            if newTypeId == None:
                 return
 
-            data_cat_template['types'].append(new_type_id)
+            dataCatTemplate['types'].append(newTypeId)
 
-            put_type_in_catigories = cmdbApi('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdb_token,
-                                              data_cat_template)
-            print('put_type_in_catigories', put_type_in_catigories)
-            print('data_cat_template', data_cat_template)
+            putTypeInCatigories = cmdbApi('PUT', f"categories/{osPortalCategorieId['public_id']}", cmdbToken,
+                                              dataCatTemplate)
+            print('putTypeInCatigories', putTypeInCatigories)
+            print('dataCatTemplate', dataCatTemplate)
 
             for namespace in cluster['info']:
-                create_object = objects(namespace, cmdb_token, new_type_id, user_id, 'NAMESPACE')
-                print(create_object)
+                createObject = objects(namespace, cmdbToken, newTypeId, userId, 'NAMESPACE')
+                print(createObject)
                 time.sleep(0.1)
 
-    # all_objects = getInfoFromAllPage('objects', cmdb_token)
+    # all_objects = getInfoFromAllPage('objects', cmdbToken)
     # from objects import all_objects
 
     # from pymongo import MongoClient
@@ -220,18 +220,18 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     # all_objects = tuple(bdObjects.find({}))
     from allObjects import all_objects
 
-    cmdb_projects = getInfoFromAllPage('types', cmdb_token)
-    all_cmdb_cluster_types = reduce(lambda x, y: x + y,
+    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
+    allCmdbClusterTypes = reduce(lambda x, y: x + y,
                                     map(lambda z: tuple(
                                         filter(lambda f: f'os-cluster-{portal_name}--' in f['name'], z['results'])),
                                         cmdb_projects))
 
-    for cmdb_cluster in all_cmdb_cluster_types:
+    for cmdbCluster in allCmdbClusterTypes:
         for cluster in os_info:
-            if cmdb_cluster['label'] == cluster['cluster']:
-                # print(cmdb_cluster['label'], cluster['cluster'])
+            if cmdbCluster['label'] == cluster['cluster']:
+                # print(cmdbCluster['label'], cluster['cluster'])
 
-                # cmdb_namespaces = tuple(filter(lambda f: f['type_id'] == cmdb_cluster['public_id'],
+                # cmdb_namespaces = tuple(filter(lambda f: f['type_id'] == cmdbCluster['public_id'],
                 #                                reduce(lambda x, y: x + y, map(lambda z: tuple(
                 #                                    map(lambda j: dict(public_id=j.get('public_id'),
                 #                                                       type_id=j.get('type_id'),
@@ -239,48 +239,48 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 #                                                       fields=j.get('fields'),
                 #                                                       creation_time=j.get('creation_time')),
                 #                                        z['results'])), all_objects))))
-                cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
-                for os_namespace in cluster['info']:
-                    if os_namespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdb_namespaces):
-                        print('NAMESPACE FOR CREATE', os_namespace['namespace'])
-                        # objects(os_namespace, cmdb_token, cmdb_cluster['public_id'], user_id, 'NAMESPACE')
+                cmdbNamespaces = tuple(filter(lambda x: x['type_id'] == cmdbCluster['public_id'], all_objects))
+                for osNamespace in cluster['info']:
+                    if osNamespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdbNamespaces):
+                        print('NAMESPACE FOR CREATE', osNamespace['namespace'])
+                        objects(osNamespace, cmdbToken, cmdbCluster['public_id'], userId, 'NAMESPACE')
                         time.sleep(0.1)
 
-                    for cmdb_ns in cmdb_namespaces:
-                        ns_template = objects(os_namespace, cmdb_token, cmdb_cluster['public_id'], user_id,
+                    for cmdbNs in cmdbNamespaces:
+                        nsTemplate = objects(osNamespace, cmdbToken, cmdbCluster['public_id'], userId,
                                               'NAMESPACE', template=True)
-                        if cmdb_ns['fields'][0]['value'] == os_namespace['namespace'] and cmdb_ns['fields'] != \
-                                ns_template['fields']:
+                        if cmdbNs['fields'][0]['value'] == osNamespace['namespace'] and cmdbNs['fields'] != \
+                                nsTemplate['fields']:
                             # unixTime = lambda x: int(datetime.datetime.timestamp(x) * 1000)
-                            # print(unixTime(cmdb_ns['creation_time']))
+                            # print(unixTime(cmdbNs['creation_time']))
 
-                            update_object_template: dict = {
-                                "type_id": cmdb_ns['type_id'],
+                            updateObjectTemplate: dict = {
+                                "type_id": cmdbNs['type_id'],
                                 "status": True,
                                 "version": "1.0.1",
                                 "creation_time": {
-                                    # "$date": int(time.mktime(time.strptime(cmdb_ns['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
-                                    "$date": int(datetime.datetime.timestamp(cmdb_ns['creation_time']) * 1000)
+                                    # "$date": int(time.mktime(time.strptime(cmdbNs['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
+                                    "$date": int(datetime.datetime.timestamp(cmdbNs['creation_time']) * 1000)
                                 },
-                                "author_id": cmdb_ns['author_id'],
+                                "author_id": cmdbNs['author_id'],
                                 "last_edit_time": {
                                     "$date": int(time.time() * 1000)
                                 },
-                                "editor_id": user_id,
+                                "editor_id": userId,
                                 "active": True,
-                                "fields": ns_template['fields'],
-                                "public_id": cmdb_ns['public_id'],
+                                "fields": nsTemplate['fields'],
+                                "public_id": cmdbNs['public_id'],
                                 "views": 0,
                                 "comment": ""
                             }
 
-                            # json_read(update_object_template)
+                            # json_read(updateObjectTemplate)
                             time.sleep(0.1)
-                            print(f"UPDATE NAMESPACE in {cmdb_ns['type_id']}", os_namespace['namespace'])
-                            objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT')
+                            print(f"UPDATE NAMESPACE in {cmdbNs['type_id']}", osNamespace['namespace'])
+                            objects(updateObjectTemplate, cmdbToken, cmdbCluster['public_id'], userId, 'PUT')
 
-                for cmdb_ns in cmdb_namespaces:
-                    if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
-                        print('DELETE NAMESPACE', cmdb_ns['fields'][0]['value'])
-                        cmdbApi('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token)
+                for cmdbNs in cmdbNamespaces:
+                    if cmdbNs['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
+                        print('DELETE NAMESPACE', cmdbNs['fields'][0]['value'])
+                        cmdbApi('DELETE', f"object/{cmdbNs['public_id']}", cmdbToken)
                         time.sleep(0.1)

@@ -5,6 +5,7 @@ import time
 import socket
 import requests
 from functools import reduce
+from datetime import datetime
 # from pymongo import MongoClient
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
@@ -17,9 +18,14 @@ from vm_passport import getInfoFromAllPage
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+from tools import *
+# def json_read(json_object: dict):
+#     print(json.dumps(json_object, indent=4))
 
-def json_read(json_object: dict):
-    print(json.dumps(json_object, indent=4))
+# def writeToFile(object: str):
+#     separator: int = object.index('=')
+#     with open('%s.py' % object[:separator], 'w') as file:
+#         file.write('%s = %s' % (object[:separator], object[(separator + 1):]))
 
 
 # def pprb3Versions(portal_name: str, clusters: tuple = (), all_objects: tuple = ()) -> None:
@@ -51,6 +57,8 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 return versionInfo['nginx_version']
             if 'pgse_version' in versionInfo:
                 return versionInfo['pgse_version']
+            if 'kafka_version' in versionInfo:
+                return versionInfo['kafka_version']
             if 'wf_info' in versionInfo:
                 # print(next(iter(versionInfo['wf_info'])))
                 if next(iter(versionInfo['wf_info'])) == 'ERROR':
@@ -107,9 +115,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
 
         return cmdbApi('POST', 'object/', cmdbToken, labelObjectTemplate)
 
-    # cmdbToken, userId = get_cmdbToken()
-    cmdbToken = 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZSI6IkRBVEFHRVJSWSJ9LCJpYXQiOjE2NDI5NzE4MDQsImV4cCI6MTY0MzA1NTgwNCwiREFUQUdFUlJZIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOnsidXNlciI6eyJwdWJsaWNfaWQiOjEwfX19fQ.AxayswC7Je7Dx-ZMr5NCsGWPlOiSp1qcmlQ9MJYKn_CtCvHcRbb1TNb8_2-lBJT_Kbf_t-Ud2jcb1RN6xMioNXUUpNIj1Lu1U5VRAVRE3_aKzBrNy85t0nYUcTB4aIA8whtHPvU1rWtI4XgDM36ry_XB407mG5_3Y70b9yqKKz_NXUhcDiGp1zbgoDfiYlx12672OcVUcrxzRU6jOrKlzddT3YQkn7fU0N6JPhjIukAAcPgY6cs4pQ5A2Jo6WQj5lFsW7wnn4nD8sOJ4-0OPllOoNAdw9wckm035cmIIpdGnrKWgXS7lXYRGaw1mfXBXCJKbqABfyGcVc5qgSdmOew'
-    userId = 10
+    cmdbToken, userId = getCmdbToken()
     all_categories = getInfoFromAllPage('categories', cmdbToken)
 
     os_passports_categorie_id = categorie_id('pprb3-app-versions', 'Pprb3 App Versions', 'fas fa-server', cmdbToken,
@@ -144,12 +150,19 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     # return
     # from allLabels import allLabels
 
-    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
+    # cmdb_projects = getInfoFromAllPage('types', cmdbToken)
+    # writeToFile(f"{cmdb_projects=}")
+    from cmdb_projects import cmdb_projects
+
+    # for stand in allPprb3Verions['info']:
+    #     if not any(map(lambda x: any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
+    #                                      x['results'])), cmdb_projects)) and stand['modules_version']:
+    #         print(stand)
+
     for stand in allPprb3Verions['info']:
         if not any(map(lambda x: any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
                                          x['results'])), cmdb_projects)) and stand['modules_version']:
                 # and stand['project_name'] == 'gt-dvp-dev-admin-platform':
-
             data_type_template: dict = {
                 "fields": [
                     {
@@ -265,82 +278,89 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
             print('DATA CATATEGORIE TEMPLATE', data_cat_template)
 
-            # return
             # newTypeId = 120
             for version in stand['modules_version']:
-                # print(version)
                 create_object = CreateObject(version, cmdbToken, newTypeId, userId)
                 print('CREATE OBJECT', create_object)
                 time.sleep(0.1)
-                # return
-    return
 
-    # all_objects = None
-    # all_objects = getInfoFromAllPage('objects', cmdbToken)
 
-    # connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
-    # cluster = MongoClient(connection_sring)
-    # db = cluster['cmdb']
-    # bdObjects = db.get_collection('framework.objects')
-    # all_objects = tuple(bdObjects.find({}))
-
-    # from allObjects import allObjects as all_objects
     from allObjects import all_objects
+
 
     cmdb_projects = getInfoFromAllPage('types', cmdbToken)
 
-    allTypesLabels = reduce(lambda x, y: x + y, map(lambda foo: tuple(
-        filter(lambda bar: f'os-labels-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
+    allTypesVersions = reduce(lambda x, y: x + y, map(lambda foo: tuple(
+        filter(lambda bar: f'pprb3-versions-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
 
-    def formatPodName(podInfo: list) -> list:
-        podInfoTmp = podInfo[:]
-        podInfoTmp[1]['value'] = podInfo[1]['value'][:-6]
-        if podInfo[5]['value']:
-            numberValue = 0
-            for value in podInfo[1]['value'][::-1]:
-                numberValue += 1
-                if value == '-':
-                    podInfoTmp[1]['value'] = podInfo[1]['value'][:-numberValue]
-                    return podInfoTmp
-        return podInfoTmp
-
-    for cmdb_cluster in allTypesLabels:
-        # if cmdb_cluster['label'] == 'ocp.test.minsport.tech':
-        # if cmdb_cluster['label'] != 'ocp.business.tech1111111':
-        for cluster in allLabels:
-            if cmdb_cluster['label'] == cluster['cluster']:
-
-                # cmdb_namespaces = tuple(filter(
-                #     lambda f: f['type_id'] == cmdb_cluster['public_id'],
-                #     reduce(lambda x, y: x + y, map(lambda z: tuple(map(lambda j:
-                #                                                        dict(public_id=j.get('public_id'),
-                #                                                             type_id=j.get('type_id'),
-                #                                                             author_id=j.get('author_id'),
-                #                                                             fields=j.get('fields'),
-                #                                                             creation_time=j.get('creation_time')),
-                #                                                        z['results'])), all_objects))))
-
+    for cmdbTypeVersion in allTypesVersions:
+        for projectsPprb3Verions in allPprb3Verions:
+            
+            if cmdbTypeVersion['label'] == projectsPprb3Verions['cluster']:
                 cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
-
-                for podInfo in cluster['labels']:
-                    # if podInfo['name'] not in map(lambda x: x.get('fields')[1]['value'], cmdb_namespaces):
-                    # if podInfo['name'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
-                    template = CreateObject(podInfo, cmdbToken, cmdb_cluster['public_id'], userId, template=True)
-                    # template['fields'][1]['value'] = template['fields'][1]['value'][:-6]
-                    # print(template['fields'][1]['value'])
-                    # tmpField = formatPodName(template['fields'])
-                    # if tmpField not in map(lambda x: formatPodName(x.get('fields')), cmdb_namespaces):
-                    if template['fields'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
-                        createLabel = CreateObject(podInfo, cmdbToken, cmdb_cluster['public_id'], userId)
-                        print('CREATE LABEL <--->', template['fields'][1]['value'], createLabel)
+                for os_namespace in cluster['info']:
+                    if os_namespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdb_namespaces):
+                        print('NAMESPACE FOR CREATE', os_namespace['namespace'])
+                        # objects(os_namespace, cmdbToken, cmdb_cluster['public_id'], userId, 'NAMESPACE')
                         time.sleep(0.1)
 
-                for cmdbLabel in cmdb_namespaces:
-                    if cmdbLabel['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
-                        print('DELETE LABEL <--->', cmdbLabel['fields'][1]['value'])
-                        cmdbApi('DELETE', f"object/{cmdbLabel['public_id']}", cmdbToken)
+                    for cmdb_ns in cmdb_namespaces:
+                        ns_template = objects(os_namespace, cmdbToken, cmdb_cluster['public_id'], userId,
+                                              'NAMESPACE', template=True)
+                        if cmdb_ns['fields'][0]['value'] == os_namespace['namespace'] and cmdb_ns['fields'] != \
+                                ns_template['fields']:
+
+                            updateObjectTemplate: dict = {
+                                "type_id": cmdb_ns['type_id'],
+                                "status": True,
+                                "version": "1.0.1",
+                                "creation_time": {
+                                    "$date": int(datetime.datetime.timestamp(cmdb_ns['creation_time']) * 1000)
+                                },
+                                "author_id": cmdb_ns['author_id'],
+                                "last_edit_time": {
+                                    "$date": int(time.time() * 1000)
+                                },
+                                "editor_id": userId,
+                                "active": True,
+                                "fields": ns_template['fields'],
+                                "public_id": cmdb_ns['public_id'],
+                                "views": 0,
+                                "comment": ""
+                            }
+
+                            time.sleep(0.1)
+                            print(f"UPDATE NAMESPACE in {cmdb_ns['type_id']}", os_namespace['namespace'])
+                            objects(updateObjectTemplate, cmdbToken, cmdb_cluster['public_id'], userId, 'PUT')
+
+                for cmdb_ns in cmdb_namespaces:
+                    if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
+                        print('DELETE NAMESPACE', cmdb_ns['fields'][0]['value'])
+                        cmdbApi('DELETE', f"object/{cmdb_ns['public_id']}", cmdbToken)
                         time.sleep(0.1)
+
+
 
 
 if __name__ == '__main__':
     pprb3Versions(next(iter(portal_info)))
+
+
+
+# for cmdb_cluster in allTypesLabels:
+#     for cluster in allLabels:
+#         if cmdb_cluster['label'] == cluster['cluster']:
+#             cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
+#
+#             for podInfo in cluster['labels']:
+#                 template = CreateObject(podInfo, cmdbToken, cmdb_cluster['public_id'], userId, template=True)
+#                 if template['fields'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
+#                     createLabel = CreateObject(podInfo, cmdbToken, cmdb_cluster['public_id'], userId)
+#                     print('CREATE LABEL <--->', template['fields'][1]['value'], createLabel)
+#                     time.sleep(0.1)
+#
+#             for cmdbLabel in cmdb_namespaces:
+#                 if cmdbLabel['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
+#                     print('DELETE LABEL <--->', cmdbLabel['fields'][1]['value'])
+#                     cmdbApi('DELETE', f"object/{cmdbLabel['public_id']}", cmdbToken)
+#                     time.sleep(0.1)
