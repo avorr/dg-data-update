@@ -364,7 +364,6 @@ def PassportsVM(portal_name: str) -> tuple:
 
     vdc_categorie_id = categorie_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, dg_categories)
     print(vdc_categorie_id)
-    return
 
     cloudDomainsInfo = portalApi('domains', portal_name)['stdout']
     domainsInfo = dict()
