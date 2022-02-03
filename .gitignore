@@ -6,7 +6,6 @@ dev.py
 test.py
 allObjects.py
 allPprb3Version.py
-tools.py
 cmdb_projects.py
 Jenkinsfile-work
 ref-type*
