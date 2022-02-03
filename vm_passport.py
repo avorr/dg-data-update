@@ -314,7 +314,7 @@ def create_categorie(name: str, label: str, icon: str, cmdb_token: str, parent: 
 
 
 def categorie_id(categorie_name: str, categorie_label: str, categorie_icon: str, cmdb_token: str, dg_categories: tuple,
-                 parentСat: int = None) -> Union[dict[str, Any], dict[str, Any]]:
+                 parentСat: int = None) -> dict: #Union[dict[str, Any], dict[str, Any]]:
     """Func to create categorie in cmdb"""
     if not any(map(lambda x: any(map(lambda y: y['name'] == categorie_name, x['results'])), dg_categories)):
         result: dict = create_categorie(categorie_name, categorie_label, categorie_icon, cmdb_token, parentСat)
