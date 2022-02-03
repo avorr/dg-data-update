@@ -48,7 +48,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
         # "network-name",
         # "network-uuid"
 
-        def networks_info(networks: list, dns_servers: bool, subnet: bool) -> Union[str, tuple[str, str, str, str]]:
+        def networks_info(networks: list, dns_servers: bool, subnet: bool) -> str:# Union[str, tuple[str, str, str, str]]:
             networks = tuple(map(lambda x: defaultdict(str, x), networks))
             if dns_servers:
                 dnsInfo = list()
