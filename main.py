@@ -37,10 +37,8 @@ if __name__ == '__main__':
 
     getObjectsDb()
     all_objects = PassportsVM(sys.argv[1])
-"""
     PassportsOS(sys.argv[1], all_objects)
     LabelsOS(sys.argv[1])
     if sys.argv[1] == 'PD15':
         from view_settings import visiableSetting
         visiableSetting()
-"""
