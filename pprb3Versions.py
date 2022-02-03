@@ -287,12 +287,13 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
 
     from allObjects import all_objects
 
-
     cmdb_projects = getInfoFromAllPage('types', cmdbToken)
 
     allTypesVersions = reduce(lambda x, y: x + y, map(lambda foo: tuple(
         filter(lambda bar: f'pprb3-versions-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
 
+
+    return
     for cmdbTypeVersion in allTypesVersions:
         for projectsPprb3Verions in allPprb3Verions:
             

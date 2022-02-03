@@ -5,7 +5,7 @@ from env import portal_info
 from vm_passport import PassportsVM
 from os_passport import PassportsOS
 from os_labels import LabelsOS
-# sys.argv = ['', 'PD15']
+from getObjects import getObjectsDb
 
 if __name__ == '__main__':
     # from allPprb3Version import allPprb3WfVersions
@@ -35,9 +35,12 @@ if __name__ == '__main__':
     #     from view_settings import visiableSetting
     #     visiableSetting()
 
+    getObjectsDb()
     all_objects = PassportsVM(sys.argv[1])
+"""
     PassportsOS(sys.argv[1], all_objects)
     LabelsOS(sys.argv[1])
     if sys.argv[1] == 'PD15':
         from view_settings import visiableSetting
         visiableSetting()
+"""

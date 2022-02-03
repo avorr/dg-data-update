@@ -5,14 +5,13 @@ import json
 import requests
 from functools import reduce
 from pymongo import MongoClient
+from tools import *
 # from bson.objectid import ObjectId
 from concurrent.futures import ThreadPoolExecutor
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-def json_read(json_object: dict):
-    print(json.dumps(json_object, indent=4))
 
 def visiableSetting():
     def cmdbApi(method: str, api_method: str = '', token: str = '', payload: dict = '') -> dict:
@@ -55,6 +54,8 @@ def visiableSetting():
     cmdb_projects_vm = dict(type='vm', items=list())
     cmdb_projects_os = dict(type='os', items=list())
     cmdb_projects_label = dict(type='label', items=list())
+    cmdb_projects_version = dict(type='version', items=list())
+    cmdb_projects_vcd = dict(type='vcd', items=list())
 
     for item in cmdb_projects:
         for type in item['results']:
@@ -64,12 +65,16 @@ def visiableSetting():
                 cmdb_projects_os['items'].append(type['public_id'])
             elif type['render_meta']['sections'][0]['fields'][3] == 'SUBSYSTEM':
                 cmdb_projects_label['items'].append(type['public_id'])
+            elif type['render_meta']['sections'][0]['fields'][4] == 'version':
+                cmdb_projects_version['items'].append(type['public_id'])
+            elif type['render_meta']['sections'][0]['fields'][1] == 'datacenter-name':
+                cmdb_projects_vcd['items'].append(type['public_id'])
 
     cmdb_users = getInfoFromAllPage('users')
     cmdb_users = reduce(lambda x, y: x + y,
                         map(lambda foo: tuple(map(lambda bar: bar['public_id'], foo['results'])), cmdb_users))
     # cmdb_users = (35, 19, 13, 9, 17)
-    # cmdb_users = (17,)
+    # cmdb_users = (10,)
 
     connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
     cluster = MongoClient(connection_sring)
@@ -217,9 +222,55 @@ def visiableSetting():
                                 del bat, quux
 
 
+                            elif 'fields.datacenter-name' in settings['payloads'][0]['currentState']["visibleColumns"]:
+                                # print(settings['payloads'][0]['currentState']["visibleColumns"])
+
+                                visibleColumnsVcd = [
+                                    'fields.name',
+                                    'fields.datacenter-name',
+                                    'fields.networks',
+                                    'fields.dns-nameservers',
+                                    'actions'
+                                ]
+
+                                bat = set(settings['payloads'][0]['currentState']["visibleColumns"])
+                                quux = set(visibleColumnsVcd)
+
+                                if (bat - quux) or (quux - bat) or settings['payloads'][0]['currentState'][
+                                    'pageSize'] != 100:
+                                    settings['payloads'][0]['currentState']['pageSize'] = 100
+                                    settings['payloads'][0]['currentState']["visibleColumns"] = visibleColumnsVcd
+                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
+                                                                                     {"$set": settings})
+                                    print(update_view_settings.raw_result)
+                                del bat, quux
+
+                            elif 'fields.tag' in settings['payloads'][0]['currentState']["visibleColumns"]:
+                                visibleColumnsVersion = [
+                                    'fields.name',
+                                    'fields.vm-name',
+                                    'fields.local-ip',
+                                    'fields.tag',
+                                    'fields.version',
+                                    'actions'
+                                ]
+
+                                bat = set(settings['payloads'][0]['currentState']["visibleColumns"])
+                                quux = set(visibleColumnsVersion)
+
+                                if (bat - quux) or (quux - bat) or \
+                                        settings['payloads'][0]['currentState']['pageSize'] != 50:
+                                    settings['payloads'][0]['currentState']['pageSize'] = 50
+                                    settings['payloads'][0]['currentState']["visibleColumns"] = visibleColumnsVersion
+                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
+                                                                                     {"$set": settings})
+                                    print(update_view_settings.raw_result)
+                                del bat, quux
+
+
                         else:
                             if projects['type'] == 'vm':
-                                print('######'*100, '\nTHIS BLOCK IS WORKING\n', '######'*100)
+                                print('######' * 100, '\nTHIS BLOCK IS WORKING\n', '######' * 100)
                                 payloads_vm = [
                                     {
                                         "id": "table-objects-type",
@@ -314,13 +365,66 @@ def visiableSetting():
                                 ]
                                 settings['payloads'] = payloads_label
 
+
+                            elif projects['type'] == 'version':
+                                print('######' * 100, '\nTHIS BLOCK IS WORKING\n', '######' * 100)
+                                payloads_version = [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 50,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                'fields.name',
+                                                'fields.vm-name',
+                                                'fields.local-ip',
+                                                'fields.tag',
+                                                'fields.version',
+                                                'actions'
+                                            ]
+                                        }
+                                    }
+                                ]
+                                settings['payloads'] = payloads_version
+
+                            elif projects['type'] == 'vcd':
+                                print('######' * 100, '\nTHIS BLOCK IS WORKING\n', '######' * 100)
+                                payloads_vcd = [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 100,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                'fields.name',
+                                                'fields.datacenter-name',
+                                                'fields.networks',
+                                                'fields.dns-nameservers',
+                                                'actions'
+                                            ]
+                                        }
+                                    }
+                                ]
+                                settings['payloads'] = payloads_vcd
+
                             update_view_settings = users_settings.update_one({"_id": settings['_id']},
                                                                              {"$set": settings})
                             print(update_view_settings.raw_result)
 
                 if f'framework-object-type-{cmdb_type}' not in map(lambda x: x['resource'], viewSettings):
                     if projects['type'] == 'os':
-
                         settings_view_os = {
                             "setting_type": "APPLICATION",
                             "resource": "framework-object-type-1009",
@@ -357,7 +461,6 @@ def visiableSetting():
                         viewSettingsForCreate.append(settings_view_os)
 
                     elif projects['type'] == 'vm':
-
                         settings_view_vm = {
                             "setting_type": "APPLICATION",
                             "resource": "framework-object-type-1009",
@@ -442,6 +545,74 @@ def visiableSetting():
                         settings_view_label['user_id'] = user_id
                         viewSettingsForCreate.append(settings_view_label)
 
+                    elif projects['type'] == 'version':
+                        settings_view_version = {
+                            "setting_type": "APPLICATION",
+                            "resource": "framework-object-type-1009",
+                            "user_id": 17,
+                            "payloads": [
+                                {
+                                    "id": "table-objects-type",
+                                    "tableStates": [],
+                                    "currentState": {
+                                        "name": "",
+                                        "page": 1,
+                                        "pageSize": 50,
+                                        "sort": {
+                                            "name": "public_id",
+                                            "order": -1
+                                        },
+                                        "visibleColumns": [
+                                            "fields.name",
+                                            "fields.vm-name",
+                                            "fields.local-ip",
+                                            "fields.tag",
+                                            "fields.version",
+                                            "actions"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                        # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
+                        settings_view_version['resource'] = f"framework-object-type-{cmdb_type}"
+                        settings_view_version['user_id'] = user_id
+                        viewSettingsForCreate.append(settings_view_version)
+
+                    elif projects['type'] == 'vcd':
+
+                        settings_view_vcd = {
+                            "setting_type": "APPLICATION",
+                            "resource": "framework-object-type-1009",
+                            "user_id": 17,
+                            "payloads": [
+                                {
+                                    "id": "table-objects-type",
+                                    "tableStates": [],
+                                    "currentState": {
+                                        "name": "",
+                                        "page": 1,
+                                        "pageSize": 100,
+                                        "sort": {
+                                            "name": "public_id",
+                                            "order": -1
+                                        },
+                                        "visibleColumns": [
+                                            "fields.name",
+                                            "fields.datacenter-name",
+                                            "fields.networks",
+                                            "fields.dns-nameservers",
+                                            "actions"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                        # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
+                        settings_view_vcd['resource'] = f"framework-object-type-{cmdb_type}"
+                        settings_view_vcd['user_id'] = user_id
+                        viewSettingsForCreate.append(settings_view_vcd)
+
             if viewSettingsForCreate:
                 create_view_settings = users_settings.insert_many(viewSettingsForCreate)
                 for new_object in create_view_settings.inserted_ids:
@@ -450,6 +621,8 @@ def visiableSetting():
         visibleSettings(cmdb_projects_vm)
         visibleSettings(cmdb_projects_os)
         visibleSettings(cmdb_projects_label)
+        visibleSettings(cmdb_projects_version)
+        visibleSettings(cmdb_projects_vcd)
 
 
 if __name__ == '__main__':
