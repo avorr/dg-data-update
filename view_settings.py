@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def visiableSetting():
-    def cmdbApi(method: str, api_method: str = '', token: str = '', payload: dict = '') -> dict:
+    def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict = '') -> dict:
         cmdb_api_url: str = "https://cmdb.common.gos-tech.xyz/rest/"
         headers_cmdb_api: dict = {
             'Content-Type': 'application/json',
@@ -29,9 +29,9 @@ def visiableSetting():
             "user_name": cmdb_login,
             "password": cmdb_password
         }
-        # check_cmdb_auth = cmdbApi('GET', 'users/')
+        # check_cmdb_auth = cmdb_api('GET', 'users/')
         # print(check_cmdb_auth)
-        user_info = cmdbApi('POST', 'auth/login', payload=auth_payload)
+        user_info = cmdb_api('POST', 'auth/login', payload=auth_payload)
         return user_info['token'], user_info['user']['public_id']
 
     cmdb_token, id_user = getCmdbToken()
@@ -39,10 +39,10 @@ def visiableSetting():
     number_of_tread = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
 
     def getInfoFromAllPage(cmdb_item: str) -> tuple:
-        numbers_of_pages = cmdbApi('GET', f"{cmdb_item}/", cmdb_token)['pager']['total_pages']
+        numbers_of_pages = cmdb_api('GET', f"{cmdb_item}/", cmdb_token)['pager']['total_pages']
 
         def get_info_from_one_page(page_number: int):
-            return cmdbApi('GET', f'{cmdb_item}/?page={page_number}', cmdb_token)
+            return cmdb_api('GET', f'{cmdb_item}/?page={page_number}', cmdb_token)
 
         full_info = list()
         with ThreadPoolExecutor(max_workers=number_of_tread(numbers_of_pages)) as executor:
