@@ -243,19 +243,20 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
             }
             create_type = cmdb_api('POST', 'types/', cmdbToken, data_type_template)
             print(create_type)
-            all_types_pages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
 
-            new_all_types_pages = list()
-            for page in range(1, all_types_pages + 1):
-                response_page = cmdb_api('GET', f'types/?page={page}', cmdbToken)
-                new_all_types_pages.append(response_page)
+            # all_types_pages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
 
-            newTypeId = None
-            for new_types in new_all_types_pages:
-                for new_item in new_types['results']:
-                    if new_item['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}":
-                        newTypeId = new_item['public_id']
-            print(newTypeId, 'new type id')
+            # new_all_types_pages = list()
+            # for page in range(1, all_types_pages + 1):
+            #     response_page = cmdb_api('GET', f'types/?page={page}', cmdbToken)
+            #     new_all_types_pages.append(response_page)
+
+            # newTypeId = None
+            # for new_types in new_all_types_pages:
+            #     for new_item in new_types['results']:
+            #         if new_item['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}":
+            #             newTypeId = new_item['public_id']
+            print(create_type['result_id'], 'new type id')
 
             data_cat_template: dict = {
                 "public_id": os_portal_categorie_id['public_id'],
@@ -269,18 +270,18 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 "types": os_portal_categorie_id['types']
             }
 
-            if newTypeId == None:
+            if create_type['result_id'] == None:
                 return
-            data_cat_template['types'].append(newTypeId)
+            data_cat_template['types'].append(create_type['result_id'])
             put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdbToken,
                                               data_cat_template)
 
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
             print('DATA CATATEGORIE TEMPLATE', data_cat_template)
 
-            # newTypeId = 120
+            # create_type['result_id'] = 120
             for version in stand['modules_version']:
-                create_object = CreateObject(version, cmdbToken, newTypeId, userId)
+                create_object = CreateObject(version, cmdbToken, create_type['result_id'], userId)
                 print('CREATE OBJECT', create_object)
                 time.sleep(0.1)
 
