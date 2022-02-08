@@ -1,20 +1,21 @@
 #!/usr/bin/python3
-
+import os
 import sys
 from env import portal_info
 from vm_passport import PassportsVM
 from os_passport import PassportsOS
 from os_labels import LabelsOS
-from getObjects import getObjectsDb
+from getObjects import get_dg_objects
+from vdcPassports import PassportsVDC
 
 if __name__ == '__main__':
     # from allPprb3Version import allPprb3WfVersions
     # for i in allPprb3WfVersions:
-        # print(i['pprb3gServers'])
-        # for ii in i['pprb3gServers']:
-        #     if type(ii['wf_info']) is dict:
-        #         print(ii['wf_info'])
-        #         print(type(ii['wf_info']))
+    # print(i['pprb3gServers'])
+    # for ii in i['pprb3gServers']:
+    #     if type(ii['wf_info']) is dict:
+    #         print(ii['wf_info'])
+    #         print(type(ii['wf_info']))
     # exit()
 
     # from allObjects import allObjects
@@ -26,7 +27,6 @@ if __name__ == '__main__':
     # all(map(PassportsOS, portal_info, all_objects))
     # tuple(LabelsOS(foo, all_objects) for foo in portal_info)
 
-
     # all_objects = max(map(PassportsVM, portal_info))
     # tuple(PassportsOS(foo, all_objects) for foo in portal_info)
     # tuple(map(LabelsOS, portal_info))
@@ -35,10 +35,36 @@ if __name__ == '__main__':
     #     from view_settings import visiableSetting
     #     visiableSetting()
 
-    getObjectsDb()
+    # foo = range(1, 11)
+    # bar = range(11, 21)
+    #
+    # zip = dict()
+    # for i in foo:
+    #     for y in bar:
+    #         zip[i] = y
+
+    # print(zip)
+    # foo = {None: 8383}
+    # print(foo.get(next(iter(foo))))
+
+    if sys.argv[1] == 'PD15':
+        from view_settings import visiableSetting
+        visiableSetting()
+    exit()
+    #
+
+    get_dg_objects()
+    # PassportsVDC(sys.argv[1])
     all_objects = PassportsVM(sys.argv[1])
+
+    # if sys.argv[1] == 'PD15':
+    #     from view_settings import visiableSetting
+    #     visiableSetting()
+"""
     PassportsOS(sys.argv[1], all_objects)
     LabelsOS(sys.argv[1])
     if sys.argv[1] == 'PD15':
         from view_settings import visiableSetting
+
         visiableSetting()
+"""
