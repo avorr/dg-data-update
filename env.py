@@ -3,9 +3,10 @@
 import os
 import json
 
+from tools import *
+
 # from creds import *
-def jsonRead(json_object: dict):
-    print(json.dumps(json_object, indent=4))
+
 
 cmdb_login: str = os.environ['CMDB_CRED_USR']
 cmdb_password: str = os.environ['CMDB_CRED_PSW']

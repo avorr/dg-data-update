@@ -1,20 +1,18 @@
 #!/usr/bin/python3
 
-import json
 import time
 from typing import Union, Tuple
 
 import requests
 import datetime
-from functools import reduce
+from pymongo import MongoClient
 from collections import defaultdict
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from env import portal_info
 from tools import *
-from vm_passport import portalApi
+from vm_passport import portal_api
 from vm_passport import cmdbApi
-from vm_passport import objects
 from vm_passport import categorie_id
 from vm_passport import getCmdbToken
 from vm_passport import getInfoFromAllPage
@@ -22,7 +20,7 @@ from vm_passport import getInfoFromAllPage
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
-def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
+def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
     cmdb_token, user_id = getCmdbToken()
     allCategories = getInfoFromAllPage('categories', cmdb_token)
 
@@ -32,29 +30,19 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
     # osPortalCategorieId = categorie_id(f'VDC-{portal_name}', f'VDC-{portal_name}', 'fas fa-folder-open',
     #                                    cmdb_token, allCategories, vdc_categorie_id['public_id'])
 
-    def createVcd(vcd_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
-                  template: bool = False) -> dict:
+    def create_vdc(vdc_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
+                   template: bool = False) -> dict:
         if method == 'PUT':
-            print(f'object/{vcd_info["public_id"]}')
+            return cmdbApi(method, 'object/%s' % type_id, cmdb_token, vdc_info)
 
-        # "name",
-        # "datacenter-name",
-        # "networks",
-        # "dns-nameservers",
-        # "openstack-id",
-        # "default-network",
-        # "subnet-name",
-        # "subnet-uuid",
-        # "network-name",
-        # "network-uuid"
-
-        def networks_info(networks: list, dns_servers: bool, subnet: bool) -> str:# Union[str, tuple[str, str, str, str]]:
+        def networks_info(networks: list, dns_servers: bool,
+                          subnet: bool) -> str:  # Union[str, tuple[str, str, str, str]]:
             networks = tuple(map(lambda x: defaultdict(str, x), networks))
             if dns_servers:
-                dnsInfo = list()
+                dns_info = list()
                 for network in networks:
-                    dnsInfo.append(network['dns_nameservers'])
-                return '\n'.join(map(lambda x: '\n'.join(x), dnsInfo))
+                    dns_info.append(network['dns_nameservers'])
+                return '\n'.join(map(lambda x: '\n'.join(x), dns_info))
             cidrs = list()
             if subnet:
                 subnet_names, subnet_uuids, network_names, network_uuids = list(), list(), list(), list()
@@ -70,7 +58,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
                 cidrs.append(network['cidr'])
             return '\n'.join(cidrs)
 
-        subnet_name, subnet_uuid, network_name, network_uuid = networks_info(vcd_info['networks'], False, True)
+        subnet_name, subnet_uuid, network_name, network_uuid = networks_info(vdc_info['networks'], False, True)
 
         payload_vcd_object: dict = {
             "status": True,
@@ -80,27 +68,31 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
             "fields": [
                 {
                     "name": "name",
-                    "value": vcd_info["name"]
+                    "value": vdc_info["name"]
                 },
                 {
                     "name": "datacenter-name",
-                    "value": vcd_info["datacenter_name"]
+                    "value": vdc_info["datacenter_name"]
                 },
                 {
                     "name": "networks",
-                    "value": networks_info(vcd_info["networks"], dns_servers=False, subnet=False)
+                    "value": networks_info(vdc_info["networks"], dns_servers=False, subnet=False)
                 },
                 {
                     "name": "dns-nameservers",
-                    "value": networks_info(vcd_info["networks"], dns_servers=True, subnet=False)
+                    "value": networks_info(vdc_info["networks"], dns_servers=True, subnet=False)
                 },
                 {
                     "name": "openstack-id",
-                    "value": vcd_info["openstack_project_id"]
+                    "value": vdc_info["openstack_project_id"]
+                },
+                {
+                    "name": "project-id",
+                    "value": vdc_info["id"]
                 },
                 {
                     "name": "default-network",
-                    "value": vcd_info["default_network"]
+                    "value": vdc_info["default_network"]
                 },
                 {
                     "name": "subnet-name",
@@ -127,17 +119,18 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
         return cmdbApi("POST", "object/", cmdb_token, payload_vcd_object)
         # json_read(payload_vcd_object)
 
-    dg_types: tuple = getInfoFromAllPage('types', cmdb_token)
+    def get_mongo_objects(collection: str) -> tuple:
+        mongo_db = MongoClient('mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb')['cmdb']
+        # mongo_db = MongoClient('mongodb://172.26.107.101:30039/cmdb')['cmdb']
+        mongo_objects = mongo_db.get_collection('framework.%s' % collection)
+        return tuple(mongo_objects.find())
 
-    for i in dg_types:
-        print(i)
+    # dg_types: tuple = getInfoFromAllPage('types', cmdb_token)
+    dg_types: tuple = get_mongo_objects('types')
 
-    return
+    portal_vdces: list = portal_api("projects", portal_name)["stdout"]["projects"]
 
-    portal_vdc: list = portalApi("projects", portal_name)["stdout"]["projects"]
-
-    if not any(map(lambda x: any(map(lambda y: y["name"] == f"VDC-{portal_name}", x["results"])),
-                   dg_types)):  # and cluster['cluster'] == 'ocp.bootcampsdp.tech':
+    if not any(filter(lambda x: x['name'] == "VDC-%s" % portal_name, dg_types)):
 
         payload_type_tmp: dict = {
             "fields": [
@@ -165,6 +158,11 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
                     "type": "text",
                     "name": "openstack-id",
                     "label": "openstack id"
+                },
+                {
+                    "type": "text",
+                    "name": "project-id",
+                    "label": "project id"
                 },
                 {
                     "type": "text",
@@ -205,6 +203,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
                             "networks",
                             "dns-nameservers",
                             "openstack-id",
+                            "project-id",
                             "default-network",
                             "subnet-name",
                             "subnet-uuid",
@@ -249,22 +248,20 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
 
         create_type = cmdbApi("POST", "types/", cmdb_token, payload_type_tmp)
         print(create_type)
-        allTypesPages = getInfoFromAllPage("types", cmdb_token)[0]["pager"]["total_pages"]
+        all_types_pages = getInfoFromAllPage("types", cmdb_token)[0]["pager"]["total_pages"]
 
-        newAllTypesPages = list()
-        for page in range(1, allTypesPages + 1):
+        new_all_types_pages = list()
+        for page in range(1, all_types_pages + 1):
             responsePage = cmdbApi("GET", f"types/?page={page}", cmdb_token)
-            newAllTypesPages.append(responsePage)
+            new_all_types_pages.append(responsePage)
 
-        newTypeId = None
-        for newTypes in newAllTypesPages:
-            for newItem in newTypes['results']:
+        new_type_id = None
+        for new_type in new_all_types_pages:
+            for newItem in new_type['results']:
                 if newItem['name'] == f"VDC-{portal_name}":
-                    newTypeId = newItem['public_id']
+                    new_type_id = newItem['public_id']
 
-        print(newTypeId, 'new type id')
-        # osPortalCategorieId = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
-        #                                       vdc_categorie_id['public_id'], allCategories)
+        print(new_type_id, 'new type id')
         payload_categorie: dict = {
             "public_id": vdc_categorie_id["public_id"],
             "name": vdc_categorie_id["name"],
@@ -278,101 +275,72 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> None:
             "types": vdc_categorie_id["types"]
         }
 
-        if newTypeId == None:
+        if new_type_id == None:
             return
 
-        payload_categorie['types'].append(newTypeId)
+        payload_categorie['types'].append(new_type_id)
 
-        putTypeInCat = cmdbApi('PUT', f"categories/{vdc_categorie_id['public_id']}", cmdb_token,
-                               payload_categorie)
-        print('putTypeInCatigories', putTypeInCat)
+        put_type_in_cat = cmdbApi('PUT', f"categories/{vdc_categorie_id['public_id']}", cmdb_token, payload_categorie)
+        print('put_type_in_cat', put_type_in_cat)
         print('payload_categorie', payload_categorie)
 
-        for vdc in portal_vdc:
-            createObject = createVcd(vdc, cmdb_token, newTypeId, user_id)
-            print(createObject)
+        for vdc in portal_vdces:
+            create_vdc_object = create_vdc(vdc, cmdb_token, new_type_id, user_id)
+            print(create_vdc_object)
             time.sleep(0.1)
+
+    if 'new_type_id' in locals():
+        dg_vdc_type: dict = {'public_id': locals()['new_type_id']}
+        print('new_type_id in locals')
+    else:
+        dg_vdc_type: dict = max(filter(lambda x: x['name'] == "VDC-%s" % portal_name, dg_types))
+
+    del dg_types
 
     from allObjects import all_objects
 
-    dg_types: tuple = getInfoFromAllPage('types', cmdb_token)
-    dg_vdc_types = map(lambda z: tuple(filter(lambda f: f'VDC-{portal_name}' in f['name'], z['results'])), dg_types)
-    del dg_types
-    dg_vdc_types = reduce(lambda x, y: x + y, dg_vdc_types)
-    jsonRead(dg_vdc_types)
-    return
+    all_vdc_objects = tuple(filter(lambda x: x['type_id'] == dg_vdc_type['public_id'], all_objects))
 
-    for cmdbCluster in allCmdbClusterTypes:
-        for cluster in os_info:
-            if cmdbCluster['label'] == cluster['cluster']:
-                # print(cmdbCluster['label'], cluster['cluster'])
+    del all_objects
 
-                # cmdb_namespaces = tuple(filter(lambda f: f['type_id'] == cmdbCluster['public_id'],
-                #                                reduce(lambda x, y: x + y, map(lambda z: tuple(
-                #                                    map(lambda j: dict(public_id=j.get('public_id'),
-                #                                                       type_id=j.get('type_id'),
-                #                                                       author_id=j.get('author_id'),
-                #                                                       fields=j.get('fields'),
-                #                                                       creation_time=j.get('creation_time')),
-                #                                        z['results'])), all_objects))))
+    for dg_object in all_vdc_objects:
+        if dg_object['fields'][5]['value'] not in map(lambda x: x['id'], portal_vdces):
+            print(f"DELETE OBJECT {dg_object['fields'][0]['value']} FROM TYPE {dg_vdc_type['public_id']}")
+            cmdbApi('DELETE', "object/%s" % dg_object['public_id'], cmdb_token)
 
-                cmdbNamespaces = tuple(filter(lambda x: x['type_id'] == cmdbCluster['public_id'], all_objects))
-                for osNamespace in cluster['info']:
-                    if osNamespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdbNamespaces):
-                        print('NAMESPACE FOR CREATE', osNamespace['namespace'])
-                        objects(osNamespace, cmdb_token, cmdbCluster['public_id'], user_id, 'NAMESPACE')
-                        time.sleep(0.1)
+    for vdc in portal_vdces:
+        for dg_object in all_vdc_objects:
 
-                    for cmdbNs in cmdbNamespaces:
-                        nsTemplate = objects(osNamespace, cmdb_token, cmdbCluster['public_id'], user_id,
-                                             'NAMESPACE', template=True)
-                        if cmdbNs['fields'][0]['value'] == osNamespace['namespace'] and cmdbNs['fields'] != \
-                                nsTemplate['fields']:
-                            # unixTime = lambda x: int(datetime.datetime.timestamp(x) * 1000)
-                            # print(unixTime(cmdbNs['creation_time']))
+            vdc_template = create_vdc(vdc, cmdb_token, dg_vdc_type['public_id'], user_id, template=True)
+            if vdc["id"] == dg_object["fields"][5]['value'] and dg_object["fields"] != vdc_template["fields"]:
+                payload_object_tmp: dict = {
+                    "type_id": dg_object['type_id'],
+                    "status": dg_object['status'],
+                    "version": dg_object['version'],
+                    "creation_time": {
+                        "$date": int(datetime.datetime.timestamp(dg_object['creation_time']) * 1000)
+                    },
+                    "author_id": dg_object['author_id'],
+                    "last_edit_time": {
+                        "$date": int(time.time() * 1000)
+                    },
+                    "editor_id": user_id,
+                    "active": dg_object['active'],
+                    "fields": vdc_template['fields'],
+                    "public_id": dg_object['public_id'],
+                    "views": dg_object['views'],
+                    "comment": ""
+                }
 
-                            updateObjectTemplate: dict = {
-                                "type_id": cmdbNs['type_id'],
-                                "status": True,
-                                "version": "1.0.1",
-                                "creation_time": {
-                                    # "$date": int(time.mktime(time.strptime(cmdbNs['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
-                                    "$date": int(datetime.datetime.timestamp(cmdbNs['creation_time']) * 1000)
-                                },
-                                "author_id": cmdbNs['author_id'],
-                                "last_edit_time": {
-                                    "$date": int(time.time() * 1000)
-                                },
-                                "editor_id": user_id,
-                                "active": True,
-                                "fields": nsTemplate['fields'],
-                                "public_id": cmdbNs['public_id'],
-                                "views": 0,
-                                "comment": ""
-                            }
+                create_vdc(payload_object_tmp, cmdb_token, dg_object['public_id'], user_id, 'PUT')
+                print(f'UPDATE OBJECT {dg_object["public_id"]} IN TYPE {dg_object["type_id"]}')
 
-                            # json_read(updateObjectTemplate)
-                            time.sleep(0.1)
-                            print(f"UPDATE NAMESPACE in {cmdbNs['type_id']}", osNamespace['namespace'])
-                            objects(updateObjectTemplate, cmdb_token, cmdbCluster['public_id'], user_id, 'PUT')
+        if vdc["id"] not in map(lambda x: x['fields'][5]['value'], all_vdc_objects):
+            create_vdc(vdc, cmdb_token, dg_vdc_type["public_id"], user_id)
+            print(f'CREATE VDC {vdc["name"]} IN TYPE {dg_vdc_type["public_id"]}')
 
-                for cmdbNs in cmdbNamespaces:
-                    if cmdbNs['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
-                        print('DELETE NAMESPACE', cmdbNs['fields'][0]['value'])
-                        cmdbApi('DELETE', f"object/{cmdbNs['public_id']}", cmdb_token)
-                        time.sleep(0.1)
+    return all_vdc_objects, dg_vdc_type
 
 
 if __name__ == '__main__':
     PassportsVDC('PD15')
-
-# "name",
-# "datacenter-name",
-# "networks",
-# "dns-nameservers",
-# "openstack-id",
-# "default-network",
-# "subnet-name",
-# "subnet-uuid",
-# "network-name",
-# "network-uuid"

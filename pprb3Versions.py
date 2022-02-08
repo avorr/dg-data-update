@@ -22,7 +22,7 @@ from tools import *
 # def json_read(json_object: dict):
 #     print(json.dumps(json_object, indent=4))
 
-# def writeToFile(object: str):
+# def write_to_file(object: str):
 #     separator: int = object.index('=')
 #     with open('%s.py' % object[:separator], 'w') as file:
 #         file.write('%s = %s' % (object[:separator], object[(separator + 1):]))
@@ -151,7 +151,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     # from allLabels import allLabels
 
     # cmdb_projects = getInfoFromAllPage('types', cmdbToken)
-    # writeToFile(f"{cmdb_projects=}")
+    # write_to_file(f"{cmdb_projects=}")
     from cmdb_projects import cmdb_projects
 
     # for stand in allPprb3Verions['info']:

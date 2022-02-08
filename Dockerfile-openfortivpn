@@ -1,0 +1,46 @@
+FROM ubuntu:20.04
+
+ENV TZ=Europe/Moscow
+
+#RUN apt-get update && apt-get install curl -y && \
+#    curl https://filestore.fortinet.com/forticlient/downloads/FortiClientFullVPNInstaller_6.4.0.0851.deb -o FortiClientFullVPNInstaller_6.4.0.0851.deb && \
+#    apt-get install ./FortiClientFullVPNInstaller_6.4.0.0851.deb -y
+
+RUN apt-get update && apt-get -y install \
+                              screen \
+                              python3 \
+                              python3-pip \
+                              vim \
+                              curl \
+                              iputils-ping \
+                              openfortivpn
+
+#RUN pip3 install --no-cache --upgrade requests pymongo && \
+#    rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb && \
+#    apt-get -y remove curl && \
+#    apt-get clean -q &&  \
+#    apt-get -y autoremove --purge && \
+#    rm -rf /var/lib/apt/lists/*
+
+#    libexpect-perl
+#    apt-get install -y -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
+#    ca-certificates \
+#    iproute2 \
+#    expect \
+
+
+#RUN rm -R FortiClientFullVPNInstaller_6.4.0.0851.deb && \
+#    apt-get clean -q &&  \
+#    apt-get -y autoremove --purge && \
+#    rm -rf /var/lib/apt/lists/*
+
+#COPY . /opt/
+#COPY start-connect.exp start-connect.exp
+
+#CMD nohup bash -c /opt/start.sh &
+#CMD bash -c /opt/start.sh
+#CMD sleep 100000000
+#CMD ["/usr/bin/python3", "/opt/main.py"]
+#CMD ["nohup", "/opt/startvpn.sh", ">", "/opt/nohup.out", "2>&1", "&", "&&", "sh", "/opt/start.sh"]
+
+#CMD expect /opt/start-connect.exp $HOST $LOGIN $PASSWORD
