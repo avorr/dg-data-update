@@ -10,7 +10,7 @@ from datetime import datetime
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from env import portal_info
-from vm_passport import cmdbApi
+from vm_passport import cmdb_api
 # from vm_passport import objects
 from vm_passport import categorie_id
 from vm_passport import getCmdbToken
@@ -35,7 +35,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     def CreateObject(versionInfo: dict, cmdbToken: str, type_id: str, author_id: int, method: str = 'POST',
                      template: bool = False) -> dict:
         if method == 'PUT':
-            # return cmdbApi(method, f'object/{versionInfo["public_id"]}', cmdbToken, versionInfo)
+            # return cmdb_api(method, f'object/{versionInfo["public_id"]}', cmdbToken, versionInfo)
             print(f'object/{versionInfo["public_id"]}')
 
         def getLabel(labels: dict, label: str) -> str:
@@ -113,7 +113,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
         if template:
             return labelObjectTemplate
 
-        return cmdbApi('POST', 'object/', cmdbToken, labelObjectTemplate)
+        return cmdb_api('POST', 'object/', cmdbToken, labelObjectTemplate)
 
     cmdbToken, userId = getCmdbToken()
     all_categories = getInfoFromAllPage('categories', cmdbToken)
@@ -241,13 +241,13 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 "label": stand['project_name'],
                 "description": f'pprb3 versions {stand["project_id"]}'
             }
-            create_type = cmdbApi('POST', 'types/', cmdbToken, data_type_template)
+            create_type = cmdb_api('POST', 'types/', cmdbToken, data_type_template)
             print(create_type)
             all_types_pages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
 
             new_all_types_pages = list()
             for page in range(1, all_types_pages + 1):
-                response_page = cmdbApi('GET', f'types/?page={page}', cmdbToken)
+                response_page = cmdb_api('GET', f'types/?page={page}', cmdbToken)
                 new_all_types_pages.append(response_page)
 
             newTypeId = None
@@ -272,7 +272,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
             if newTypeId == None:
                 return
             data_cat_template['types'].append(newTypeId)
-            put_type_in_catigories = cmdbApi('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdbToken,
+            put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdbToken,
                                               data_cat_template)
 
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
@@ -285,7 +285,8 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 time.sleep(0.1)
 
 
-    from allObjects import all_objects
+    from vm_passport import get_mongodb_objects
+    all_objects = get_mongodb_objects('framework.objects')
 
     cmdb_projects = getInfoFromAllPage('types', cmdbToken)
 
@@ -337,7 +338,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 for cmdb_ns in cmdb_namespaces:
                     if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
                         print('DELETE NAMESPACE', cmdb_ns['fields'][0]['value'])
-                        cmdbApi('DELETE', f"object/{cmdb_ns['public_id']}", cmdbToken)
+                        cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdbToken)
                         time.sleep(0.1)
 
 
@@ -363,5 +364,5 @@ if __name__ == '__main__':
 #             for cmdbLabel in cmdb_namespaces:
 #                 if cmdbLabel['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
 #                     print('DELETE LABEL <--->', cmdbLabel['fields'][1]['value'])
-#                     cmdbApi('DELETE', f"object/{cmdbLabel['public_id']}", cmdbToken)
+#                     cmdb_api('DELETE', f"object/{cmdbLabel['public_id']}", cmdbToken)
 #                     time.sleep(0.1)

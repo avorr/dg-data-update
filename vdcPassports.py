@@ -9,10 +9,11 @@ from pymongo import MongoClient
 from collections import defaultdict
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-from env import portal_info
 from tools import *
+from env import portal_info
+from vm_passport import get_mongodb_objects
 from vm_passport import portal_api
-from vm_passport import cmdbApi
+from vm_passport import cmdb_api
 from vm_passport import categorie_id
 from vm_passport import getCmdbToken
 from vm_passport import getInfoFromAllPage
@@ -24,8 +25,8 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
     cmdb_token, user_id = getCmdbToken()
     allCategories = getInfoFromAllPage('categories', cmdb_token)
 
-    vdc_categorie_id = categorie_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token,
-                                    allCategories)
+    vdc_categorie_id = \
+        categorie_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, allCategories)
 
     # osPortalCategorieId = categorie_id(f'VDC-{portal_name}', f'VDC-{portal_name}', 'fas fa-folder-open',
     #                                    cmdb_token, allCategories, vdc_categorie_id['public_id'])
@@ -33,7 +34,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
     def create_vdc(vdc_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
                    template: bool = False) -> dict:
         if method == 'PUT':
-            return cmdbApi(method, 'object/%s' % type_id, cmdb_token, vdc_info)
+            return cmdb_api(method, 'object/%s' % type_id, cmdb_token, vdc_info)
 
         def networks_info(networks: list, dns_servers: bool,
                           subnet: bool) -> str:  # Union[str, tuple[str, str, str, str]]:
@@ -42,7 +43,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
                 dns_info = list()
                 for network in networks:
                     dns_info.append(network['dns_nameservers'])
-                return '\n'.join(map(lambda x: '\n'.join(x), dns_info))
+                return '\n#'.join(map(lambda x: ', '.join(x), dns_info))
             cidrs = list()
             if subnet:
                 subnet_names, subnet_uuids, network_names, network_uuids = list(), list(), list(), list()
@@ -116,17 +117,13 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
         if template:
             return payload_vcd_object
 
-        return cmdbApi("POST", "object/", cmdb_token, payload_vcd_object)
+        return cmdb_api("POST", "object/", cmdb_token, payload_vcd_object)
         # json_read(payload_vcd_object)
 
-    def get_mongo_objects(collection: str) -> tuple:
-        mongo_db = MongoClient('mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb')['cmdb']
-        # mongo_db = MongoClient('mongodb://172.26.107.101:30039/cmdb')['cmdb']
-        mongo_objects = mongo_db.get_collection('framework.%s' % collection)
-        return tuple(mongo_objects.find())
 
     # dg_types: tuple = getInfoFromAllPage('types', cmdb_token)
-    dg_types: tuple = get_mongo_objects('types')
+    from vm_passport import get_mongodb_objects
+    dg_types: tuple = get_mongodb_objects('framework.types')
 
     portal_vdces: list = portal_api("projects", portal_name)["stdout"]["projects"]
 
@@ -246,13 +243,13 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
             "description": f"VDC-{portal_name}"
         }
 
-        create_type = cmdbApi("POST", "types/", cmdb_token, payload_type_tmp)
+        create_type = cmdb_api("POST", "types/", cmdb_token, payload_type_tmp)
         print(create_type)
         all_types_pages = getInfoFromAllPage("types", cmdb_token)[0]["pager"]["total_pages"]
 
         new_all_types_pages = list()
         for page in range(1, all_types_pages + 1):
-            responsePage = cmdbApi("GET", f"types/?page={page}", cmdb_token)
+            responsePage = cmdb_api("GET", f"types/?page={page}", cmdb_token)
             new_all_types_pages.append(responsePage)
 
         new_type_id = None
@@ -280,7 +277,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
 
         payload_categorie['types'].append(new_type_id)
 
-        put_type_in_cat = cmdbApi('PUT', f"categories/{vdc_categorie_id['public_id']}", cmdb_token, payload_categorie)
+        put_type_in_cat = cmdb_api('PUT', f"categories/{vdc_categorie_id['public_id']}", cmdb_token, payload_categorie)
         print('put_type_in_cat', put_type_in_cat)
         print('payload_categorie', payload_categorie)
 
@@ -297,16 +294,28 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
 
     del dg_types
 
-    from allObjects import all_objects
+    #from allObjects import all_objects
+    from vm_passport import get_mongodb_objects
+    # all_objects = get_mongodb_objects('framework.objects')
 
+    all_objects = get_mongodb_objects('framework.objects')
     all_vdc_objects = tuple(filter(lambda x: x['type_id'] == dg_vdc_type['public_id'], all_objects))
+
+    # print(all_vdc_objects)
+    # return
+    # for i in all_vdc_objects:
+    #     print(i)
+    # print(all_vdc_objects[0])
+    # print('******')
+    # print(portal_vdces[0])
+    # return
 
     del all_objects
 
     for dg_object in all_vdc_objects:
         if dg_object['fields'][5]['value'] not in map(lambda x: x['id'], portal_vdces):
             print(f"DELETE OBJECT {dg_object['fields'][0]['value']} FROM TYPE {dg_vdc_type['public_id']}")
-            cmdbApi('DELETE', "object/%s" % dg_object['public_id'], cmdb_token)
+            cmdb_api('DELETE', "object/%s" % dg_object['public_id'], cmdb_token)
 
     for vdc in portal_vdces:
         for dg_object in all_vdc_objects:
@@ -336,8 +345,13 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
                 print(f'UPDATE OBJECT {dg_object["public_id"]} IN TYPE {dg_object["type_id"]}')
 
         if vdc["id"] not in map(lambda x: x['fields'][5]['value'], all_vdc_objects):
+            # all_vdc_objects.append({})
             create_vdc(vdc, cmdb_token, dg_vdc_type["public_id"], user_id)
             print(f'CREATE VDC {vdc["name"]} IN TYPE {dg_vdc_type["public_id"]}')
+
+    from vm_passport import get_mongodb_objects
+    all_objects = get_mongodb_objects('framework.objects')
+    all_vdc_objects = tuple(filter(lambda x: x['type_id'] == dg_vdc_type['public_id'], all_objects))
 
     return all_vdc_objects, dg_vdc_type
 

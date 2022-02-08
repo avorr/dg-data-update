@@ -8,7 +8,7 @@ from functools import reduce
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from env import portal_info
-from vm_passport import cmdbApi
+from vm_passport import cmdb_api
 from vm_passport import objects
 from vm_passport import categorie_id
 from vm_passport import getCmdbToken
@@ -161,14 +161,14 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 "description": f'openshift cluster {cluster["cluster"]}'
             }
 
-            createType = cmdbApi('POST', 'types/', cmdbToken, data_type_template)
+            createType = cmdb_api('POST', 'types/', cmdbToken, data_type_template)
 
             print(createType)
 
             allTypesPages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
             newAllTypesPages = list()
             for page in range(1, allTypesPages + 1):
-                responsePage = cmdbApi('GET', f'types/?page={page}', cmdbToken)
+                responsePage = cmdb_api('GET', f'types/?page={page}', cmdbToken)
                 newAllTypesPages.append(responsePage)
 
             newTypeId = None
@@ -198,7 +198,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
 
             dataCatTemplate['types'].append(newTypeId)
 
-            putTypeInCatigories = cmdbApi('PUT', f"categories/{osPortalCategorieId['public_id']}", cmdbToken,
+            putTypeInCatigories = cmdb_api('PUT', f"categories/{osPortalCategorieId['public_id']}", cmdbToken,
                                               dataCatTemplate)
             print('putTypeInCatigories', putTypeInCatigories)
             print('dataCatTemplate', dataCatTemplate)
@@ -218,7 +218,9 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     # bdObjects = db.get_collection('framework.objects')
     #
     # all_objects = tuple(bdObjects.find({}))
-    from allObjects import all_objects
+    from vm_passport import get_mongodb_objects
+    all_objects = get_mongodb_objects('framework.objects')
+
 
     cmdb_projects = getInfoFromAllPage('types', cmdbToken)
     allCmdbClusterTypes = reduce(lambda x, y: x + y,
@@ -282,5 +284,5 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 for cmdbNs in cmdbNamespaces:
                     if cmdbNs['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
                         print('DELETE NAMESPACE', cmdbNs['fields'][0]['value'])
-                        cmdbApi('DELETE', f"object/{cmdbNs['public_id']}", cmdbToken)
+                        cmdb_api('DELETE', f"object/{cmdbNs['public_id']}", cmdbToken)
                         time.sleep(0.1)
