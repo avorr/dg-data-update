@@ -8,6 +8,7 @@ from os_labels import LabelsOS
 from getObjects import get_dg_objects
 from vdcPassports import PassportsVDC
 from pprb3Versions import pprb3Versions
+from view_settings import visiableSetting
 
 if __name__ == '__main__':
     # from allPprb3Version import allPprb3WfVersions
@@ -52,8 +53,6 @@ if __name__ == '__main__':
     #     from view_settings import visiableSetting
     #     visiableSetting()
 
-
-
     # from allProjects import allProjects
 
     # from vm_passport import get_mongodb_objects
@@ -62,29 +61,49 @@ if __name__ == '__main__':
     # print(get_info_cmdb_vdc)
     # exit()
 
-
-
-
     # for project in allProjects:
     #     if not any(map(lambda x: x['name'] == allProjects[project]['id'], dg_types)):
     #         print(project)
 
+    # def get_metric(ns_info: list, looking_metric: str, type_metric: str) -> str:
+    #     for metric in ns_info:
+    #         if metric[0] == looking_metric and metric[1] == type_metric:
+    #             return metric[2][1]
+    #         else:
+    #             return 0
 
 
+    # get_usage = lambda x, y: "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
+    #
+    # vm_info = {'namespace': 'gt-sol-dev-entrance-01',
+    #            'info': [('limits.cpu', 'hard', [1644362032, '16']), ('requests.cpu', 'used', [1644362032, '3']),
+    #                     ('requests.memory', 'used', [1644362032, '12301893632'])]}
 
+    # print(get_metric(vm_info['info'], 'limits.cpu', 'used'))
+    # print(get_metric(vm_info['info'], 'limits.cpu', 'hard'))
+    #
+    # print(get_usage(get_metric(vm_info['info'], 'limits.cpu', 'used'), get_metric(vm_info['info'], 'limits.cpu', 'hard')))
 
+    # exit()
 
     # get_dg_objects()
     # PassportsVDC(sys.argv[1])
 
+    # if sys.argv[1] == 'PD15':
+    #     from view_settings import visiableSetting
+    #     visiableSetting()
+    # all_objects = PassportsVM(sys.argv[1])
+    # from vm_passport import get_mongodb_objects
+    # all_objects: tuple = get_mongodb_objects('framework.objects')
+
+
+    all_objects = PassportsVM(sys.argv[1])
+    PassportsOS(sys.argv[1], all_objects)
+    # exit()
+    LabelsOS(sys.argv[1])
+    pprb3Versions(sys.argv[1])
+    visiableSetting()
 
     # if sys.argv[1] == 'PD15':
     #     from view_settings import visiableSetting
     #     visiableSetting()
-    all_objects = PassportsVM(sys.argv[1])
-    PassportsOS(sys.argv[1], all_objects)
-    LabelsOS(sys.argv[1])
-    pprb3Versions(sys.argv[1])
-    if sys.argv[1] == 'PD15':
-        from view_settings import visiableSetting
-        visiableSetting()

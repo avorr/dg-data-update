@@ -161,23 +161,23 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 "description": f'openshift cluster {cluster["cluster"]}'
             }
 
-            createType = cmdb_api('POST', 'types/', cmdbToken, data_type_template)
+            create_type = cmdb_api('POST', 'types/', cmdbToken, data_type_template)
 
-            print(createType)
+            print(create_type)
 
-            allTypesPages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
-            newAllTypesPages = list()
-            for page in range(1, allTypesPages + 1):
-                responsePage = cmdb_api('GET', f'types/?page={page}', cmdbToken)
-                newAllTypesPages.append(responsePage)
+            # allTypesPages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
+            # newAllTypesPages = list()
+            # for page in range(1, allTypesPages + 1):
+            #     responsePage = cmdb_api('GET', f'types/?page={page}', cmdbToken)
+            #     newAllTypesPages.append(responsePage)
 
-            newTypeId = None
-            for newTypes in newAllTypesPages:
-                for newItem in newTypes['results']:
-                    if newItem['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}":
-                        newTypeId = newItem['public_id']
+            # newTypeId = None
+            # for newTypes in newAllTypesPages:
+            #     for newItem in newTypes['results']:
+            #         if newItem['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}":
+            #             newTypeId = newItem['public_id']
 
-            print(newTypeId, 'new type id')
+            print(create_type['result_id'], 'new type id')
 
             # osPortalCategorieId = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
             #                                       osPassportsCategorieId['public_id'], all_categories)
@@ -193,10 +193,10 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 "types": osPortalCategorieId['types']
             }
             #
-            if newTypeId == None:
+            if create_type['result_id'] == None:
                 return
 
-            dataCatTemplate['types'].append(newTypeId)
+            dataCatTemplate['types'].append(create_type['result_id'])
 
             putTypeInCatigories = cmdb_api('PUT', f"categories/{osPortalCategorieId['public_id']}", cmdbToken,
                                               dataCatTemplate)
@@ -204,7 +204,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
             print('dataCatTemplate', dataCatTemplate)
 
             for namespace in cluster['info']:
-                createObject = objects(namespace, cmdbToken, newTypeId, userId, 'NAMESPACE')
+                createObject = objects(namespace, cmdbToken, create_type['result_id'], userId, 'NAMESPACE')
                 print(createObject)
                 time.sleep(0.1)
 

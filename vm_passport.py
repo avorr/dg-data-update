@@ -24,14 +24,14 @@ def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict =
         'Content-Type': 'application/json',
         'Authorization': 'Bearer %s' % token
     }
-    response: dict = json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
-                                                 data=json.dumps(payload)).content)
+    # response: dict = json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
+    #                                              data=json.dumps(payload)).content)
     # if 'types' in api_method:
     #     echo(response)
 
-    return response
-    # return json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
-    #                                    data=json.dumps(payload)).content)
+    # return response
+    return json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
+                                       data=json.dumps(payload)).content)
 
 
 def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
@@ -62,6 +62,8 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
             for metric in ns_info:
                 if metric[0] == looking_metric and metric[1] == type_metric:
                     return metric[2][1]
+                # else: #### TEST, FIX
+                #     return 0 #### TEST, FIX
 
         # metric = lambda x, y: filter(lambda foo: foo[2][1] if foo[0] == x and foo[1] == y else None, vm_info['info'])
 
@@ -69,6 +71,9 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
 
         fract = lambda x: str(int(x)) if x - int(x) == 0 else "%.2f" % x
 
+        # print('DEBUG')
+        # print(vm_info)
+        # print('DEBUG')
         payload_ns_tmp: dict = {
             "status": True,
             "type_id": type_id,
