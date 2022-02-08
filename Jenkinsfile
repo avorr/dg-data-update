@@ -109,6 +109,7 @@ pipeline {
                     sh "ping p-pprb-iamkeycloak-01.foms.novalocal"
                 }
             }
+        }
     }
 
     post {
