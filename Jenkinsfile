@@ -105,10 +105,10 @@ pipeline {
 //                     sh "python3 main.py PD20"
                     sh "./prepare-image.sh"
                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
+                    sh "sleep 30"
                     sh "ping p-pprb-iamkeycloak-01.foms.novalocal"
                 }
             }
-        }
     }
 
     post {
