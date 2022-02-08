@@ -101,7 +101,7 @@ if __name__ == '__main__':
     PassportsOS(sys.argv[1], all_objects)
     # exit()
     LabelsOS(sys.argv[1])
-    pprb3Versions(sys.argv[1])
+    # pprb3Versions(sys.argv[1])
     visiableSetting()
 
     # if sys.argv[1] == 'PD15':
