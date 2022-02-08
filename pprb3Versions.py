@@ -150,9 +150,9 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     # return
     # from allLabels import allLabels
 
-    # cmdb_projects = getInfoFromAllPage('types', cmdbToken)
+    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
     # write_to_file(f"{cmdb_projects=}")
-    from cmdb_projects import cmdb_projects
+    # from cmdb_projects import cmdb_projects
 
     # for stand in allPprb3Verions['info']:
     #     if not any(map(lambda x: any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
