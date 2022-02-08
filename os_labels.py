@@ -297,20 +297,20 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             print(create_type)
 
-            all_types_pages = getInfoFromAllPage('types', cmdb_token)[0]['pager']['total_pages']
+            # all_types_pages = getInfoFromAllPage('types', cmdb_token)[0]['pager']['total_pages']
 
-            new_all_types_pages = list()
-            for page in range(1, all_types_pages + 1):
-                response_page = cmdb_api('GET', f'types/?page={page}', cmdb_token)
-                new_all_types_pages.append(response_page)
+            # new_all_types_pages = list()
+            # for page in range(1, all_types_pages + 1):
+            #     response_page = cmdb_api('GET', f'types/?page={page}', cmdb_token)
+            #     new_all_types_pages.append(response_page)
 
-            new_type_id = None
-            for new_types in new_all_types_pages:
-                for new_item in new_types['results']:
-                    if new_item['name'] == f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}":
-                        new_type_id = new_item['public_id']
+            # new_type_id = None
+            # for new_types in new_all_types_pages:
+            #     for new_item in new_types['results']:
+            #         if new_item['name'] == f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}":
+            #             new_type_id = new_item['public_id']
 
-            print(new_type_id, 'new type id')
+            print(create_type['result_id'], 'new type id')
 
             # os_portal_categorie_id = categorie_id(f'OS-Labels-{portal_name}', f'OS-Labels-{portal_name}',
             #                                       'far fa-folder-open',
@@ -330,10 +330,10 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 "types": os_portal_categorie_id['types']
             }
             #
-            if new_type_id == None:
+            if create_type['result_id'] == None:
                 return
 
-            data_cat_template['types'].append(new_type_id)
+            data_cat_template['types'].append(create_type['result_id'])
 
             put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdb_token,
                                               data_cat_template)
@@ -342,9 +342,9 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
             print('DATA CATATEGORIE TEMPLATE', data_cat_template)
             #############################################################################################################
 
-            # new_type_id = 1062
+            # create_type['result_id'] = 1062
             for labels in cluster['labels']:
-                create_object = CreateLabels(labels, cmdb_token, new_type_id, user_id)
+                create_object = CreateLabels(labels, cmdb_token, create_type['result_id'], user_id)
                 print('CREATE OBJECT', create_object)
                 time.sleep(0.1)
 
