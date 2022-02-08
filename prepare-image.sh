@@ -10,7 +10,7 @@
                   iputils-ping \
                   vim
   pip3 install --no-cache --upgrade requests pymongo
-} &> /dev/null
+}# &> /dev/null
 
 #  iputils-ping \
 #tar -xf python3.9.9.tar
