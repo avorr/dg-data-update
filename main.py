@@ -96,14 +96,17 @@ if __name__ == '__main__':
     # from vm_passport import get_mongodb_objects
     # all_objects: tuple = get_mongodb_objects('framework.objects')
 
+    from tools import *
+
+    # sys.argv[1] = "PD20"
 
     all_objects = PassportsVM(sys.argv[1])
-    PassportsOS(sys.argv[1], all_objects)
-    # exit()
-    LabelsOS(sys.argv[1])
-    # pprb3Versions(sys.argv[1])
-    visiableSetting()
 
+    PassportsOS(sys.argv[1], all_objects)
+    LabelsOS(sys.argv[1])
+    if sys.argv[1] == 'PD15':
+        pprb3Versions(sys.argv[1])
+    visiableSetting()
     # if sys.argv[1] == 'PD15':
     #     from view_settings import visiableSetting
     #     visiableSetting()
