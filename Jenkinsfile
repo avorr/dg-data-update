@@ -110,7 +110,7 @@ pipeline {
                     sh "sleep 10"
                     sh "ping 172.20.18.229 -c 10"
                     sh "ping p-pprb-iamkeycloak-01.foms.novalocal -c 10"
-//                     sh "python3 main.py PD20"
+                    sh "python3 main.py PD20"
 //                     sh "ping p-pprb-iamkeycloak-01.foms.novalocal -c 5"
 //                     sh "ping p-infra-bitwarden-01.common.novalocal -c 5"
                 }
