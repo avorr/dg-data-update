@@ -4,6 +4,7 @@ import time
 import json
 import hashlib
 import datetime
+from datetime import datetime, date
 from typing import Union, Dict, Any
 from tools import *
 import requests
@@ -302,7 +303,9 @@ def getInfoFromAllPage(dg_item: str, cmdb_token: str) -> tuple:
         return cmdb_api('GET', f'{dg_item}/?page={page_number}', cmdb_token)
 
     full_info = list()
-    with ThreadPoolExecutor(max_workers=thread_count(json_count)) as executor:
+    # with ThreadPoolExecutor(max_workers=thread_count(json_count)) as executor:
+    with ThreadPoolExecutor(max_workers=1) as executor:
+    # with ThreadPoolExecutor(max_workers=1) as executor:
         for page_info in executor.map(getInfoFromOnePage, range(1, json_count + 1)):
             full_info.append(page_info)
     return tuple(full_info)
@@ -365,6 +368,17 @@ def get_mongodb_objects(collection: str) -> tuple:
     return tuple(mongo_objects.find())
 
 
+def json_serial(obj: datetime) -> str:
+    """
+    JSON serializer for objects not serializable by default json code
+    :param obj: datetime
+    :return: str
+    """
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError("Type %s not serializable" % type(obj))
+
+
 def PassportsVM(portal_name: str) -> tuple:
     """Main func for create vm objects in datagerry"""
 
@@ -381,6 +395,15 @@ def PassportsVM(portal_name: str) -> tuple:
         return tuple(mongo_objects.find())
 
     cmdb_token, user_id = getCmdbToken()
+
+    # test = getInfoFromAllPage('objects', cmdb_token)
+
+    # for i in test:
+    #     for k in i['results']:
+            # if k['public_id'] == 13:
+            # print(k)
+            # json_read(k)
+    # return
 
     dg_categories = getInfoFromAllPage('categories', cmdb_token)
 
@@ -414,7 +437,7 @@ def PassportsVM(portal_name: str) -> tuple:
         checksum_portal_vdcs = dict()
         # print(thread_count(len(cloud_projects)))
         # with ThreadPoolExecutor(max_workers=thread_count(len(cloud_projects))) as executor:
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=4) as executor:
             for project in executor.map(get_project_checksum, cloud_projects):
                 checksum_portal_vdcs[project['info']['name']] = dict(id=project['info']['id'],
                                                                      domain_id=project['info']['domain_id'],
@@ -430,16 +453,15 @@ def PassportsVM(portal_name: str) -> tuple:
             # if deleteCmdbType['public_id'] in list(range(171, 262)):
             # if deleteCmdbType['description'] == 'passport-vm-%s' % portal_name:
             # if 'pd20-' in deleteCmdbType['label']:
-                # print('del', deleteCmdbType['label'])
+            # print('del', deleteCmdbType['label'])
             print('DELETE CMDB TYPE', cmdb_api('DELETE', f"types/{deleteCmdbType['public_id']}", cmdb_token))
 
         for categories in dg_categories:
             for categoriesId in categories['results']:
-                print('DELETE CMDB CATEGORIE', cmdb_api('DELETE', f"categories/{categoriesId['public_id']}", cmdb_token))
-
+                print('DELETE CMDB CATEGORIE',
+                      cmdb_api('DELETE', f"categories/{categoriesId['public_id']}", cmdb_token))
 
     # dg_types: tuple = getInfoFromAllPage('types', cmdb_token)
-
 
     # {'vdc_id': 'os-cluster-PD15--ocp_prod_foms_tech', 'type_id': 86, 'check_sum': 'ocp.prod.foms.tech'}
 
@@ -447,8 +469,6 @@ def PassportsVM(portal_name: str) -> tuple:
     #     map(lambda x: dict(vdc_id=x.get('name'), type_id=x.get('public_id'),
     #                        check_sum=x['render_meta']['sections'][0].get('label')), dg_types)
     # x['description'] == 'passport-vm-%s' % portal_name else x, dg_types)
-
-
 
     # get_vdc_checksum = lambda foo: reduce(lambda x, y: x + y, map(lambda bar: tuple(
     #     map(lambda baz: dict(vdc_id=baz.get('name'), type_id=baz.get('public_id'),
@@ -503,9 +523,8 @@ def PassportsVM(portal_name: str) -> tuple:
 
     # dg_vdc_checksum = get_vdc_checksum(dg_types)
 
-
     dg_vdc_checksum = tuple(map(lambda x: dict(vdc_id=x.get('name'), type_id=x.get('public_id'),
-                           check_sum=x['render_meta']['sections'][0].get('label')), dg_types))
+                                               check_sum=x['render_meta']['sections'][0].get('label')), dg_types))
     # from checksum import dg_vdc_checksum
 
     update_dg_types = list()
@@ -533,8 +552,7 @@ def PassportsVM(portal_name: str) -> tuple:
     # print(cmdb_api('DELETE', f"types/{type_for_delete['type_id']}", cmdb_token))
     # pass
 
-    print('VCOD WHERE WERE CHANGES', len(update_dg_types))
-
+    print('VDC WHERE WERE CHANGES', len(update_dg_types))
 
     # all_types_pages = getInfoFromAllPage('categories', cmdb_token)[0]['pager']['total_pages']
     portal_tags = portal_api('dict/tags', portal_name)['stdout']['tags']
@@ -851,14 +869,15 @@ def PassportsVM(portal_name: str) -> tuple:
         # return
 
         cloudProjectVm = tuple(map(lambda server: objects(server, 'token', cmdbProject['type_id'], user_id,
-                                                          'GET_TEMPLATE', tags=portal_tags, vdc_object=vdc_id).get('fields'),
+                                                          'GET_TEMPLATE', tags=portal_tags, vdc_object=vdc_id).get(
+            'fields'),
                                    vm_list['stdout']['servers']))
 
         for cloudVm in cloudProjectVm:
             if not any(map(lambda x: x['fields'][17]['value'] == cloudVm[17]['value'], cmdbTypeObjects)):
                 # print('VM FOR CREATE', cloudVm)
                 # time.sleep(0.1)
-                objects(cloudVm, cmdb_token, cmdbProject['type_id'], user_id, 'POST_NEW_VM', tags=portal_tags, 
+                objects(cloudVm, cmdb_token, cmdbProject['type_id'], user_id, 'POST_NEW_VM', tags=portal_tags,
                         vdc_object=vdc_id)
 
             for cmdb_type in cmdbTypeObjects:
@@ -872,29 +891,39 @@ def PassportsVM(portal_name: str) -> tuple:
                     # unixTime = lambda x: int(time.mktime(time.strptime(x, '%Y-%m-%dT%H:%M:%S.%f')) * 1000) if '.' in x \
                     #     else int(time.mktime(time.strptime(x, '%Y-%m-%dT%H:%M:%S')) * 1000)
 
-                    unixTime = lambda x: int(datetime.datetime.timestamp(x) * 1000)
+                    # unixTime = lambda x: int(datetime.datetime.timestamp(x) * 1000)
 
-
+                    # print('##' * 30)
+                    # print(cmdb_type)
+                    # print('##' * 30)
                     payload_object_tmp: dict = {
                         "type_id": cmdbProject['type_id'],
-                        "status": True,
-                        "version": "1.0.1",
+                        "status": cmdb_type['status'],
+                        # "version": "1.0.1",
+                        "version": cmdb_type['version'],
                         "creation_time": {
                             # "$date": int(time.mktime(time.strptime(cmdb_type['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
                             # "$date": unixTime(cmdb_type['creation_time'])
-                            "$date": int(datetime.datetime.timestamp(cmdb_type['creation_time']) * 1000)
+                            # "$date": int(datetime.datetime.timestamp(cmdb_type['creation_time']) * 1000)
+                            # "$date": json_serial(cmdb_type['creation_time'])
+                            "$date": int(time.mktime(cmdb_type['creation_time'].timetuple()) * 1000)
                         },
                         "author_id": cmdb_type['author_id'],
                         "last_edit_time": {
                             "$date": int(time.time() * 1000)
                         },
                         "editor_id": user_id,
-                        "active": True,
+                        # "active": True,
+                        "active": cmdb_type['active'],
                         "fields": cloudVm,
                         "public_id": cmdb_type['public_id'],
-                        "views": 0,
+                        # "views": 0,
+                        "views": cmdb_type['views'],
                         "comment": ""
                     }
+                    # print('##' * 30)
+                    # print(payload_object_tmp)
+                    # print('##' * 30)
 
                     time.sleep(0.1)
                     print(objects(payload_object_tmp, cmdb_token, cmdbProject['type_id'], user_id, 'PUT',
@@ -913,12 +942,22 @@ def PassportsVM(portal_name: str) -> tuple:
 
         get_info_cmdb_vdc = get_project_checksum(get_info_cmdb_vdc)
 
-        del get_info_cmdb_vdc['info']['id']
+        # print('##########')
+        # print(get_info_cmdb_vdc)
+        # print('##########')
+
+        del get_info_cmdb_vdc['info']['id'], get_info_cmdb_vdc['info']['_id']
         get_info_cmdb_vdc['info']['render_meta']['sections'][0]['label'] = get_info_cmdb_vdc['checksum']
         get_info_cmdb_vdc['info']['last_edit_time'] = \
             time.strftime(f'%Y-%m-%dT%H:%M:%S.{str(time.time())[-5:]}0', time.localtime(time.time()))
+        get_info_cmdb_vdc['info']['creation_time'] = json_serial(get_info_cmdb_vdc['info']['creation_time'])
 
-        print('####' * 3, 'UPDATE CHECKSUM')
+        print('##' * 20, 'UPDATE CHECKSUM', '##' * 20)
+
+        print(cmdbProject['type_id'])
+        print(get_info_cmdb_vdc['info'])
+
+        # del get_info_cmdb_vdc
         print(cmdb_api('PUT', f'types/{cmdbProject["type_id"]}', cmdb_token, get_info_cmdb_vdc['info']))
         # return
 

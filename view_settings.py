@@ -45,7 +45,8 @@ def visiableSetting():
             return cmdb_api('GET', f'{cmdb_item}/?page={page_number}', cmdb_token)
 
         full_info = list()
-        with ThreadPoolExecutor(max_workers=number_of_tread(numbers_of_pages)) as executor:
+        # with ThreadPoolExecutor(max_workers=number_of_tread(numbers_of_pages)) as executor:
+        with ThreadPoolExecutor(max_workers=1) as executor:
             for page_info in executor.map(get_info_from_one_page, range(1, numbers_of_pages + 1)):
                 full_info.append(page_info)
         return tuple(full_info)

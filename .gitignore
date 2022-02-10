@@ -9,3 +9,5 @@ allPprb3Version.py
 cmdb_projects.py
 Jenkinsfile-work
 ref-*
+objects.json
+type.json
