@@ -11,7 +11,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from env import portal_info
 from vm_passport import cmdb_api
 # from vm_passport import objects
-from vm_passport import categorie_id
+from vm_passport import category_id
 from vm_passport import getCmdbToken
 from vm_passport import getInfoFromAllPage
 
@@ -124,12 +124,12 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     cmdb_token, user_id = getCmdbToken()
     all_categories = getInfoFromAllPage('categories', cmdb_token)
 
-    os_passports_categorie_id = categorie_id('os-app-labels', 'OS App Labels', 'fas fa-tags', cmdb_token,
+    os_passports_category_id = category_id('os-app-labels', 'OS App Labels', 'fas fa-tags', cmdb_token,
                                              all_categories)
 
-    os_portal_categorie_id = categorie_id(f'OS-Labels-{portal_name}', f'OS-Labels-{portal_name}', 'fas fa-folder-open',
+    os_portal_category_id = category_id(f'OS-Labels-{portal_name}', f'OS-Labels-{portal_name}', 'fas fa-folder-open',
                                           cmdb_token, all_categories,
-                                          os_passports_categorie_id['public_id'])
+                                          os_passports_category_id['public_id'])
 
     def get_os_info() -> dict:
         return json.loads(requests.request("GET", portal_info[portal_name]['metrics']).content)
@@ -312,22 +312,22 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             print(create_type['result_id'], 'new type id')
 
-            # os_portal_categorie_id = categorie_id(f'OS-Labels-{portal_name}', f'OS-Labels-{portal_name}',
+            # os_portal_category_id = category_id(f'OS-Labels-{portal_name}', f'OS-Labels-{portal_name}',
             #                                       'far fa-folder-open',
-            #                                       os_passports_categorie_id['public_id'], all_categories)
+            #                                       os_passports_category_id['public_id'], all_categories)
 
-            # print(os_portal_categorie_id)
+            # print(os_portal_category_id)
 
             data_cat_template: dict = {
-                "public_id": os_portal_categorie_id['public_id'],
-                "name": os_portal_categorie_id['name'],
-                "label": os_portal_categorie_id['label'],
+                "public_id": os_portal_category_id['public_id'],
+                "name": os_portal_category_id['name'],
+                "label": os_portal_category_id['label'],
                 "meta": {
                     "icon": "fas fa-folder-open",
                     "order": None
                 },
-                "parent": os_passports_categorie_id['public_id'],
-                "types": os_portal_categorie_id['types']
+                "parent": os_passports_category_id['public_id'],
+                "types": os_portal_category_id['types']
             }
             #
             if create_type['result_id'] == None:
@@ -335,7 +335,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             data_cat_template['types'].append(create_type['result_id'])
 
-            put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_categorie_id['public_id']}", cmdb_token,
+            put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_category_id['public_id']}", cmdb_token,
                                               data_cat_template)
 
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
