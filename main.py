@@ -10,6 +10,7 @@ from getObjects import get_dg_objects
 from vdcPassports import PassportsVDC
 from pprb3Versions import pprb3Versions
 from view_settings import visiableSetting
+from vm_passport import get_mongodb_objects
 
 if __name__ == '__main__':
 
@@ -39,7 +40,6 @@ if __name__ == '__main__':
     # get_info_cmdb_vdc = max(filter(lambda y: y['name'] == 'cfc54d92-ca81-4d4f-9e92-b46dd78acaa8', dg_types))
     # print(get_info_cmdb_vdc)
 
-
     # if sys.argv[1] == 'PD15':
     #     from view_settings import visiableSetting
     #     visiableSetting()
@@ -49,8 +49,13 @@ if __name__ == '__main__':
 
     # sys.argv[1] = "PD20"
 
+    # all_types: tuple = get_mongodb_objects('framework.types', {'name': '322b98d0-ae7e-48c6-a64d-6f8cb84042e6'})
 
+    # for i in all_types:
+    #     print(i['public_id'])
+    # exit()
     all_objects = PassportsVM(sys.argv[1])
+    exit()
     PassportsOS(sys.argv[1], all_objects)
     LabelsOS(sys.argv[1])
     if sys.argv[1] == 'PD15':

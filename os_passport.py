@@ -10,7 +10,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from env import portal_info
 from vm_passport import cmdb_api
 from vm_passport import objects
-from vm_passport import categorie_id
+from vm_passport import category_id
 from vm_passport import getCmdbToken
 from vm_passport import getInfoFromAllPage
 
@@ -25,9 +25,9 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     cmdbToken, userId = getCmdbToken()
     all_categories = getInfoFromAllPage('categories', cmdbToken)
 
-    osPassportsCategorieId = categorie_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdbToken,
+    osPassportsCategorieId = category_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdbToken,
                                              all_categories)
-    osPortalCategorieId = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open', cmdbToken,
+    osPortalCategorieId = category_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open', cmdbToken,
                                           all_categories,
                                           osPassportsCategorieId['public_id'])
 
@@ -179,7 +179,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
 
             print(create_type['result_id'], 'new type id')
 
-            # osPortalCategorieId = categorie_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
+            # osPortalCategorieId = category_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
             #                                       osPassportsCategorieId['public_id'], all_categories)
             dataCatTemplate: dict = {
                 "public_id": osPortalCategorieId['public_id'],

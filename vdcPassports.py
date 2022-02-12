@@ -14,7 +14,7 @@ from env import portal_info
 from vm_passport import get_mongodb_objects
 from vm_passport import portal_api
 from vm_passport import cmdb_api
-from vm_passport import categorie_id
+from vm_passport import category_id
 from vm_passport import getCmdbToken
 from vm_passport import getInfoFromAllPage
 
@@ -23,13 +23,12 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
     cmdb_token, user_id = getCmdbToken()
-    allCategories = getInfoFromAllPage('categories', cmdb_token)
+    all_categories: tuple = getInfoFromAllPage('categories', cmdb_token)
 
-    vdc_categorie_id = \
-        categorie_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, allCategories)
+    vdc_category_id = category_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, all_categories)
 
-    # osPortalCategorieId = categorie_id(f'VDC-{portal_name}', f'VDC-{portal_name}', 'fas fa-folder-open',
-    #                                    cmdb_token, allCategories, vdc_categorie_id['public_id'])
+    # osPortalCategorieId = category_id(f'VDC-{portal_name}', f'VDC-{portal_name}', 'fas fa-folder-open',
+    #                                    cmdb_token, all_categories, vdc_category_id['public_id'])
 
     def create_vdc(vdc_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
                    template: bool = False) -> dict:
@@ -119,7 +118,6 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
 
         return cmdb_api("POST", "object/", cmdb_token, payload_vcd_object)
         # json_read(payload_vcd_object)
-
 
     # dg_types: tuple = getInfoFromAllPage('types', cmdb_token)
     from vm_passport import get_mongodb_objects
@@ -244,77 +242,68 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
         }
 
         create_type = cmdb_api("POST", "types/", cmdb_token, payload_type_tmp)
-        print(create_type)
-        all_types_pages = getInfoFromAllPage("types", cmdb_token)[0]["pager"]["total_pages"]
+        print(create_type['result_id'])
 
-        new_all_types_pages = list()
-        for page in range(1, all_types_pages + 1):
-            responsePage = cmdb_api("GET", f"types/?page={page}", cmdb_token)
-            new_all_types_pages.append(responsePage)
+        # all_types_pages = getInfoFromAllPage("types", cmdb_token)[0]["pager"]["total_pages"]
+        # new_all_types_pages = list()
+        # for page in range(1, all_types_pages + 1):
+        #     responsePage = cmdb_api("GET", f"types/?page={page}", cmdb_token)
+        #     new_all_types_pages.append(responsePage)
+        #
+        # new_type_id = None
+        # for new_type in new_all_types_pages:
+        #     for newItem in new_type['results']:
+        #         if newItem['name'] == f"VDC-{portal_name}":
+        #             new_type_id = newItem['public_id']
 
-        new_type_id = None
-        for new_type in new_all_types_pages:
-            for newItem in new_type['results']:
-                if newItem['name'] == f"VDC-{portal_name}":
-                    new_type_id = newItem['public_id']
-
-        print(new_type_id, 'new type id')
-        payload_categorie: dict = {
-            "public_id": vdc_categorie_id["public_id"],
-            "name": vdc_categorie_id["name"],
-            "label": vdc_categorie_id["label"],
+        print(create_type['result_id'], 'new type id')
+        payload_category: dict = {
+            "public_id": vdc_category_id["public_id"],
+            "name": vdc_category_id["name"],
+            "label": vdc_category_id["label"],
             "meta": {
                 # "icon": "far fa-folder-open",
                 "icon": "fas fa-network-wired",
                 "order": None
             },
             "parent": None,
-            "types": vdc_categorie_id["types"]
+            "types": vdc_category_id["types"]
         }
 
-        if new_type_id == None:
+        if create_type['result_id'] == None:
             return
 
-        payload_categorie['types'].append(new_type_id)
+        payload_category['types'].append(create_type['result_id'])
 
-        put_type_in_cat = cmdb_api('PUT', f"categories/{vdc_categorie_id['public_id']}", cmdb_token, payload_categorie)
+        put_type_in_cat = cmdb_api('PUT', f"categories/{vdc_category_id['public_id']}", cmdb_token, payload_category)
         print('put_type_in_cat', put_type_in_cat)
-        print('payload_categorie', payload_categorie)
+        print('payload_category', payload_category)
 
         for vdc in portal_vdces:
-            create_vdc_object = create_vdc(vdc, cmdb_token, new_type_id, user_id)
+            create_vdc_object = create_vdc(vdc, cmdb_token, create_type['result_id'], user_id)
             print(create_vdc_object)
             time.sleep(0.1)
 
-    if 'new_type_id' in locals():
-        dg_vdc_type: dict = {'public_id': locals()['new_type_id']}
-        print('new_type_id in locals')
+    if 'create_type' in locals():
+        dg_vdc_type: dict = {'public_id': locals()['create_type']['result_id']}
+        print('create_type in locals')
     else:
         dg_vdc_type: dict = max(filter(lambda x: x['name'] == "VDC-%s" % portal_name, dg_types))
-
     del dg_types
 
-    #from allObjects import all_objects
-    from vm_passport import get_mongodb_objects
-    # all_objects = get_mongodb_objects('framework.objects')
+    # from allObjects import all_objects
+    # from vm_passport import get_mongodb_objects
 
-    all_objects = get_mongodb_objects('framework.objects')
+    all_objects: tuple = get_mongodb_objects('framework.objects')
     all_vdc_objects = tuple(filter(lambda x: x['type_id'] == dg_vdc_type['public_id'], all_objects))
-
-    # print(all_vdc_objects)
-    # return
-    # for i in all_vdc_objects:
-    #     print(i)
-    # print(all_vdc_objects[0])
-    # print('******')
-    # print(portal_vdces[0])
-    # return
 
     del all_objects
 
     for dg_object in all_vdc_objects:
         if dg_object['fields'][5]['value'] not in map(lambda x: x['id'], portal_vdces):
-            print(f"DELETE OBJECT {dg_object['fields'][0]['value']} FROM TYPE {dg_vdc_type['public_id']}")
+            type_for_delete: tuple = get_mongodb_objects('framework.types', {'name': dg_object['fields'][5]['value']})
+            print('DELETE CMDB TYPE', cmdb_api('DELETE', f"types/%s" % max(type_for_delete)['public_id'], cmdb_token))
+            print(f"DELETE VDC OBJECT {dg_object['fields'][0]['value']} FROM TYPE {dg_vdc_type['public_id']}")
             cmdb_api('DELETE', "object/%s" % dg_object['public_id'], cmdb_token)
 
     for vdc in portal_vdces:
