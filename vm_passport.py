@@ -797,7 +797,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
         for portal_vm in portal_project_vms:
             if not any(map(lambda x: x['fields'][17]['value'] == portal_vm[17]['value'], dg_type_objects)):
-                print('VM FOR CREATE', portal_vm['name'])
+                print('VM FOR CREATE', portal_vm)
                 objects(portal_vm, cmdb_token, dg_type['type_id'], user_id, 'POST_NEW_VM', tags=portal_tags,
                         vdc_object=vdc_id)
 
