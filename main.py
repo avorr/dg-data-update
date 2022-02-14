@@ -55,7 +55,6 @@ if __name__ == '__main__':
     #     print(i['public_id'])
     # exit()
     all_objects = PassportsVM(sys.argv[1])
-    exit()
     PassportsOS(sys.argv[1], all_objects)
     LabelsOS(sys.argv[1])
     if sys.argv[1] == 'PD15':
