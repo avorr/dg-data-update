@@ -423,7 +423,8 @@ def PassportsVM(portal_name: str) -> tuple:
     # return
 
     def get_project_checksum(vdc_info: dict) -> dict:
-        vdc_checksum = portal_api(f"projects/{vdc_info['id']}/checksum", portal_name)
+        #vdc_checksum = portal_api(f"projects/{vdc_info['id']}/checksum", portal_name)
+        vdc_checksum: dict = portal_api(f"servers?project_id={vdc_info['id']}", portal_name)
         return dict(info=vdc_info, checksum=hashlib.md5(json.dumps(vdc_checksum['stdout']).encode()).hexdigest())
 
     def checksum_vdces(cloud_projects: dict) -> dict:
