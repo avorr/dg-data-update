@@ -118,6 +118,7 @@ pipeline {
 //                     sh "ping p-pprb-iamkeycloak-01.foms.novalocal -c 10"
 //                     sh "ping p-pprb-iamkeycloak-01.foms.novalocal -c 5"
 //                     sh "ping p-infra-bitwarden-01.common.novalocal -c 5"
+                }
             }
         }
 
@@ -168,5 +169,5 @@ pipeline {
             // }
         // }
     // }
-}
+    }
 }
