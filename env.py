@@ -7,8 +7,8 @@ from tools import *
 
 # from creds import *
 
-cf_login: str = os.environ['CF_LOGIN']
-cf_password: str = os.environ['CF_PASS']
+# cf_login: str = os.environ['CF_LOGIN']
+# cf_password: str = os.environ['CF_PASS']
 
 cmdb_login: str = os.environ['CMDB_CRED_USR']
 cmdb_password: str = os.environ['CMDB_CRED_PSW']
