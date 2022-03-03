@@ -12,7 +12,7 @@ from vdcPassports import PassportsVDC
 from pprb3Versions import pprb3_versions
 from view_settings import visiableSetting
 from vm_passport import get_mongodb_objects
-from platformReleases import releases
+# from platformReleases import releases
 
 if __name__ == '__main__':
 
