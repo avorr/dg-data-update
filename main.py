@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import os
 import sys
 from tools import *
@@ -8,9 +9,10 @@ from os_passport import PassportsOS
 from os_labels import LabelsOS
 from getObjects import get_dg_objects
 from vdcPassports import PassportsVDC
-from pprb3Versions import pprb3Versions
+from pprb3Versions import pprb3_versions
 from view_settings import visiableSetting
 from vm_passport import get_mongodb_objects
+from platformReleases import releases
 
 if __name__ == '__main__':
 
@@ -53,10 +55,25 @@ if __name__ == '__main__':
 
     # for i in all_types:
     #     print(i['public_id'])
+    # if sys.argv[1] == 'PD15':
+        # visiableSetting()
+        # exit()
+        # pprb3_versions(sys.argv[1])
     # exit()
+
+    # print(portal_info)
+    # exit()
+    if sys.argv[1] == 'PD23':
+        all_objects = PassportsVM(sys.argv[1])
+        exit()
+    else:
+        exit()
+
+
     all_objects = PassportsVM(sys.argv[1])
     PassportsOS(sys.argv[1], all_objects)
     LabelsOS(sys.argv[1])
-    if sys.argv[1] == 'PD151':
-        pprb3Versions(sys.argv[1])
+    if sys.argv[1] == 'PD15':
+        releases()
+        # pprb3_versions(sys.argv[1])
     visiableSetting()

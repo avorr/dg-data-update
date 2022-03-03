@@ -23,7 +23,7 @@ def visiableSetting():
         return json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
                                            data=json.dumps(payload)).content)
 
-    def getCmdbToken() -> str:
+    def get_dg_token() -> str:
         from env import cmdb_login, cmdb_password
         auth_payload: dict = {
             "user_name": cmdb_login,
@@ -34,11 +34,11 @@ def visiableSetting():
         user_info = cmdb_api('POST', 'auth/login', payload=auth_payload)
         return user_info['token'], user_info['user']['public_id']
 
-    cmdb_token, id_user = getCmdbToken()
+    cmdb_token, id_user = get_dg_token()
 
     number_of_tread = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
 
-    def getInfoFromAllPage(cmdb_item: str) -> tuple:
+    def get_all_jsons(cmdb_item: str) -> tuple:
         numbers_of_pages = cmdb_api('GET', f"{cmdb_item}/", cmdb_token)['pager']['total_pages']
 
         def get_info_from_one_page(page_number: int):
@@ -51,12 +51,13 @@ def visiableSetting():
                 full_info.append(page_info)
         return tuple(full_info)
 
-    cmdb_projects = getInfoFromAllPage('types')
+    cmdb_projects = get_all_jsons('types')
     cmdb_projects_vm = dict(type='vm', items=list())
     cmdb_projects_os = dict(type='os', items=list())
     cmdb_projects_label = dict(type='label', items=list())
     cmdb_projects_version = dict(type='version', items=list())
     cmdb_projects_vcd = dict(type='vcd', items=list())
+    cmdb_projects_release = dict(type='release', items=list())
 
     for item in cmdb_projects:
         for type in item['results']:
@@ -70,8 +71,11 @@ def visiableSetting():
                 cmdb_projects_version['items'].append(type['public_id'])
             elif type['render_meta']['sections'][0]['fields'][1] == 'datacenter-name':
                 cmdb_projects_vcd['items'].append(type['public_id'])
+            elif type['render_meta']['sections'][0]['fields'][0] == 'platform-path':
+                cmdb_projects_release['items'].append(type['public_id'])
 
-    cmdb_users = getInfoFromAllPage('users')
+
+    cmdb_users = get_all_jsons('users')
     cmdb_users = reduce(lambda x, y: x + y,
                         map(lambda foo: tuple(map(lambda bar: bar['public_id'], foo['results'])), cmdb_users))
     # cmdb_users = (35, 19, 13, 9, 17)
@@ -122,17 +126,17 @@ def visiableSetting():
     for user_id in cmdb_users:
 
         users_settings = db.get_collection('management.users.settings')
-        visibleSettings = users_settings.find({'user_id': user_id})
+        visible_settings = users_settings.find({'user_id': user_id})
 
-        viewSettings = list()
-        for settings in visibleSettings:
-            viewSettings.append(settings)
-        del visibleSettings
+        view_settings = list()
+        for settings in visible_settings:
+            view_settings.append(settings)
+        del visible_settings
 
         def visibleSettings(projects: list):
             viewSettingsForCreate = list()
             for cmdb_type in projects['items']:
-                for settings in viewSettings:
+                for settings in view_settings:
 
                     if f'framework-object-type-{cmdb_type}' == settings['resource']:
                         if 'currentState' in settings['payloads'][0]:
@@ -260,9 +264,36 @@ def visiableSetting():
                                 quux = set(visibleColumnsVersion)
 
                                 if (bat - quux) or (quux - bat) or \
-                                        settings['payloads'][0]['currentState']['pageSize'] != 50:
-                                    settings['payloads'][0]['currentState']['pageSize'] = 50
+                                        settings['payloads'][0]['currentState']['pageSize'] != 100:
+                                    settings['payloads'][0]['currentState']['pageSize'] = 100
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visibleColumnsVersion
+                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
+                                                                                     {"$set": settings})
+                                    print(update_view_settings.raw_result)
+                                del bat, quux
+
+
+                            elif 'fields.platform-path' in settings['payloads'][0]['currentState']["visibleColumns"]:
+
+                                visible_columns_release: list = [
+                                    "fields.platform-path",
+                                    "fields.tribe",
+                                    "fields.service-code",
+                                    "fields.ke",
+                                    "fields.service-name",
+                                    "fields.marketing-name",
+                                    "fields.distrib-link",
+                                    "actions"
+
+                                ]
+
+                                bat = set(settings['payloads'][0]['currentState']["visibleColumns"])
+                                quux = set(visible_columns_release)
+
+                                if (bat - quux) or (quux - bat) or \
+                                        settings['payloads'][0]['currentState']['pageSize'] != 100:
+                                    settings['payloads'][0]['currentState']['pageSize'] = 100
+                                    settings['payloads'][0]['currentState']["visibleColumns"] = visible_columns_release
                                     update_view_settings = users_settings.update_one({"_id": settings['_id']},
                                                                                      {"$set": settings})
                                     print(update_view_settings.raw_result)
@@ -420,11 +451,41 @@ def visiableSetting():
                                 ]
                                 settings['payloads'] = payloads_vcd
 
+                            elif projects['type'] == 'release':
+                                print('######' * 100, '\nTHIS BLOCK IS WORKING\n', '######' * 100)
+                                payloads_release = [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 100,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                "fields.platform-path",
+                                                "fields.tribe",
+                                                "fields.service-code",
+                                                "fields.ke",
+                                                "fields.service-name",
+                                                "fields.marketing-name",
+                                                "fields.distrib-link",
+                                                "actions"
+                                            ]
+                                        }
+                                    }
+                                ]
+                                settings['payloads'] = payloads_release
+
+
                             update_view_settings = users_settings.update_one({"_id": settings['_id']},
                                                                              {"$set": settings})
                             print(update_view_settings.raw_result)
 
-                if f'framework-object-type-{cmdb_type}' not in map(lambda x: x['resource'], viewSettings):
+                if f'framework-object-type-{cmdb_type}' not in map(lambda x: x['resource'], view_settings):
                     if projects['type'] == 'os':
                         settings_view_os = {
                             "setting_type": "APPLICATION",
@@ -614,6 +675,45 @@ def visiableSetting():
                         settings_view_vcd['user_id'] = user_id
                         viewSettingsForCreate.append(settings_view_vcd)
 
+
+                    elif projects['type'] == 'release':
+
+                        settings_view_release: dict = {
+                            "setting_type": "APPLICATION",
+                            "resource": "framework-object-type-1009",
+                            "user_id": 17,
+                            "payloads": [
+                                {
+                                    "id": "table-objects-type",
+                                    "tableStates": [],
+                                    "currentState": {
+                                        "name": "",
+                                        "page": 1,
+                                        "pageSize": 100,
+                                        "sort": {
+                                            "name": "public_id",
+                                            "order": -1
+                                        },
+                                        "visibleColumns": [
+                                            "fields.platform-path",
+                                            "fields.tribe",
+                                            "fields.service-code",
+                                            "fields.ke",
+                                            "fields.service-name",
+                                            "fields.marketing-name",
+                                            "fields.distrib-link",
+                                            "actions"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                        # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
+                        settings_view_release['resource'] = f"framework-object-type-{cmdb_type}"
+                        settings_view_release['user_id'] = user_id
+                        viewSettingsForCreate.append(settings_view_release)
+
+
             if viewSettingsForCreate:
                 create_view_settings = users_settings.insert_many(viewSettingsForCreate)
                 for new_object in create_view_settings.inserted_ids:
@@ -624,6 +724,7 @@ def visiableSetting():
         visibleSettings(cmdb_projects_label)
         visibleSettings(cmdb_projects_version)
         visibleSettings(cmdb_projects_vcd)
+        visibleSettings(cmdb_projects_release)
 
 
 if __name__ == '__main__':

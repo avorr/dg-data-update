@@ -13,12 +13,14 @@ from env import portal_info
 from vm_passport import cmdb_api
 # from vm_passport import objects
 from vm_passport import category_id
-from vm_passport import getCmdbToken
-from vm_passport import getInfoFromAllPage
+from vm_passport import get_dg_token
+from vm_passport import get_all_jsons
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from tools import *
+
+
 # def json_read(json_object: dict):
 #     print(json.dumps(json_object, indent=4))
 
@@ -28,57 +30,48 @@ from tools import *
 #         file.write('%s = %s' % (object[:separator], object[(separator + 1):]))
 
 
-# def pprb3Versions(portal_name: str, clusters: tuple = (), all_objects: tuple = ()) -> None:
-def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
+# def pprb3_versions(portal_name: str, clusters: tuple = (), all_objects: tuple = ()) -> None:
+def pprb3_versions(portal_name: str, all_objects: tuple = ()) -> None:
     """main func for autocomplete labels in DataGerry"""
 
-    def CreateObject(versionInfo: dict, cmdbToken: str, type_id: str, author_id: int, method: str = 'POST',
-                     template: bool = False) -> dict:
+    def create_object(version_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
+                      template: bool = False) -> dict:
         if method == 'PUT':
-            # return cmdb_api(method, f'object/{versionInfo["public_id"]}', cmdbToken, versionInfo)
-            print(f'object/{versionInfo["public_id"]}')
+            # return cmdb_api(method, f'object/{version_info["public_id"]}', cmdb_token, version_info)
+            print(f'object/{version_info["public_id"]}')
 
-        def getLabel(labels: dict, label: str) -> str:
-            if 'labels' in labels:
-                if label in labels:
-                    return labels[label]
-                elif label in labels['labels']:
-                    return labels['labels'][label]
-                else:
-                    return ''
-            else:
-                if label in labels:
-                    return labels[label]
-                else:
-                    return ''
-
-        def getVersion(versionInfo: dict) -> str:
-            if 'nginx_version' in versionInfo:
-                return versionInfo['nginx_version']
-            if 'pgse_version' in versionInfo:
-                return versionInfo['pgse_version']
-            if 'kafka_version' in versionInfo:
-                return versionInfo['kafka_version']
-            if 'wf_info' in versionInfo:
-                # print(next(iter(versionInfo['wf_info'])))
-                if next(iter(versionInfo['wf_info'])) == 'ERROR':
-                    return versionInfo['wf_info']['ERROR']
-                if next(iter(versionInfo['wf_info'])) == 'deployment':
-                    # print('\n'.join(versionInfo['wf_info']['deployment'].keys()), versionInfo['wf_info']['product-version'], versionInfo['wf_info']['release-version'], sep='\n')
-                    # print(versionInfo['wf_info']['product-version'], versionInfo['wf_info']['release-version'])
-                    # print(versionInfo['wf_info'])
-                    # print('\n'.join(('\n'.join(versionInfo['wf_info']['deployment'].keys()), versionInfo['wf_info']['product-version'], versionInfo['wf_info']['release-version'])))
+        def get_version(version_info: dict) -> str:
+            if 'nginx_version' in version_info:
+                return version_info['nginx_version']
+            if 'pgsqlse_version' in version_info:
+                return version_info['pgsqlse_version']
+            if 'kafka_version' in version_info:
+                return version_info['kafka_version']
+            if 'wf_info' in version_info:
+                # print(next(iter(version_info['wf_info'])))
+                if next(iter(version_info['wf_info'])) == 'ERROR':
+                    return version_info['wf_info']['ERROR']
+                if next(iter(version_info['wf_info'])) == 'deployment':
+                    # print('\n'.join(version_info['wf_info']['deployment'].keys()), version_info['wf_info']['product-version'], version_info['wf_info']['release-version'], sep='\n')
+                    # print(version_info['wf_info']['product-version'], version_info['wf_info']['release-version'])
+                    # print(version_info['wf_info'])
+                    # print('\n'.join(('\n'.join(version_info['wf_info']['deployment'].keys()), version_info['wf_info']['product-version'], version_info['wf_info']['release-version'])))
                     # print('##########')
-                    # return versionInfo['wf_info']['deployment']
-                    return '\n'.join(('\n'.join(versionInfo['wf_info']['deployment'].keys()), versionInfo['wf_info']['product-version'], versionInfo['wf_info']['release-version']))
+                    # return version_info['wf_info']['deployment']
+                    if not version_info['wf_info']['deployment']:
+                        return '\n'.join((version_info['wf_info']['product-version'],
+                                          version_info['wf_info']['release-version']))
 
-                return versionInfo['wf_info']
+                    return '\n'.join(('\n'.join(version_info['wf_info']['deployment'].keys()),
+                                      version_info['wf_info']['product-version'],
+                                      version_info['wf_info']['release-version']))
+
+                return version_info['wf_info']
 
             else:
                 return None
 
-
-        labelObjectTemplate: dict = {
+        pprb3_object_template: dict = {
             "status": True,
             "type_id": type_id,
             "version": "1.0.0",
@@ -86,59 +79,47 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
             "fields": [
                 {
                     "name": "name",
-                    "value": versionInfo['service_name']
+                    "value": version_info['service_name']
                 },
                 {
                     "name": "vm-name",
-                    "value": versionInfo['name']
+                    "value": version_info['name']
                 },
                 {
                     "name": "local-ip",
-                    "value": versionInfo['ip']
+                    "value": version_info['ip']
 
                 },
                 {
                     "name": "tag",
-                    "value": versionInfo['tag']
+                    "value": version_info['tag']
                 },
                 {
                     "name": "version",
-                    "value": getVersion(versionInfo)
+                    "value": get_version(version_info)
                 }
             ]
         }
 
-        # json_read(labelObjectTemplate)
-
         if template:
-            return labelObjectTemplate
+            return pprb3_object_template
 
-        return cmdb_api('POST', 'object/', cmdbToken, labelObjectTemplate)
+        return cmdb_api('POST', 'object/', cmdb_token, pprb3_object_template)
 
-    cmdbToken, userId = getCmdbToken()
-    all_categories = getInfoFromAllPage('categories', cmdbToken)
+    cmdb_token, user_id = get_dg_token()
+    all_categories = get_all_jsons('categories', cmdb_token)
 
-    os_passports_category_id = category_id('pprb3-app-versions', 'Pprb3 App Versions', 'fas fa-server', cmdbToken,
-                                             all_categories)
+    os_passports_category_id = category_id('pprb3-app-versions', 'Pprb3 App Versions', 'fas fa-server', cmdb_token,
+                                           all_categories)
 
     os_portal_category_id = \
         category_id(f'Pprb3-Versions-{portal_name}', f'Pprb3-Versions-{portal_name}', 'far fa-folder-open',
-                     cmdbToken, all_categories,
-                     os_passports_category_id['public_id'])
+                    cmdb_token, all_categories,
+                    os_passports_category_id['public_id'])
 
+    all_pprb3_verions: dict = json.loads(requests.request("GET", portal_info[portal_name]['pprb3_versions']).content)
 
-    def check_resolves(dnsName: str) -> bool:
-        """function for checking resolving dns names"""
-        try:
-            socket.gethostbyname(dnsName)
-            return True
-        except socket.error as Error:
-            print(dnsName, Error)
-            return False
-
-    allPprb3Verions: dict = json.loads(requests.request("GET", portal_info[portal_name]['pprb3_versions']).content)
-
-    # for i in allPprb3Verions['info']:
+    # for i in all_pprb3_verions['info']:
     #     if i['modules_version']:
     #         for k in i['modules_version']:
     #             print(k.keys())
@@ -149,21 +130,27 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
     # print(allLabels)
     # return
     # from allLabels import allLabels
+    # start = time.time()
+    # cmdb_projects = get_all_jsons('types', cmdb_token)
 
-    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
-    # write_to_file(f"{cmdb_projects=}")
-    # from cmdb_projects import cmdb_projects
+    from vm_passport import get_mongodb_objects
+    cmdb_projects: tuple = get_mongodb_objects('framework.types')
 
-    # for stand in allPprb3Verions['info']:
+    # for stand in all_pprb3_verions['info']:
     #     if not any(map(lambda x: any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
     #                                      x['results'])), cmdb_projects)) and stand['modules_version']:
     #         print(stand)
 
-    for stand in allPprb3Verions['info']:
-        if not any(map(lambda x: any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
-                                         x['results'])), cmdb_projects)) and stand['modules_version']:
-                # and stand['project_name'] == 'gt-dvp-dev-admin-platform':
-            data_type_template: dict = {
+    # for stand in all_pprb3_verions['info']:
+    #     if not any(map(lambda x: any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
+    #                                      x['results'])), cmdb_projects)) and stand['modules_version']:
+    # and stand['project_name'] == 'gt-dvp-dev-admin-platform':
+
+    for stand in all_pprb3_verions['info']:
+        if not any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}", cmdb_projects)) \
+                and stand['modules_version']:  # and stand['project_name'] == 'gt-business-test-platform':
+
+            payload_type_template: dict = {
                 "fields": [
                     {
                         "type": "text",
@@ -193,7 +180,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 ],
                 "active": True,
                 "version": "1.0.0",
-                "author_id": userId,
+                "author_id": user_id,
                 "render_meta": {
                     "icon": "fab fa-centos",
                     "sections": [
@@ -241,21 +228,9 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 "label": stand['project_name'],
                 "description": f'pprb3 versions {stand["project_id"]}'
             }
-            create_type = cmdb_api('POST', 'types/', cmdbToken, data_type_template)
+
+            create_type = cmdb_api('POST', 'types/', cmdb_token, payload_type_template)
             print(create_type)
-
-            # all_types_pages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
-
-            # new_all_types_pages = list()
-            # for page in range(1, all_types_pages + 1):
-            #     response_page = cmdb_api('GET', f'types/?page={page}', cmdbToken)
-            #     new_all_types_pages.append(response_page)
-
-            # newTypeId = None
-            # for new_types in new_all_types_pages:
-            #     for new_item in new_types['results']:
-            #         if new_item['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}":
-            #             newTypeId = new_item['public_id']
             print(create_type['result_id'], 'new type id')
 
             data_cat_template: dict = {
@@ -270,49 +245,84 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                 "types": os_portal_category_id['types']
             }
 
-            if create_type['result_id'] == None:
+            if not create_type['result_id']:
                 return
             data_cat_template['types'].append(create_type['result_id'])
-            put_type_in_catigories = cmdb_api('PUT', f"categories/{os_portal_category_id['public_id']}", cmdbToken,
-                                              data_cat_template)
+            put_type_in_category = \
+                cmdb_api('PUT', f"categories/{os_portal_category_id['public_id']}", cmdb_token, data_cat_template)
 
-            print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
-            print('DATA CATATEGORIE TEMPLATE', data_cat_template)
+            print('PUT TYPE IN CATEGORY', put_type_in_category)
+            print('DATA CATEGORY TEMPLATE', data_cat_template)
 
-            # create_type['result_id'] = 120
             for version in stand['modules_version']:
-                create_object = CreateObject(version, cmdbToken, create_type['result_id'], userId)
-                print('CREATE OBJECT', create_object)
+                create_pprb3_version_object = create_object(version, cmdb_token, create_type['result_id'], user_id)
+                # create_pprb3_version_object = create_object(version, cmdb_token, 190, user_id)
+                print('CREATE OBJECT', create_pprb3_version_object)
                 time.sleep(0.1)
 
+    # return
+    all_objects: tuple = get_mongodb_objects('framework.objects')
+    # from vm_passport import get_mongodb_objects
+    # cmdb_projects = get_all_jsons('types', cmdb_token)
+    # cmdb_projects: tuple = get_mongodb_objects('framework.types')
 
-    from vm_passport import get_mongodb_objects
-    all_objects = get_mongodb_objects('framework.objects')
+    all_pprb3_types = tuple(filter(lambda x: f'pprb3-versions-{portal_name}--' in x['name'], cmdb_projects))
+    # print(all_pprb3_types)
 
-    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
+    # for i in all_pprb3_types:
+    #     print(i['name'][21:])
+    #     print(i['label'])
+    # for pprb3_verions in all_pprb3_verions['info']:
+    #     print(pprb3_verions['project_id'])
 
-    allTypesVersions = reduce(lambda x, y: x + y, map(lambda foo: tuple(
-        filter(lambda bar: f'pprb3-versions-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
+    # for pprb3_type in all_pprb3_types:
+    #     for pprb3_verions in all_pprb3_verions['info']:
+    #         if pprb3_type['name'][21:] == pprb3_verions['project_id']:
+    #             print(pprb3_verions['project_id'])
 
+    # all_pprb3_types = reduce(lambda x, y: x + y, map(lambda foo: tuple(
+    #     filter(lambda bar: f'pprb3-versions-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
+    # print(all_pprb3_types)
+
+    # for i in all_pprb3_types:
+    #     print(i)
 
     return
-    for cmdbTypeVersion in allTypesVersions:
-        for projectsPprb3Verions in allPprb3Verions:
-            
-            if cmdbTypeVersion['label'] == projectsPprb3Verions['cluster']:
-                cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
-                for os_namespace in cluster['info']:
-                    if os_namespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdb_namespaces):
-                        print('NAMESPACE FOR CREATE', os_namespace['namespace'])
-                        # objects(os_namespace, cmdbToken, cmdb_cluster['public_id'], userId, 'NAMESPACE')
+    for pprb3_type in all_pprb3_types:
+        for pprb3_verions in all_pprb3_verions['info']:
+            if pprb3_type['name'][21:] == pprb3_verions['project_id'] and pprb3_type['name'][21:] == \
+                    'fe6d283e-c96e-4b32-b1b7-72c004066f4e' and pprb3_verions['modules_version']:
+            # if pprb3_type['name'][21:] == pprb3_verions['project_id'] and pprb3_verions['modules_version'] != None:
+
+                # print()
+                # print(pprb3_verions['modules_version'])
+                # print(pprb3_type['name'][21:])
+                # print(pprb3_verions['project_id'])
+
+                # if pprb3_type['label'] == pprb3_verions['cluster']:
+                dg_pprb3_objects = tuple(filter(lambda x: x['type_id'] == pprb3_type['public_id'], all_objects))
+
+                # for i in dg_pprb3_objects:
+                #     print(i)
+                # return
+                for pprb3_module in pprb3_verions['modules_version']:
+                    print(pprb3_module)
+
+
+                return
+                for ve_pprb3_object in all_pprb3_verions['info']:
+                    print(ve_pprb3_object)
+                    return
+                    if ve_pprb3_object['namespace'] not in map(lambda x: x.get('fields')[0]['value'], dg_pprb3_objects):
+                        print('NAMESPACE FOR CREATE', ve_pprb3_object['namespace'])
+                        # objects(ve_pprb3_object, cmdb_token, cmdb_cluster['public_id'], user_id, 'NAMESPACE')
                         time.sleep(0.1)
 
-                    for cmdb_ns in cmdb_namespaces:
-                        ns_template = objects(os_namespace, cmdbToken, cmdb_cluster['public_id'], userId,
+                    for cmdb_ns in dg_pprb3_objects:
+                        ns_template = objects(ve_pprb3_object, cmdb_token, cmdb_cluster['public_id'], user_id,
                                               'NAMESPACE', template=True)
-                        if cmdb_ns['fields'][0]['value'] == os_namespace['namespace'] and cmdb_ns['fields'] != \
+                        if cmdb_ns['fields'][0]['value'] == ve_pprb3_object['namespace'] and cmdb_ns['fields'] != \
                                 ns_template['fields']:
-
                             updateObjectTemplate: dict = {
                                 "type_id": cmdb_ns['type_id'],
                                 "status": True,
@@ -324,7 +334,7 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                                 "last_edit_time": {
                                     "$date": int(time.time() * 1000)
                                 },
-                                "editor_id": userId,
+                                "editor_id": user_id,
                                 "active": True,
                                 "fields": ns_template['fields'],
                                 "public_id": cmdb_ns['public_id'],
@@ -333,37 +343,62 @@ def pprb3Versions(portal_name: str, all_objects: tuple = ()) -> None:
                             }
 
                             time.sleep(0.1)
-                            print(f"UPDATE NAMESPACE in {cmdb_ns['type_id']}", os_namespace['namespace'])
-                            objects(updateObjectTemplate, cmdbToken, cmdb_cluster['public_id'], userId, 'PUT')
+                            print(f"UPDATE NAMESPACE in {cmdb_ns['type_id']}", ve_pprb3_object['namespace'])
+                            objects(updateObjectTemplate, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT')
 
-                for cmdb_ns in cmdb_namespaces:
+                for cmdb_ns in dg_pprb3_objects:
                     if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
                         print('DELETE NAMESPACE', cmdb_ns['fields'][0]['value'])
-                        cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdbToken)
+                        cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token)
                         time.sleep(0.1)
 
 
-
-
 if __name__ == '__main__':
-    pprb3Versions(next(iter(portal_info)))
-
+    pprb3_versions(next(iter(portal_info)))
 
 
 # for cmdb_cluster in allTypesLabels:
 #     for cluster in allLabels:
 #         if cmdb_cluster['label'] == cluster['cluster']:
-#             cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
+#             dg_pprb3_objects = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
 #
 #             for podInfo in cluster['labels']:
-#                 template = CreateObject(podInfo, cmdbToken, cmdb_cluster['public_id'], userId, template=True)
-#                 if template['fields'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
-#                     createLabel = CreateObject(podInfo, cmdbToken, cmdb_cluster['public_id'], userId)
+#                 template = create_object(podInfo, cmdb_token, cmdb_cluster['public_id'], user_id, template=True)
+#                 if template['fields'] not in map(lambda x: x.get('fields'), dg_pprb3_objects):
+#                     createLabel = create_object(podInfo, cmdb_token, cmdb_cluster['public_id'], user_id)
 #                     print('CREATE LABEL <--->', template['fields'][1]['value'], createLabel)
 #                     time.sleep(0.1)
 #
-#             for cmdbLabel in cmdb_namespaces:
+#             for cmdbLabel in dg_pprb3_objects:
 #                 if cmdbLabel['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
 #                     print('DELETE LABEL <--->', cmdbLabel['fields'][1]['value'])
-#                     cmdb_api('DELETE', f"object/{cmdbLabel['public_id']}", cmdbToken)
+#                     cmdb_api('DELETE', f"object/{cmdbLabel['public_id']}", cmdb_token)
 #                     time.sleep(0.1)
+
+
+#####################################
+
+
+def get_label(labels: dict, label: str) -> str:
+    if 'labels' in labels:
+        if label in labels:
+            return labels[label]
+        elif label in labels['labels']:
+            return labels['labels'][label]
+        else:
+            return ''
+    else:
+        if label in labels:
+            return labels[label]
+        else:
+            return ''
+
+
+def check_resolves(dns_name: str) -> bool:
+    """function for checking resolving dns names"""
+    try:
+        socket.gethostbyname(dns_name)
+        return True
+    except socket.error as Error:
+        print(dns_name, Error)
+        return False

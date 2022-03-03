@@ -272,7 +272,7 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
     #     return dict(vm_name=vm_info['name'], tag_name=vm_info['tag_name'], status_code=response['status_code'])
 
 
-def getCmdbToken() -> str:
+def get_dg_token() -> str:
     """Function to get app token and user id"""
     from env import cmdb_login, cmdb_password
     payload_auth: dict = {
@@ -288,18 +288,18 @@ def getCmdbToken() -> str:
 thread_count = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
 
 
-def getInfoFromAllPage(dg_item: str, cmdb_token: str) -> tuple:
+def get_all_jsons(dg_item: str, cmdb_token: str) -> tuple:
     """Function to get different types of cmdb data in one tuple"""
     json_count = cmdb_api('GET', f"{dg_item}/", cmdb_token)['pager']['total_pages']
 
-    def getInfoFromOnePage(page_number: int):
+    def get_one_json(page_number: int):
         return cmdb_api('GET', f'{dg_item}/?page={page_number}', cmdb_token)
 
     full_info = list()
     # with ThreadPoolExecutor(max_workers=thread_count(json_count)) as executor:
     with ThreadPoolExecutor(max_workers=1) as executor:
         # with ThreadPoolExecutor(max_workers=1) as executor:
-        for page_info in executor.map(getInfoFromOnePage, range(1, json_count + 1)):
+        for page_info in executor.map(get_one_json, range(1, json_count + 1)):
             full_info.append(page_info)
     return tuple(full_info)
 
@@ -391,11 +391,11 @@ def PassportsVM(portal_name: str) -> tuple:
         mongo_objects = mongo_db.get_collection(collection)
         return tuple(mongo_objects.find())
 
-    cmdb_token, user_id = getCmdbToken()
+    cmdb_token, user_id = get_dg_token()
 
-    # test = getInfoFromAllPage('objects', cmdb_token)
+    # test = get_all_jsons('objects', cmdb_token)
 
-    dg_categories = getInfoFromAllPage('categories', cmdb_token)
+    dg_categories = get_all_jsons('categories', cmdb_token)
 
     vm_category_id = category_id('passports', 'Passports VM', 'far fa-folder-open', cmdb_token, dg_categories)
     portal_category_id = category_id(portal_name, portal_name, 'fas fa-folder-open', cmdb_token, dg_categories,
@@ -423,7 +423,7 @@ def PassportsVM(portal_name: str) -> tuple:
     # return
 
     def get_project_checksum(vdc_info: dict) -> dict:
-        #vdc_checksum = portal_api(f"projects/{vdc_info['id']}/checksum", portal_name)
+        # vdc_checksum = portal_api(f"projects/{vdc_info['id']}/checksum", portal_name)
         vdc_checksum: dict = portal_api(f"servers?project_id={vdc_info['id']}", portal_name)
         return dict(info=vdc_info, checksum=hashlib.md5(json.dumps(vdc_checksum['stdout']).encode()).hexdigest())
 
@@ -433,10 +433,12 @@ def PassportsVM(portal_name: str) -> tuple:
         # with ThreadPoolExecutor(max_workers=thread_count(len(cloud_projects))) as executor:
         with ThreadPoolExecutor(max_workers=4) as executor:
             for project in executor.map(get_project_checksum, cloud_projects):
-                checksum_portal_vdcs[project['info']['name']] = dict(id=project['info']['id'],
-                                                                     domain_id=project['info']['domain_id'],
-                                                                     zone=project['info']['datacenter_name'],
-                                                                     checksum=project['checksum'])
+                checksum_portal_vdcs[project['info']['name']] = {
+                    'id': project['info']['id'],
+                    'domain_id': project['info']['domain_id'],
+                    'zone': project['info']['datacenter_name'],
+                    'checksum': project['checksum']
+                }
         return checksum_portal_vdcs
 
     dg_types: tuple = get_mongodb_objects('framework.types')
@@ -449,14 +451,16 @@ def PassportsVM(portal_name: str) -> tuple:
         for deleteCmdbType in dg_types:
             # if deleteCmdbType['public_id'] in list(range(171, 262)):
             # if deleteCmdbType['description'] == 'passport-vm-%s' % portal_name:
-            # if 'pd20-' in deleteCmdbType['label']:
-            print('DELETE CMDB TYPE', cmdb_api('DELETE', f"types/{deleteCmdbType['public_id']}", cmdb_token))
+            if 'pprb3 versi' in deleteCmdbType['description']:
+                print(deleteCmdbType['description'])
+                # if 'pd20-' in deleteCmdbType['label']:
+                print('DELETE CMDB TYPE', cmdb_api('DELETE', f"types/{deleteCmdbType['public_id']}", cmdb_token))
 
         for categories in dg_categories:
             for categoriesId in categories['results']:
                 print('DELETE CMDB CATEGORY', cmdb_api('DELETE', f"categories/{categoriesId['public_id']}", cmdb_token))
 
-    # dg_types: tuple = getInfoFromAllPage('types', cmdb_token)
+    # dg_types: tuple = get_all_jsons('types', cmdb_token)
 
     # {'vdc_id': 'os-cluster-PD15--ocp_prod_foms_tech', 'type_id': 86, 'check_sum': 'ocp.prod.foms.tech'}
 
@@ -786,15 +790,17 @@ def PassportsVM(portal_name: str) -> tuple:
         return all_objects
 
     for dg_type in update_dg_types:
+
         vdc_id = project_id_vcd_types[dg_type['vdc_id']]['vdc_object_id']
 
         vm_list = portal_api(f"servers?project_id={dg_type['vdc_id']}", portal_name)
 
         dg_type_objects = tuple(filter(lambda x: x['type_id'] == dg_type['type_id'], all_objects))
 
-        portal_project_vms = tuple(map(lambda server: objects(server, 'token', dg_type['type_id'], user_id,
-                                                              'GET_TEMPLATE', tags=portal_tags, vdc_object=vdc_id).get(
-            'fields'), vm_list['stdout']['servers']))
+        portal_project_vms = \
+            tuple(map(lambda server: objects(server, 'token', dg_type['type_id'], user_id, 'GET_TEMPLATE',
+                                             tags=portal_tags, vdc_object=vdc_id).get('fields'),
+                      vm_list['stdout']['servers']))
 
         for portal_vm in portal_project_vms:
             if not any(map(lambda x: x['fields'][17]['value'] == portal_vm[17]['value'], dg_type_objects)):

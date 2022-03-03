@@ -12,8 +12,8 @@ from env import portal_info
 from vm_passport import cmdb_api
 # from vm_passport import objects
 from vm_passport import category_id
-from vm_passport import getCmdbToken
-from vm_passport import getInfoFromAllPage
+from vm_passport import get_dg_token
+from vm_passport import get_all_jsons
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -28,12 +28,13 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
     def CreateLabels(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
                      template: bool = False) -> dict:
+
         if method == 'PUT':
             # return cmdb_api(method, f'object/{labels_info["public_id"]}', cmdb_token, labels_info)
             print(f'object/{labels_info["public_id"]}')
 
 
-        def getLabel(labels: dict, label: str) -> str:
+        def get_label(labels: dict, label: str) -> str:
             if 'labels' in labels:
                 if label in labels:
                     return labels[label]
@@ -59,7 +60,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
         # security.istio.io/tlsMode
         # jenkinsDeployUser
 
-        labelObjectTemplate: dict = {
+        label_object_template: dict = {
             "status": True,
             "type_id": type_id,
             "version": "1.0.0",
@@ -67,62 +68,62 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
             "fields": [
                 {
                     "name": "namespace",
-                    "value": getLabel(labels_info, 'namespace')
+                    "value": get_label(labels_info, 'namespace')
                 },
                 {
                     "name": "name",
-                    "value": getLabel(labels_info, 'name')
+                    "value": get_label(labels_info, 'name')
                 },
                 {
                     "name": "app",
-                    "value": getLabel(labels_info, 'app')
+                    "value": get_label(labels_info, 'app')
                 },
                 {
                     "name": "SUBSYSTEM",
-                    "value": getLabel(labels_info, 'SUBSYSTEM')
+                    "value": get_label(labels_info, 'SUBSYSTEM')
 
                 },
                 {
                     "name": "deployment",
-                    "value": getLabel(labels_info, 'deployment')
+                    "value": get_label(labels_info, 'deployment')
                 },
                 {
                     "name": "deploymentconfig",
-                    "value": getLabel(labels_info, 'deploymentconfig')
+                    "value": get_label(labels_info, 'deploymentconfig')
                 },
                 {
                     "name": "deployDate",
-                    "value": getLabel(labels_info, 'deployDate')
+                    "value": get_label(labels_info, 'deployDate')
                 },
                 {
                     "name": "distribVersion",
-                    "value": getLabel(labels_info, 'distribVersion')
+                    "value": get_label(labels_info, 'distribVersion')
                 },
                 {
                     "name": "version",
-                    "value": getLabel(labels_info, 'version')
+                    "value": get_label(labels_info, 'version')
                 },
                 {
                     "name": "security.istio.io/tlsMode",
-                    "value": getLabel(labels_info, 'security.istio.io/tlsMode')
+                    "value": get_label(labels_info, 'security.istio.io/tlsMode')
                 },
                 {
                     "name": "jenkinsDeployUser",
-                    "value": getLabel(labels_info, 'jenkinsDeployUser')
+                    "value": get_label(labels_info, 'jenkinsDeployUser')
                 }
             ]
         }
 
         if template:
-            return labelObjectTemplate
+            return label_object_template
 
-        return cmdb_api('POST', 'object/', cmdb_token, labelObjectTemplate)
+        return cmdb_api('POST', 'object/', cmdb_token, label_object_template)
 
         # print(response.status_code)
         # print(response.json())
 
-    cmdb_token, user_id = getCmdbToken()
-    all_categories = getInfoFromAllPage('categories', cmdb_token)
+    cmdb_token, user_id = get_dg_token()
+    all_categories = get_all_jsons('categories', cmdb_token)
 
     os_passports_category_id = category_id('os-app-labels', 'OS App Labels', 'fas fa-tags', cmdb_token,
                                              all_categories)
@@ -165,7 +166,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     # return
     # from allLabels import allLabels
 
-    cmdb_projects = getInfoFromAllPage('types', cmdb_token)
+    cmdb_projects = get_all_jsons('types', cmdb_token)
 
     for cluster in allLabels:
         if not any(map(lambda x: any(
@@ -297,7 +298,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             print(create_type)
 
-            # all_types_pages = getInfoFromAllPage('types', cmdb_token)[0]['pager']['total_pages']
+            # all_types_pages = get_all_jsons('types', cmdb_token)[0]['pager']['total_pages']
 
             # new_all_types_pages = list()
             # for page in range(1, all_types_pages + 1):
@@ -330,7 +331,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 "types": os_portal_category_id['types']
             }
             #
-            if create_type['result_id'] == None:
+            if not create_type['result_id']:
                 return
 
             data_cat_template['types'].append(create_type['result_id'])
@@ -349,7 +350,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 time.sleep(0.1)
 
     # all_objects = None
-    # all_objects = getInfoFromAllPage('objects', cmdb_token)
+    # all_objects = get_all_jsons('objects', cmdb_token)
 
     # connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
     # cluster = MongoClient(connection_sring)
@@ -361,7 +362,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     from vm_passport import get_mongodb_objects
     all_objects = get_mongodb_objects('framework.objects')
 
-    cmdb_projects = getInfoFromAllPage('types', cmdb_token)
+    cmdb_projects = get_all_jsons('types', cmdb_token)
 
     allTypesLabels = reduce(lambda x, y: x + y, map(lambda foo: tuple(
         filter(lambda bar: f'os-labels-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))

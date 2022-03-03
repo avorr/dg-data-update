@@ -11,3 +11,7 @@ Jenkinsfile-work
 ref-*
 objects.json
 type.json
+download-pdf.py
+read-docx.py
+read-pdf.py
+platform-versions.docx

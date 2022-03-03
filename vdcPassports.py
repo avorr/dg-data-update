@@ -15,15 +15,15 @@ from vm_passport import get_mongodb_objects
 from vm_passport import portal_api
 from vm_passport import cmdb_api
 from vm_passport import category_id
-from vm_passport import getCmdbToken
-from vm_passport import getInfoFromAllPage
+from vm_passport import get_dg_token
+from vm_passport import get_all_jsons
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
-    cmdb_token, user_id = getCmdbToken()
-    all_categories: tuple = getInfoFromAllPage('categories', cmdb_token)
+    cmdb_token, user_id = get_dg_token()
+    all_categories: tuple = get_all_jsons('categories', cmdb_token)
 
     vdc_category_id = category_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, all_categories)
 
@@ -119,7 +119,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
         return cmdb_api("POST", "object/", cmdb_token, payload_vcd_object)
         # json_read(payload_vcd_object)
 
-    # dg_types: tuple = getInfoFromAllPage('types', cmdb_token)
+    # dg_types: tuple = get_all_jsons('types', cmdb_token)
     from vm_passport import get_mongodb_objects
     dg_types: tuple = get_mongodb_objects('framework.types')
 
@@ -244,7 +244,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
         create_type = cmdb_api("POST", "types/", cmdb_token, payload_type_tmp)
         print(create_type['result_id'])
 
-        # all_types_pages = getInfoFromAllPage("types", cmdb_token)[0]["pager"]["total_pages"]
+        # all_types_pages = get_all_jsons("types", cmdb_token)[0]["pager"]["total_pages"]
         # new_all_types_pages = list()
         # for page in range(1, all_types_pages + 1):
         #     responsePage = cmdb_api("GET", f"types/?page={page}", cmdb_token)
@@ -270,7 +270,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
             "types": vdc_category_id["types"]
         }
 
-        if create_type['result_id'] == None:
+        if not create_type['result_id']:
             return
 
         payload_category['types'].append(create_type['result_id'])
