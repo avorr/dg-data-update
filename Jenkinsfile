@@ -69,38 +69,38 @@ pipeline {
         }
 */
 
-//         stage("Update CMDB Info Portal-PD15/PD20") {
-//             environment {
-//                 DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
-//
-//                 PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev/api/v1/'
-//                 OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
-//                 PPRB3_VERSIONS_PD15 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
-//                 PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
-//
-//                 PORTAL_URL_PD20 = "https://portal.gostech.novalocal/api/v1/"
-//                 OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-//                 PPRB3_VERSIONS_PD20 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
-//                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-//
-//                 CMDB_CRED = credentials('cmdb-cred')
-//                 FORTI_VPN_HOST = "37.18.109.130:18443"
-//             }
-//             agent {
-//                 docker {
-//                     label "pkles-gt0000369"
-//                     image "ubuntu:20.04"
-//                     args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
-//                     reuseNode true
-//                 }
-//             }
-//             steps {
-//                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
-//                     sh "./prepare-image.sh"
-//                     sh "python3 main.py PD15"
-//                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
-//                     sh "sleep 10"
-//                     sh "python3 main.py PD20"
+        stage("Update CMDB Info Portal-PD15/PD20") {
+            environment {
+                DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
+
+                PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev/api/v1/'
+                OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
+                PPRB3_VERSIONS_PD15 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
+                PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
+
+                PORTAL_URL_PD20 = "https://portal.gostech.novalocal/api/v1/"
+                OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+                PPRB3_VERSIONS_PD20 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
+                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
+
+                CMDB_CRED = credentials('cmdb-cred')
+                FORTI_VPN_HOST = "37.18.109.130:18443"
+            }
+            agent {
+                docker {
+                    label "pkles-gt0000369"
+                    image "ubuntu:20.04"
+                    args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
+                    reuseNode true
+                }
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'fortivpn_cred', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
+                    sh "./prepare-image.sh"
+                    sh "python3 main.py PD15"
+                    sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
+                    sh "sleep 10"
+                    sh "python3 main.py PD20"
 
 
 
@@ -128,8 +128,8 @@ pipeline {
 
 
 
-//                 }
-//             }
+                }
+            }
 
 
             stage("Update CMDB Info Portal-PD23") {

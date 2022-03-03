@@ -61,19 +61,15 @@ if __name__ == '__main__':
         # pprb3_versions(sys.argv[1])
     # exit()
 
-    # print(portal_info)
-    # exit()
     if sys.argv[1] == 'PD23':
         all_objects = PassportsVM(sys.argv[1])
-        exit()
-    else:
         exit()
 
 
     all_objects = PassportsVM(sys.argv[1])
     PassportsOS(sys.argv[1], all_objects)
     LabelsOS(sys.argv[1])
-    if sys.argv[1] == 'PD15':
-        releases()
+    # if sys.argv[1] == 'PD15':
+        # releases()
         # pprb3_versions(sys.argv[1])
     visiableSetting()
