@@ -11,8 +11,8 @@ from env import portal_info
 from vm_passport import cmdb_api
 from vm_passport import objects
 from vm_passport import category_id
-from vm_passport import getCmdbToken
-from vm_passport import getInfoFromAllPage
+from vm_passport import get_dg_token
+from vm_passport import get_all_jsons
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -22,8 +22,8 @@ def json_read(json_object: dict):
 
 
 def PassportsOS(portal_name: str, all_objects: tuple) -> None:
-    cmdbToken, userId = getCmdbToken()
-    all_categories = getInfoFromAllPage('categories', cmdbToken)
+    cmdbToken, userId = get_dg_token()
+    all_categories = get_all_jsons('categories', cmdbToken)
 
     osPassportsCategorieId = category_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdbToken,
                                              all_categories)
@@ -59,7 +59,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                         info['namespace'] == metric['metric']['namespace']:
                     info['info'].append((metric['metric']['resource'], metric['metric']['type'], metric['value']))
 
-    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
+    cmdb_projects = get_all_jsons('types', cmdbToken)
 
     for cluster in os_info:
         if not any(map(lambda x: any(
@@ -165,7 +165,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
 
             print(create_type)
 
-            # allTypesPages = getInfoFromAllPage('types', cmdbToken)[0]['pager']['total_pages']
+            # allTypesPages = get_all_jsons('types', cmdbToken)[0]['pager']['total_pages']
             # newAllTypesPages = list()
             # for page in range(1, allTypesPages + 1):
             #     responsePage = cmdb_api('GET', f'types/?page={page}', cmdbToken)
@@ -193,7 +193,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 "types": osPortalCategorieId['types']
             }
             #
-            if create_type['result_id'] == None:
+            if not create_type['result_id']:
                 return
 
             dataCatTemplate['types'].append(create_type['result_id'])
@@ -208,7 +208,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 print(createObject)
                 time.sleep(0.1)
 
-    # all_objects = getInfoFromAllPage('objects', cmdbToken)
+    # all_objects = get_all_jsons('objects', cmdbToken)
     # from objects import all_objects
 
     # from pymongo import MongoClient
@@ -222,7 +222,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     all_objects = get_mongodb_objects('framework.objects')
 
 
-    cmdb_projects = getInfoFromAllPage('types', cmdbToken)
+    cmdb_projects = get_all_jsons('types', cmdbToken)
     allCmdbClusterTypes = reduce(lambda x, y: x + y,
                                     map(lambda z: tuple(
                                         filter(lambda f: f'os-cluster-{portal_name}--' in f['name'], z['results'])),
