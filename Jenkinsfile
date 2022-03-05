@@ -135,6 +135,7 @@ pipeline {
 
                 CMDB_CRED = credentials('cmdb-cred')
                 FORTI_VPN_HOST = "193.23.144.132:15443"
+
             }
             agent {
                 docker {
