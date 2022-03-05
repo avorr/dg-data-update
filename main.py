@@ -12,6 +12,7 @@ from vdcPassports import PassportsVDC
 from pprb3Versions import pprb3_versions
 from view_settings import visiableSetting
 from vm_passport import get_mongodb_objects
+
 # from platformReleases import releases
 
 if __name__ == '__main__':
@@ -56,20 +57,36 @@ if __name__ == '__main__':
     # for i in all_types:
     #     print(i['public_id'])
     # if sys.argv[1] == 'PD15':
-        # visiableSetting()
-        # exit()
-        # pprb3_versions(sys.argv[1])
+    # visiableSetting()
+    # exit()
+    # pprb3_versions(sys.argv[1])
     # exit()
 
     if sys.argv[1] == 'PD23':
+        try:
+            all_objects = PassportsVM(sys.argv[1])
+            exit()
+        except EOFError as error:
+            print(error)
+
+    try:
         all_objects = PassportsVM(sys.argv[1])
-        exit()
+    except EOFError as error:
+        print(error)
 
+    try:
+        PassportsOS(sys.argv[1], all_objects)
+    except EOFError as error:
+        print(error)
 
-    all_objects = PassportsVM(sys.argv[1])
-    PassportsOS(sys.argv[1], all_objects)
-    LabelsOS(sys.argv[1])
+    try:
+        LabelsOS(sys.argv[1])
+    except EOFError as error:
+        print(error)
     # if sys.argv[1] == 'PD15':
-        # releases()
-        # pprb3_versions(sys.argv[1])
-    visiableSetting()
+    # releases()
+    # pprb3_versions(sys.argv[1])
+    try:
+        visiableSetting()
+    except EOFError as error:
+        print(error)
