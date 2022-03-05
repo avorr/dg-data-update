@@ -81,8 +81,10 @@ if __name__ == '__main__':
 
     try:
         LabelsOS(sys.argv[1])
-    except EOFError as error:
-        print(error)
+    # except EOFError as error:
+    except:
+        pass
+        # print(error)
     # if sys.argv[1] == 'PD15':
     # releases()
     # pprb3_versions(sys.argv[1])
