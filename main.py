@@ -60,6 +60,7 @@ if __name__ == '__main__':
     # visiableSetting()
     # exit()
     # pprb3_versions(sys.argv[1])
+    # pprb3_versions(sys.argv[1])
     # exit()
 
     if sys.argv[1] == 'PD23':
@@ -85,7 +86,8 @@ if __name__ == '__main__':
     except:
         pass
         # print(error)
-    # if sys.argv[1] == 'PD15':
+    if sys.argv[1] == 'PD15':
+        pprb3_versions(sys.argv[1])
     # releases()
     # pprb3_versions(sys.argv[1])
     try:
