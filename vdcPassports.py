@@ -23,9 +23,11 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
     cmdb_token, user_id = get_dg_token()
-    all_categories: tuple = get_all_jsons('categories', cmdb_token)
+    from vm_passport import get_mongodb_objects
+    all_categories: tuple = get_mongodb_objects('framework.categories')
 
-    vdc_category_id = category_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, all_categories)
+    vdc_category_id: dict = \
+        category_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, all_categories)
 
     # osPortalCategorieId = category_id(f'VDC-{portal_name}', f'VDC-{portal_name}', 'fas fa-folder-open',
     #                                    cmdb_token, all_categories, vdc_category_id['public_id'])
