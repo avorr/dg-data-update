@@ -10,7 +10,7 @@ from os_labels import LabelsOS
 from getObjects import get_dg_objects
 from vdcPassports import PassportsVDC
 from pprb3Versions import pprb3_versions
-from view_settings import visiableSetting
+from view_settings import visible_settings
 from vm_passport import get_mongodb_objects
 
 # from platformReleases import releases
@@ -26,15 +26,15 @@ if __name__ == '__main__':
     # tuple(map(LabelsOS, portal_info))
     #
     # if next(iter(portal_info)) == 'PD15':
-    #     from view_settings import visiableSetting
-    #     visiableSetting()
+    #     from view_settings import visible_settings
+    #     visible_settings()
 
     # foo = {None: 8383}
     # print(foo.get(next(iter(foo))))
 
     # if sys.argv[1] == 'PD15':
-    #     from view_settings import visiableSetting
-    #     visiableSetting()
+    #     from view_settings import visible_settings
+    #     visible_settings()
 
     # from allProjects import allProjects
 
@@ -44,8 +44,8 @@ if __name__ == '__main__':
     # print(get_info_cmdb_vdc)
 
     # if sys.argv[1] == 'PD15':
-    #     from view_settings import visiableSetting
-    #     visiableSetting()
+    #     from view_settings import visible_settings
+    #     visible_settings()
     # all_objects = PassportsVM(sys.argv[1])
     # from vm_passport import get_mongodb_objects
     # all_objects: tuple = get_mongodb_objects('framework.objects')
@@ -57,10 +57,15 @@ if __name__ == '__main__':
     # for i in all_types:
     #     print(i['public_id'])
     # if sys.argv[1] == 'PD15':
-    # visiableSetting()
+    # visible_settings()
     # exit()
     # pprb3_versions(sys.argv[1])
     # pprb3_versions(sys.argv[1])
+    # all_objects = get_mongodb_objects('framework.objects')
+    # PassportsOS(sys.argv[1], all_objects)
+    all_objects = PassportsVM(sys.argv[1])
+    exit()
+    # LabelsOS(sys.argv[1])
     # exit()
 
     if sys.argv[1] == 'PD23':
@@ -91,6 +96,6 @@ if __name__ == '__main__':
     # releases()
     # pprb3_versions(sys.argv[1])
     try:
-        visiableSetting()
+        visible_settings()
     except EOFError as error:
         print(error)

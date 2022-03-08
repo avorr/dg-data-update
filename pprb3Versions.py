@@ -15,6 +15,7 @@ from vm_passport import cmdb_api
 from vm_passport import category_id
 from vm_passport import get_dg_token
 from vm_passport import get_all_jsons
+from vm_passport import get_mongodb_objects
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -111,7 +112,7 @@ def pprb3_versions(portal_name: str, all_objects: tuple = ()) -> None:
         return cmdb_api('POST', 'object/', cmdb_token, pprb3_object_template)
 
     cmdb_token, user_id = get_dg_token()
-    all_categories = get_all_jsons('categories', cmdb_token)
+    all_categories: tuple = get_mongodb_objects('framework.categories')
 
     os_passports_category_id = category_id('pprb3-app-versions', 'Pprb3 App Versions',
                                            'fas fa-server', cmdb_token, all_categories)
@@ -136,7 +137,6 @@ def pprb3_versions(portal_name: str, all_objects: tuple = ()) -> None:
     # start = time.time()
     # cmdb_projects = get_all_jsons('types', cmdb_token)
 
-    from vm_passport import get_mongodb_objects
     cmdb_projects: tuple = get_mongodb_objects('framework.types')
 
     # for stand in all_pprb3_verions['info']:
@@ -301,6 +301,7 @@ def pprb3_versions(portal_name: str, all_objects: tuple = ()) -> None:
                         if pprb3_module['id'] == dg_object['fields'][5]['value'] and \
                                 pprb3_module['tag'] == dg_object['fields'][3]['value'] and \
                                 pprb3_object_tmp['fields'] != dg_object['fields']:
+
                             update_object_template: dict = {
                                 "type_id": dg_object['type_id'],
                                 "status": dg_object['status'],

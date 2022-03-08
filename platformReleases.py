@@ -122,7 +122,7 @@ def releases() -> None:
         return cmdb_api('POST', 'object/', cmdb_token, release_object_template)
 
     cmdb_token, user_id = get_dg_token()
-    all_categories = get_all_jsons('categories', cmdb_token)
+    all_categories = get_mongodb_objects('framework.categories')
 
     platform_releases_category_id = \
         category_id('platform-releases', 'Platform Releases', 'fas fa-list-alt', cmdb_token, all_categories)

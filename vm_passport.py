@@ -320,11 +320,13 @@ def create_category(name: str, label: str, icon: str, cmdb_token: str, parent: i
     return cmdb_api('POST', 'categories/', cmdb_token, payload_category_tmp)
 
 
-def category_id(categorie_name: str, categorie_label: str, categorie_icon: str, cmdb_token: str, dg_categories: tuple,
-                parent_categorie: int = None) -> dict:  # Union[dict[str, Any], dict[str, Any]]:
+def category_id(category_name: str, category_label: str, category_icon: str, cmdb_token: str, dg_categories: tuple,
+                parent_category: int = None) -> dict:  # Union[dict[str, Any], dict[str, Any]]:
     """Func to create categorie in cmdb"""
-    if not any(map(lambda x: any(map(lambda y: y['name'] == categorie_name, x['results'])), dg_categories)):
-        result: dict = create_category(categorie_name, categorie_label, categorie_icon, cmdb_token, parent_categorie)
+    # if not any(map(lambda x: any(map(lambda y: y['name'] == category_name, x['results'])), dg_categories)):
+    if not any(map(lambda y: y['name'] == category_name, dg_categories)):
+        print(True)
+        result: dict = create_category(category_name, category_label, category_icon, cmdb_token, parent_category)
         return {
             'public_id': result['raw']['public_id'],
             'name': result['raw']['name'],
@@ -332,8 +334,13 @@ def category_id(categorie_name: str, categorie_label: str, categorie_icon: str, 
             'types': result['raw']['types']
         }
     else:
-        result: map = map(lambda x: tuple(filter(lambda y: y['name'] == categorie_name, x['results'])), dg_categories)
-        result: dict = max(max(result))
+        # result: map = map(lambda x: tuple(filter(lambda y: y['name'] == category_name, x['results'])), dg_categories)
+        result: dict = max(filter(lambda y: y['name'] == category_name, dg_categories))
+
+        # result: dict = max(result)
+        # print(result)
+        # return
+        # result: dict = max(max(result))
         return {
             'public_id': result['public_id'],
             'name': result['name'],
@@ -343,13 +350,19 @@ def category_id(categorie_name: str, categorie_label: str, categorie_icon: str, 
 
 
 def portal_api(api_name: str, portal_name: str) -> dict:
-    """Func for work with Portal REST-API"""
+    """
+    Func to work with Portal REST-API
+    :param api_name:
+    :param portal_name:
+    :return: dict
+    """
     headers: dict = {
         'user-agent': 'CMDB',
         'Content-type': 'application/json',
         'Accept': 'text/plain',
-        'authorization': 'Token %s' % portal_info[portal_name]['token']}
-    response = requests.get('%s%s' % (portal_info[portal_name]['url'], api_name), headers=headers, verify=False)
+        'authorization': 'Token %s' % portal_info[portal_name]['token']
+    }
+    response = requests.get('%s/api/v1/%s' % (portal_info[portal_name]['url'], api_name), headers=headers, verify=False)
     return dict(stdout=json.loads(response.content), status_code=response.status_code)
 
 
@@ -377,7 +390,15 @@ def json_serial(obj: datetime) -> str:
 
 
 def PassportsVM(portal_name: str) -> tuple:
-    """Main func for create vm objects in datagerry"""
+    # print(portal_info[portal_name]['url'])
+    # json_read(portal_info[portal_name])
+    # return
+
+    """
+    Main func for create vm objects in datagerry
+    :param portal_name: ex: PD15
+    :return: tuple
+    """
 
     # vm_list = portal_api("servers?project_id=e594bc83-938c-48c4-a208-038aedad01de")
     # for i in vm_list['stdout']['servers']:
@@ -395,27 +416,52 @@ def PassportsVM(portal_name: str) -> tuple:
 
     # test = get_all_jsons('objects', cmdb_token)
 
-    dg_categories = get_all_jsons('categories', cmdb_token)
+    dg_categories: tuple = get_mongodb_objects('framework.categories')
 
-    vm_category_id = category_id('passports', 'Passports VM', 'far fa-folder-open', cmdb_token, dg_categories)
-    portal_category_id = category_id(portal_name, portal_name, 'fas fa-folder-open', cmdb_token, dg_categories,
-                                     vm_category_id['public_id'])
+    # dg_categories = get_mongodb_objects('framework.categories')
+
+
+    vm_category_id: dict = category_id('passports', 'Passports VM', 'far fa-folder-open', cmdb_token, dg_categories)
+    portal_category_id: dict = \
+        category_id(portal_name, portal_name, 'fas fa-folder-open', cmdb_token, dg_categories,
+                    vm_category_id['public_id'])
+
     # vdc_category_id = category_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, dg_categories)
 
     portal_domains_info: dict = portal_api('domains', portal_name)['stdout']
-    # json_read(portal_domains_info)
 
-    domains_info: dict = {domain['id']: domain['name'] for domain in portal_domains_info['domains']}
+    domains_info: dict = {
+        domain['id']: domain['name'] for domain in portal_domains_info['domains']
+    }
+
+    # for i in domains_info:
+    #     print(i)
+    # return
 
     # domains_info = dict()
     # for domainInfo in portal_domains_info['domains']:
     #     domains_info[domainInfo['id']] = domainInfo['name']
     # del portal_domains_info
 
-    for id in domains_info:
-        if not any(map(lambda x: any(map(lambda y: y['name'] == f'domain_id--{id}', x['results'])), dg_categories)):
-            create_category(f'domain_id--{id}', domains_info[id], 'far fa-folder-open', cmdb_token,
+    for domain_id in domains_info:
+        # if not any(map(lambda x: any(map(lambda y: y['name'] == f'domain_id--{id}', x['results'])), dg_categories)):
+        if not any(map(lambda y: y['name'] == 'domain_id--%s' % domain_id, dg_categories)):
+            create_category('domain_id--%s' % domain_id, domains_info[domain_id], 'far fa-folder-open', cmdb_token,
                             portal_category_id['public_id'])
+
+    # json_read(domains_info)
+    # json_read(portal_domains_info['domains'])
+
+    portal_groups_info: dict = portal_api('groups', portal_name)['stdout']
+
+    for group_id in portal_groups_info['groups']:
+        if not any(map(lambda y: y['name'] == 'group_id--%s' % group_id['id'], dg_categories)):
+            for domain in dg_categories:
+                if domain['name'] == 'domain_id--%s' % group_id['domain_id']:
+                    create_category("group_id--%s" % group_id['id'], group_id['name'],
+                                    'fas fa-folder-open', cmdb_token, domain['public_id'])
+
+
 
     portal_projects: dict = portal_api('projects', portal_name)['stdout']
 
@@ -436,6 +482,7 @@ def PassportsVM(portal_name: str) -> tuple:
                 checksum_portal_vdcs[project['info']['name']] = {
                     'id': project['info']['id'],
                     'domain_id': project['info']['domain_id'],
+                    'group_id': project['info']['group_id'],
                     'zone': project['info']['datacenter_name'],
                     'checksum': project['checksum']
                 }
@@ -451,7 +498,7 @@ def PassportsVM(portal_name: str) -> tuple:
         for deleteCmdbType in dg_types:
             # if deleteCmdbType['public_id'] in list(range(171, 262)):
             # if deleteCmdbType['description'] == 'passport-vm-%s' % portal_name:
-            if 'pprb3 versi' in deleteCmdbType['description']:
+            if 'passport-vm-' in deleteCmdbType['description']:
                 print(deleteCmdbType['description'])
                 # if 'pd20-' in deleteCmdbType['label']:
                 print('DELETE CMDB TYPE', cmdb_api('DELETE', f"types/{deleteCmdbType['public_id']}", cmdb_token))
@@ -459,6 +506,7 @@ def PassportsVM(portal_name: str) -> tuple:
         for categories in dg_categories:
             for categoriesId in categories['results']:
                 print('DELETE CMDB CATEGORY', cmdb_api('DELETE', f"categories/{categoriesId['public_id']}", cmdb_token))
+
 
     # dg_types: tuple = get_all_jsons('types', cmdb_token)
 
@@ -477,6 +525,7 @@ def PassportsVM(portal_name: str) -> tuple:
     # dg_vdc_checksum = get_vdc_checksum(dg_types)
 
     dg_vm_projects = list()
+
     for vm_type in dg_types:
         if vm_type['description'] == 'passport-vm-%s' % portal_name:
             if vm_type['name'] not in map(lambda x: x['id'], portal_projects['projects']):
@@ -552,6 +601,10 @@ def PassportsVM(portal_name: str) -> tuple:
 
     # for project in projects:
     #     if not any(map(lambda x: any(map(lambda y: y['name'] == projects[project]['id'], x['results'])), dg_types)):
+
+    # for project in projects:
+    #     json_read(projects[project])
+
     for project in projects:
         if not any(map(lambda x: x['name'] == projects[project]['id'], dg_types)):
             vdc_id = project_id_vcd_types[projects[project]['id']]['vdc_object_id']
@@ -706,7 +759,24 @@ def PassportsVM(portal_name: str) -> tuple:
                             "label": projects[project]['checksum']
                         }
                     ],
-                    "externals": [],
+                    # "externals": [],
+                    "externals": [
+                        {
+                            "name": "vdc link",
+                            "href": "%s/client/orders/%s" % (portal_info[portal_name]['url'], projects[project]['id']),
+                            "label": "Vdc link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": []
+                        },
+                        {
+                            "name": "vm link",
+                            "href": "%s/client/orders/%s/servers/{}/info" % (portal_info[portal_name]['url'],
+                                                                             projects[project]['id']),
+                            "label": "Vm link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": ["vm-id"]
+                        }
+                    ],
                     "summary": {
                         "fields": [
                             "name",
@@ -743,7 +813,7 @@ def PassportsVM(portal_name: str) -> tuple:
                 },
                 "name": projects[project]['id'],
                 "label": f"{project} | {projects[project]['zone']} | {projects[project]['id']}",
-                "description": f'passport-vm-{portal_name}'
+                "description": f'passport-vm-%s' % portal_name
             }
 
             create_type = cmdb_api('POST', 'types/', cmdb_token, payload_type_tmp)
@@ -754,17 +824,23 @@ def PassportsVM(portal_name: str) -> tuple:
             dg_categories: tuple = get_mongodb_objects('framework.categories')
 
             category_search: dict = \
-                max(filter(lambda y: y['name'] == f"domain_id--{projects[project]['domain_id']}", dg_categories))
+                max(filter(lambda y: y['name'] == "group_id--%s" % projects[project]['group_id'], dg_categories))
+
+            print('#########')
+            print(category_search)
+            print('#########')
 
             payload_category_tmp: dict = {
                 "public_id": category_search['public_id'],
                 "name": category_search['name'],
                 "label": category_search['label'],
                 "meta": {
-                    "icon": "far fa-folder-open",
+                    # "icon": "far fa-folder-open",
+                    "icon": "fas fa-folder-open",
                     "order": None
                 },
-                "parent": portal_category_id['public_id'],
+                # "parent": portal_category_id['public_id'],
+                "parent": category_search['parent'],
                 "types": category_search['types']
             }
 
