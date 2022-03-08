@@ -63,8 +63,8 @@ if __name__ == '__main__':
     # pprb3_versions(sys.argv[1])
     # all_objects = get_mongodb_objects('framework.objects')
     # PassportsOS(sys.argv[1], all_objects)
-    all_objects = PassportsVM(sys.argv[1])
-    exit()
+    # all_objects = PassportsVM(sys.argv[1])
+    # exit()
     # LabelsOS(sys.argv[1])
     # exit()
 
