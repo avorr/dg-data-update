@@ -100,9 +100,9 @@ pipeline {
             }
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-//                     sh "./prepare-image-pd15.sh"
-//                     sh "python3 main.py PD15"
-                    sh "echo 'privet'"
+                    sh "./prepare-image-pd15.sh"
+                    sh "python3 main.py PD15"
+//                     sh "echo 'privet'"
                 }
             }
         }
@@ -167,11 +167,9 @@ pipeline {
             steps {
 //                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred_pd23', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
                     sh "./prepare-image-fortivpn.sh"
-//                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
                     sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
                     sh "sleep 10"
                     sh "python3 main.py PD23"
-//                     sh 'echo privet'
 //                 }
             }
         }
