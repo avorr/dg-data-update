@@ -15,6 +15,7 @@ pipeline {
 
     environment {
         PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+        CMDB_CRED = credentials('cmdb-cred')
     }
     stages {
     /*
@@ -84,7 +85,7 @@ pipeline {
 //                 PPRB3_VERSIONS_PD20 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
 //                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
 
-                CMDB_CRED = credentials('cmdb-cred')
+//                 CMDB_CRED = credentials('cmdb-cred')
 //                 FORTI_VPN_HOST = "37.18.109.130:18443"
             }
             agent {
@@ -98,33 +99,9 @@ pipeline {
             }
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh "./prepare-image.sh"
+                    sh "./prepare-image.sh-pd15"
                     sh "python3 main.py PD15"
                 }
-//                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
-//                     sh "./prepare-image.sh"
-//                     sh "python3 main.py PD15"
-//                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
-//                     sh "sleep 10"
-//                     sh "python3 main.py PD20"
-//                     sh "./prepare-image-pd20.sh"
-//                     sh "python3 getObjects.py"
-//                     sh "python3 main.py PD15"
-//                     sh "python3 getObjects.py"
-//                     sh "screen -dm ./launch-fortivpn.exp ${FORTI_VPN_HOST} ${FORTI_USERNAME} '${FORTI_PASSWORD}'"
-//                     sh "sleep 5"
-//                     sh "python3 main.py PD20"
-//                     sh "echo '##########################################'"
-//                     sh "ping query-runner.apps.ocp.dev.foms.tech -c 20"
-//                     sh "echo '##########################################'"
-//                     sh "echo '##########################################'"
-//                     sh "ping query-runner.apps.ocp.dev.foms.tech -c 20"
-//                     sh "echo '##########################################'"
-//                     sh "ping 172.20.18.229 -c 10"
-//                     sh "ping p-pprb-iamkeycloak-01.foms.novalocal -c 10"
-//                     sh "ping p-pprb-iamkeycloak-01.foms.novalocal -c 5"
-//                     sh "ping p-infra-bitwarden-01.common.novalocal -c 5"
-//                 }
             }
         }
 
@@ -133,7 +110,6 @@ pipeline {
             environment {
                 DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
 
-//                 PORTAL_URL_PD20 = "https://portal.gostech.novalocal/api/v1/"
                 PORTAL_URL_PD20 = "https://portal.gostech.novalocal"
                 OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 PPRB3_VERSIONS_PD20 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
@@ -153,7 +129,8 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
-                    sh "./prepare-image.sh"
+//                     sh "./prepare-image.sh"
+                    sh "./prepare-image-fortivpn.sh"
                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
                     sh "sleep 10"
                     sh "python3 main.py PD20"
@@ -167,7 +144,6 @@ pipeline {
             environment {
                 DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
 
-//                 PORTAL_URL_PD23 = "https://portal.gostech.novalocal/api/v1/"
                 PORTAL_URL_PD23 = "https://portal.gostech.novalocal"
                 OS_METRICS_PD23 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 PPRB3_VERSIONS_PD23 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
@@ -188,7 +164,8 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred_pd23', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
-                    sh "./prepare-image.sh"
+//                     sh "./prepare-image.sh"
+                    sh "./prepare-image-fortivpn.sh"
                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
                     sh "sleep 10"
                     sh "python3 main.py PD23"
