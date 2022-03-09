@@ -110,17 +110,13 @@ pipeline {
 
         stage("Update CMDB Info Portal-PD20") {
             environment {
-//                 DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
-
                 PORTAL_URL_PD20 = "https://portal.gostech.novalocal"
                 OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 PPRB3_VERSIONS_PD20 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
                 PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
 
-//                 CMDB_CRED = credentials('cmdb-cred')
                 FORTI_VPN_HOST = "37.18.109.130:18443"
                 FORTI_VPN_CRED = credentials('fortivpn_cred')
-
             }
             agent {
                 docker {
@@ -134,13 +130,15 @@ pipeline {
             steps {
 //                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
 //                     sh "./prepare-image.sh"
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh "./prepare-image-fortivpn.sh"
-//                     sh('curl -u $EXAMPLE_CREDS_USR:$EXAMPLE_CREDS_PSW https://example.com/')
-                    sh("screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6")
-//                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
+                    sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
                     sh "sleep 10"
                     sh "python3 main.py PD20"
-//                 }
+//                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
+//                     sh('curl -u $EXAMPLE_CREDS_USR:$EXAMPLE_CREDS_PSW https://example.com/')
+//              }
+                }
             }
         }
 
@@ -148,15 +146,13 @@ pipeline {
 
         stage("Update CMDB Info Portal-PD23") {
             environment {
-//                 DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
-
                 PORTAL_URL_PD23 = "https://portal.gostech.novalocal"
                 OS_METRICS_PD23 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 PPRB3_VERSIONS_PD23 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
                 PORTAL_TOKEN_PD23 = credentials('PORTAL_TOKEN_PD23')
 
-//                 CMDB_CRED = credentials('cmdb-cred')
                 FORTI_VPN_HOST = "193.23.144.132:15443"
+                FORTI_VPN_CRED = credentials('fortivpn_cred_pd23')
 
             }
             agent {
@@ -169,13 +165,14 @@ pipeline {
                 }
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'fortivpn_cred_pd23', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
+//                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred_pd23', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
                     sh "./prepare-image-fortivpn.sh"
-                    sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
+//                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
+                    sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
                     sh "sleep 10"
                     sh "python3 main.py PD23"
-                    sh 'echo privet'
-                }
+//                     sh 'echo privet'
+//                 }
             }
         }
     // }
