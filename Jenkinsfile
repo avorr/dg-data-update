@@ -97,9 +97,13 @@ pipeline {
                 }
             }
             steps {
-//                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh "./prepare-image.sh"
                     sh "python3 main.py PD15"
+                }
+//                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
+//                     sh "./prepare-image.sh"
+//                     sh "python3 main.py PD15"
 //                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
 //                     sh "sleep 10"
 //                     sh "python3 main.py PD20"
