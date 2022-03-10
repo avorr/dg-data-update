@@ -12,7 +12,7 @@ properties([disableConcurrentBuilds()])
 
 
 pipeline {
-//     agent none
+    agent none
 //     agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
