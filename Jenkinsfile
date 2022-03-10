@@ -38,7 +38,8 @@ pipeline {
                     agent {
                         docker {
 //                             label "pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773"
-                            label "pkles-gt0003771"
+//                             label "pkles-gt0003771"
+                            label "pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1 --add-host archive.ubuntu.com:91.189.88.152 --add-host security.ubuntu.com:91.189.88.142"
                             reuseNode true
@@ -46,7 +47,7 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh "sleep 1000"
+//                             sh "sleep 1000"
                             sh "./prepare-image-pd15.sh"
                             sh "python3 main.py PD15"
                         }
@@ -66,7 +67,8 @@ pipeline {
                     agent {
                         docker {
 //                             label "pkles-gt0003772 || pkles-gt0003773 || pkles-gt0000369"
-                            label "pkles-gt0003772"
+//                             label "pkles-gt0003772"
+                            label "pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1 --add-host archive.ubuntu.com:91.189.88.152 --add-host security.ubuntu.com:91.189.88.142"
                             reuseNode true
@@ -74,7 +76,7 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh "sleep 1000"
+//                             sh "sleep 1000"
                             sh "./prepare-image-fortivpn.sh"
                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
                             sh "sleep 10"
