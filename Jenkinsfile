@@ -51,7 +51,7 @@ pipeline {
 //                             sh "./prepare-image-pd15.sh"
 //                             sh "python3 main.py PD15"
                             sh "echo ##################################"
-                            sh "hostname"
+                            sh "cat /etc/hostname"
                             sh "echo ##################################"
                         }
                     }
@@ -72,7 +72,7 @@ pipeline {
 //                             label "pkles-gt0000369"
 //                             label "pkles-gt0000364"
 //                             label "pkles-gt0003773"
-                            label "pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773"
+                            label "pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773 || pkles-gt0000369"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
@@ -85,7 +85,7 @@ pipeline {
 //                             sh "sleep 10"
 //                             sh "python3 main.py PD20"
                             sh "echo ##################################"
-                            sh "hostname"
+                            sh "cat /etc/hostname"
                             sh "echo ##################################"
 //                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
 //                     sh('curl -u $EXAMPLE_CREDS_USR:$EXAMPLE_CREDS_PSW https://example.com/')
@@ -109,7 +109,7 @@ pipeline {
 //                             label "pkles-gt0000369"
 //                             label "pkles-gt0000364"
 //                             label "pkles-gt0003773"
-                            label "pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773"
+                            label "pkles-gt0003772 || pkles-gt0003773 || pkles-gt0000369 || pkles-gt0003771"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
@@ -121,7 +121,7 @@ pipeline {
 //                             sh "sleep 10"
 //                             sh "python3 main.py PD23"
                             sh "echo ##################################"
-                            sh "hostname"
+                            sh "cat /etc/hostname"
                             sh "echo ##################################"
                     }
                 }
