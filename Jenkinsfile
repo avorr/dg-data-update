@@ -14,7 +14,6 @@ properties([disableConcurrentBuilds()])
 pipeline {
 //     agent none
 //     agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
-    agent { label 'pkles-gt0000369 && pkles-gt0003771 && pkles-gt0003772 && pkles-gt0003773' }
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
         timestamps()
@@ -41,6 +40,7 @@ pipeline {
 //                             label "pkles-gt0000369"
 //                             label "pkles-gt0000364"
 //                             label "pkles-gt0003773"
+                            label "pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
@@ -70,6 +70,7 @@ pipeline {
 //                             label "pkles-gt0000369"
 //                             label "pkles-gt0000364"
 //                             label "pkles-gt0003773"
+                            label "pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
@@ -104,6 +105,7 @@ pipeline {
 //                             label "pkles-gt0000369"
 //                             label "pkles-gt0000364"
 //                             label "pkles-gt0003773"
+                            label "pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
