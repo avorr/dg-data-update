@@ -5,8 +5,15 @@ properties([disableConcurrentBuilds()])
 // agent = env.agent // work agent
 // token = env.token // sbercaud token
 
+// pkles-gt0000369
+// pkles-gt0003771
+// pkles-gt0003772
+// pkles-gt0003773
+
+
 pipeline {
-    agent none
+//     agent none
+    agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
         timestamps()
@@ -32,7 +39,7 @@ pipeline {
                         docker {
 //                             label "pkles-gt0000369"
 //                             label "pkles-gt0000364"
-                            label "pkles-gt0003773"
+//                             label "pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
@@ -40,8 +47,9 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh "./prepare-image-pd15.sh"
-                            sh "python3 main.py PD15"
+//                             sh "./prepare-image-pd15.sh"
+//                             sh "python3 main.py PD15"
+                            sh "ls -la"
                         }
                     }
                 }
@@ -60,7 +68,7 @@ pipeline {
                         docker {
 //                             label "pkles-gt0000369"
 //                             label "pkles-gt0000364"
-                            label "pkles-gt0003773"
+//                             label "pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
@@ -68,10 +76,11 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh "./prepare-image-fortivpn.sh"
-                            sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
-                            sh "sleep 10"
-                            sh "python3 main.py PD20"
+//                             sh "./prepare-image-fortivpn.sh"
+//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
+//                             sh "sleep 10"
+//                             sh "python3 main.py PD20"
+                            sh "ls -la"
 //                     sh "screen -dm openfortivpn ${FORTI_VPN_HOST} -u ${FORTI_USERNAME} -p '${FORTI_PASSWORD}' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
 //                     sh('curl -u $EXAMPLE_CREDS_USR:$EXAMPLE_CREDS_PSW https://example.com/')
                        }
@@ -93,17 +102,18 @@ pipeline {
                         docker {
 //                             label "pkles-gt0000369"
 //                             label "pkles-gt0000364"
-                            label "pkles-gt0003773"
+//                             label "pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
                         }
                     }
                     steps {
-                            sh "./prepare-image-fortivpn.sh"
-                            sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
-                            sh "sleep 10"
-                            sh "python3 main.py PD23"
+//                             sh "./prepare-image-fortivpn.sh"
+//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
+//                             sh "sleep 10"
+//                             sh "python3 main.py PD23"
+                            sh "ls -la"
                     }
                 }
             }
