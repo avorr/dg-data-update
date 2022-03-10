@@ -31,7 +31,8 @@ pipeline {
                     agent {
                         docker {
 //                             label "pkles-gt0000369"
-                            label "pkles-gt0000364"
+//                             label "pkles-gt0000364"
+                            label "pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
@@ -58,7 +59,8 @@ pipeline {
                     agent {
                         docker {
 //                             label "pkles-gt0000369"
-                            label "pkles-gt0000364"
+//                             label "pkles-gt0000364"
+                            label "pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
@@ -90,7 +92,8 @@ pipeline {
                     agent {
                         docker {
 //                             label "pkles-gt0000369"
-                            label "pkles-gt0000364"
+//                             label "pkles-gt0000364"
+                            label "pkles-gt0003773"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
