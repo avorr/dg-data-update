@@ -50,10 +50,8 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-//                             sh "sleep 1000"
-//                             sh "./prepare-image-pd15.sh"
-//                             sh "python3 main.py PD15"
-                            sh "apt update"
+                            sh "./prepare-image-pd15.sh"
+                            sh "python3 main.py PD15"
                         }
                     }
                 }
@@ -82,12 +80,10 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-//                             sh "sleep 1000"
-//                             sh "./prepare-image-fortivpn.sh"
-//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
-//                             sh "sleep 10"
-//                             sh "python3 main.py PD20"
-                            sh "apt update"
+                            sh "./prepare-image-fortivpn.sh"
+                            sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
+                            sh "sleep 10"
+                            sh "python3 main.py PD20"
                        }
                    }
                }
@@ -117,11 +113,10 @@ pipeline {
                         }
                     }
                     steps {
-//                             sh "./prepare-image-fortivpn.sh"
-//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
-//                             sh "sleep 10"
-//                             sh "python3 main.py PD23"
-                            sh "apt update"
+                            sh "./prepare-image-fortivpn.sh"
+                            sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
+                            sh "sleep 10"
+                            sh "python3 main.py PD23"
                     }
                 }
             }
