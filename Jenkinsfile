@@ -71,8 +71,8 @@ pipeline {
                         docker {
 //                             label "pkles-gt0003772 || pkles-gt0003773 || pkles-gt0000369"
 //                             label "pkles-gt0003772"
-//                             label "pkles-gt0003773"
-                            label "pkles-gt0000369"
+                            label "pkles-gt0003773"
+//                             label "pkles-gt0000369"
                             image "ubuntu:20.04"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1 --add-host archive.ubuntu.com:91.189.88.152 --add-host security.ubuntu.com:91.189.88.142"
                             reuseNode true
@@ -105,7 +105,8 @@ pipeline {
                         docker {
 //                             label "pkles-gt0000369 || pkles-gt0003771"
 //                             label "pkles-gt0003773"
-                            label "pkles-gt0000369"
+//                             label "pkles-gt0000369"
+                            label "pkles-gt0003772"
                             image "ubuntu:20.04"
 //                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1 --add-host archive.ubuntu.com:91.189.88.152 --add-host security.ubuntu.com:91.189.88.142"
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
