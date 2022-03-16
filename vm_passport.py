@@ -539,7 +539,7 @@ def PassportsVM(portal_name: str) -> tuple:
     from vdcPassports import PassportsVDC
     all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name)
 
-    project_id_vcd_types = dict()
+    project_id_vdc_types = dict()
 
     for project in portal_projects['projects']:
         # if project['id'] not in map(lambda x: x['name'] if x['description'] == 'passport-vm-%s' % portal_name else None,
@@ -551,12 +551,12 @@ def PassportsVM(portal_name: str) -> tuple:
         # for vm_project in dg_vm_projects:
         for vdc_vm in all_vdc_objects:
             if vdc_vm['fields'][5]['value'] == project['id']:  # and vdc_vm['fields'][5]['value'] == vm_project['name']:
-                project_id_vcd_types[project['id']] = {'vdc_object_id': vdc_vm['public_id']}
+                project_id_vdc_types[project['id']] = {'vdc_object_id': vdc_vm['public_id']}
 
                 # {'vm_project_id': vm_project['public_id'],
             # if project['id'] not in dg_vm_projects_ids:
             # print(True, project['id'])
-            # project_id_vcd_types[project['id']] = {'vdc_object_id': vdc_vm['public_id']}
+            # project_id_vdc_types[project['id']] = {'vdc_object_id': vdc_vm['public_id']}
         # {'vm_project_id': None,
 
     projects = checksum_vdces(portal_projects['projects'])
@@ -584,7 +584,7 @@ def PassportsVM(portal_name: str) -> tuple:
             # for vdc_vm in all_vdc_objects:
             # print('#######################')
             # if vdc_vm['fields'][5]['value'] == dg_vdc['vdc_id']:
-            #         project_id_vcd_types[dg_vdc['type_id']] = vdc_vm['public_id']
+            #         project_id_vdc_types[dg_vdc['type_id']] = vdc_vm['public_id']
 
     # print('ALL VCOD', len(dg_vdc_checksum))
 
@@ -607,7 +607,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     for project in projects:
         if not any(map(lambda x: x['name'] == projects[project]['id'], dg_types)):
-            vdc_id = project_id_vcd_types[projects[project]['id']]['vdc_object_id']
+            vdc_id = project_id_vdc_types[projects[project]['id']]['vdc_object_id']
             # and project in ('gt-foms-prod-jump', 'gt-foms-prod-fortigate'): # dg_types)) and project == 'gt-rosim-dev-customer':
 
             payload_type_tmp: dict = {
@@ -867,7 +867,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     for dg_type in update_dg_types:
 
-        vdc_id = project_id_vcd_types[dg_type['vdc_id']]['vdc_object_id']
+        vdc_id = project_id_vdc_types[dg_type['vdc_id']]['vdc_object_id']
 
         vm_list = portal_api(f"servers?project_id={dg_type['vdc_id']}", portal_name)
 
