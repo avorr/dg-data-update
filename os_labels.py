@@ -164,15 +164,15 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
         for cluster_name in set(clusters):
             if check_resolves('query-runner.apps.%s' % cluster_name):
-                get_labels = requests.request("GET", f'https://query-runner.apps.{cluster_name}/pods', verify=False)
+                get_labels = requests.request("GET", 'https://query-runner.apps.%s/pods' % cluster_name, verify=False)
                 if get_labels.status_code == 200:
                     all_labels.append(dict(cluster=cluster_name, labels=json.loads(get_labels.content)))
 
         return all_labels
 
     all_labels: list = get_ose_labels(clusters)
-
-    # print(all_labels)
+    # from tools import write_to_file
+    # write_to_file(f'{all_labels=}')
     # return
     # from all_labels import all_labels
     # cmdb_projects = get_all_jsons('types', cmdb_token)
@@ -343,7 +343,6 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 create_object = CreateLabels(labels, cmdb_token, create_type['result_id'], user_id)
                 print('CREATE OBJECT', create_object)
                 time.sleep(0.1)
-
     # all_objects = None
     # all_objects = get_all_jsons('objects', cmdb_token)
 
@@ -364,33 +363,52 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     # all_types_labels = reduce(lambda x, y: x + y, map(lambda foo: tuple(filter(lambda bar: f'os-labels-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
     all_types_labels = tuple(filter(lambda x: f'os-labels-{portal_name}--' in x['name'], cmdb_projects))
 
-    def format_pod_name(pod_info: list) -> list:
-        pod_info_tmp = pod_info[:]
-        pod_info_tmp[1]['value'] = pod_info[1]['value'][:-6]
-        if pod_info[5]['value']:
-            number_value = 0
-            for value in pod_info[1]['value'][::-1]:
-                number_value += 1
-                if value == '-':
-                    pod_info_tmp[1]['value'] = pod_info[1]['value'][:-number_value]
-                    return pod_info_tmp
-        return pod_info_tmp
+    # for i in all_types_labels:
+    #     print(i)
+
+    # print(list(map(lambda x: x['fields'], all_types_labels)))
+    # return
+
+    from itertools import zip_longest
 
     for cmdb_cluster in all_types_labels:
         for cluster in all_labels:
             if cmdb_cluster['label'] == cluster['cluster']:
 
-                # cmdb_namespaces = tuple(filter(
-                #     lambda f: f['type_id'] == cmdb_cluster['public_id'],
-                #     reduce(lambda x, y: x + y, map(lambda z: tuple(map(lambda j:
-                #                                                        dict(public_id=j.get('public_id'),
-                #                                                             type_id=j.get('type_id'),
-                #                                                             author_id=j.get('author_id'),
-                #                                                             fields=j.get('fields'),
-                #                                                             creation_time=j.get('creation_time')),
-                #                                                        z['results'])), all_objects))))
+
+                # itertools.zip_longest
+
+
+
 
                 cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
+                # print(cmdb_namespaces)
+                # for i in cmdb_namespaces:
+                #     print(i)
+                # return
+
+
+#######
+                # for dg_label, ex_label in zip_longest(dg_labels_new, ex_labels_new):
+                    # print(dg_label, ex_label)
+                    # if not ex_label:
+                    #     print('delete label', dg_label)
+                    # elif not dg_label:
+                    #     print('create label', ex_label)
+                    # else:
+                    #     print('update label', dg_label, ex_label)
+
+########
+                # dg_labels = list()
+                # for i in cmdb_namespaces:
+                #     dg_labels.append(i['fields'][1]['value'])
+
+                # ex_labels = list()
+                # for pod_info in cluster['labels']:
+                #     ex_labels.append(pod_info['name'])
+                # print(dg_labels)
+                # print(ex_labels)
+
 
                 for pod_info in cluster['labels']:
                     # if pod_info['name'] not in map(lambda x: x.get('fields')[1]['value'], cmdb_namespaces):
@@ -401,14 +419,14 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                     # tmpField = format_pod_name(template['fields'])
                     # if tmpField not in map(lambda x: format_pod_name(x.get('fields')), cmdb_namespaces):
                     if template['fields'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
-                        createLabel = CreateLabels(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id)
-                        print('CREATE LABEL <--->', template['fields'][1]['value'], createLabel)
+                        # createLabel = CreateLabels(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id)
+                        print('CREATE LABEL <--->', template['fields'][1]['value'], template['fields'])
                         time.sleep(0.1)
 
                 for cmdb_label in cmdb_namespaces:
                     if cmdb_label['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
                         print('DELETE LABEL <--->', cmdb_label['fields'][1]['value'])
-                        cmdb_api('DELETE', f"object/{cmdb_label['public_id']}", cmdb_token)
+                        # cmdb_api('DELETE', f"object/{cmdb_label['public_id']}", cmdb_token)
                         time.sleep(0.1)
 
                 # print(tmpField[1]['value'])
@@ -569,3 +587,41 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 #     if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
                 #         print('OBJECT for Delete', cmdb_ns['fields'][0]['value'])
                 #         print(cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token))
+
+
+    # def format_pod_name(pod_info: list) -> list:
+    #     pod_info_tmp = pod_info[:]
+    #     pod_info_tmp[1]['value'] = pod_info[1]['value'][:-6]
+    #     if pod_info[5]['value']:
+    #         number_value = 0
+    #         for value in pod_info[1]['value'][::-1]:
+    #             number_value += 1
+    #             if value == '-':
+    #                 pod_info_tmp[1]['value'] = pod_info[1]['value'][:-number_value]
+    #                 return pod_info_tmp
+    #     return pod_info_tmp
+
+
+
+
+
+
+
+    # for cmdb_cluster in all_types_labels:
+    #     for cluster in all_labels:
+    #         if cmdb_cluster['label'] == cluster['cluster']:
+    #
+    #             cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
+    #
+    #             for pod_info in cluster['labels']:
+    #                 template = CreateLabels(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id, template=True)
+    #                 if template['fields'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
+    #                     createLabel = CreateLabels(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id)
+    #                     print('CREATE LABEL <--->', template['fields'][1]['value'], template['fields'])
+    #                     time.sleep(0.1)
+    #
+    #             for cmdb_label in cmdb_namespaces:
+    #                 if cmdb_label['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
+    #                     print('DELETE LABEL <--->', cmdb_label['fields'][1]['value'])
+    #                     cmdb_api('DELETE', f"object/{cmdb_label['public_id']}", cmdb_token)
+    #                     time.sleep(0.1)

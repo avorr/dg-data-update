@@ -31,7 +31,8 @@ pipeline {
                 stage("Update CMDB Info Portal-PD15") {
                     environment {
                         PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev'
-                        OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
+//                         OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
+                        OS_METRICS_PD15 = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query\?query\=sum%20\(kube_resourcequota\)%20by%20\(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type\)"
                         PPRB3_VERSIONS_PD15 = 'http://p-infra-jenkinsslave-01.common.novalocal:5002/versions'
                         PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
                     }
