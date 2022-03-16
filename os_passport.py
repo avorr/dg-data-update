@@ -27,12 +27,14 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
     from vm_passport import get_mongodb_objects
     all_categories = get_mongodb_objects('framework.categories')
 
-    os_passports_category_id: dict = category_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdb_token,
-                                                 all_categories)
-    os_portal_category_id: dict = category_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
-                                              cmdb_token, all_categories, os_passports_category_id['public_id'])
+    os_passports_category_id: dict = \
+        category_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdb_token, all_categories)
+    os_portal_category_id: dict = \
+        category_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open', cmdb_token, all_categories,
+                    os_passports_category_id['public_id'])
 
     def get_os_info() -> dict:
+        print(portal_info[portal_name]['metrics'])
         return json.loads(requests.request("GET", portal_info[portal_name]['metrics']).content)
 
     cluster_info = get_os_info()
@@ -51,7 +53,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
         i = -1
         for namespace in info['info']:
             i += 1
-            info['info'][i] = dict(namespace=namespace, info=[])
+            info['info'][i] = dict(namespace=namespace, info=list())
 
     for item in os_info:
         for info in item['info']:
@@ -129,7 +131,24 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                             "label": cluster['cluster']
                         }
                     ],
-                    "externals": [],
+                    "externals": [
+                        {
+                            "name": "cluster link",
+                            "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects" %
+                                    cluster['cluster'],
+                            "label": "Cluster link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": []
+                        },
+                        {
+                            "name": "namespace link",
+                            "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects/{}" %
+                                    cluster['cluster'],
+                            "label": "Namespace link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": ["namespace"]
+                        }
+                    ],
                     "summary": {
                         "fields": [
                             "namespace",
@@ -200,9 +219,9 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
 
             data_category_template['types'].append(create_type['result_id'])
 
-            put_type_in_catigory = cmdb_api('PUT', f"categories/{os_portal_category_id['public_id']}", cmdb_token,
+            put_type_in_category = cmdb_api('PUT', f"categories/{os_portal_category_id['public_id']}", cmdb_token,
                                             data_category_template)
-            print('put_type_in_catigory', put_type_in_catigory)
+            print('put_type_in_category', put_type_in_category)
             print('data_category_template', data_category_template)
 
             for namespace in cluster['info']:
