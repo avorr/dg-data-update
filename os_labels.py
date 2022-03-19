@@ -419,14 +419,14 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                     # tmpField = format_pod_name(template['fields'])
                     # if tmpField not in map(lambda x: format_pod_name(x.get('fields')), cmdb_namespaces):
                     if template['fields'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
-                        # createLabel = CreateLabels(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id)
+                        createLabel = CreateLabels(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id)
                         print('CREATE LABEL <--->', template['fields'][1]['value'], template['fields'])
                         time.sleep(0.1)
 
                 for cmdb_label in cmdb_namespaces:
                     if cmdb_label['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
                         print('DELETE LABEL <--->', cmdb_label['fields'][1]['value'])
-                        # cmdb_api('DELETE', f"object/{cmdb_label['public_id']}", cmdb_token)
+                        cmdb_api('DELETE', f"object/{cmdb_label['public_id']}", cmdb_token)
                         time.sleep(0.1)
 
                 # print(tmpField[1]['value'])
