@@ -94,7 +94,7 @@ if __name__ == '__main__':
         all_objects = PassportsVM(sys.argv[1])
     except EOFError as error:
         print(error)
-    exit()
+    # exit()
     try:
         PassportsOS(sys.argv[1], all_objects)
     except EOFError as error:
