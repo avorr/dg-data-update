@@ -122,11 +122,12 @@ pipeline {
                             sh "python3 main.py PD23"
                     }
                 }
+*/
             }
         }
     }
 }
-*/
+
     // }
 
     // post {
