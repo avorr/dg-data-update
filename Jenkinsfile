@@ -44,8 +44,9 @@ pipeline {
 //                             label "pkles-gt0003773"
 //                             label "pkles-gt0000369 || pkles-gt0003773"
                             label "pkles-gt0000369"
-                            image "ubuntu:20.04"
-//                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1 --add-host archive.ubuntu.com:91.189.88.152 --add-host security.ubuntu.com:91.189.88.142"
+                            registryUrl 'https://base.sw.sbc.space/'
+                            image 'pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.1'
+                            registryCredentialsId 'tuz_pid_pidefs'
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
                         }
