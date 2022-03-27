@@ -79,7 +79,7 @@ pipeline {
 //                             registryUrl 'https://myregistry.com/'
                             registryUrl 'https://base.sw.sbc.space/'
                             image 'pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.1'
-                            registryCredentialsId 'myPredefinedCredentialsInJenkins'
+                            registryCredentialsId 'tuz_pid_pidefs'
                             args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1 --add-host archive.ubuntu.com:91.189.88.152 --add-host security.ubuntu.com:91.189.88.142"
                             reuseNode true
                         }
