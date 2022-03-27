@@ -29,6 +29,11 @@ pipeline {
         stage('Run Parallel') {
             parallel {
                 stage("Update CMDB Info Portal-PD15") {
+                    when {
+                        expression {
+                            return Deploy
+                        }
+                    }
                     environment {
                         PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev'
 //                         OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
@@ -82,14 +87,19 @@ pipeline {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             sh "./prepare-image-fortivpn.sh"
-                            sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
-                            sh "sleep 10"
-                            sh "python3 main.py PD20"
+//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
+//                             sh "sleep 10"
+//                             sh "python3 main.py PD20"
                        }
                    }
                }
 
                 stage("Update CMDB Info Portal-PD23") {
+                    when {
+                        expression {
+                            return Deploy
+                        }
+                    }
                     environment {
                         PORTAL_URL_PD23 = "https://portal.gostech.novalocal"
                         OS_METRICS_PD23 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"

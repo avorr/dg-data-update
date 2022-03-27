@@ -64,6 +64,21 @@ if __name__ == '__main__':
     # all_objects = get_mongodb_objects('framework.objects')
     # PassportsOS(sys.argv[1], all_objects)
     # all_objects = PassportsVM(sys.argv[1])
+
+
+    # from cmdb_namespaces import cmdb_namespaces
+
+    # pod_names = {
+    #     pod['fields'][1]['value']: pod['fields'] for pod in cmdb_namespaces
+    # }
+
+    # print(pod_names)
+    # for pod in pod_names:
+    #     print(pod)
+    # for i in pod_names:
+    #     print(i, pod_names[i])
+
+    # print(set(pod_names.keys()))
     # exit()
     # LabelsOS(sys.argv[1])
     # exit()
@@ -79,7 +94,7 @@ if __name__ == '__main__':
         all_objects = PassportsVM(sys.argv[1])
     except EOFError as error:
         print(error)
-
+    exit()
     try:
         PassportsOS(sys.argv[1], all_objects)
     except EOFError as error:

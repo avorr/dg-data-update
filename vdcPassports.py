@@ -16,7 +16,7 @@ from vm_passport import portal_api
 from vm_passport import cmdb_api
 from vm_passport import category_id
 from vm_passport import get_dg_token
-from vm_passport import get_all_jsons
+# from vm_passport import get_all_jsons
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -122,7 +122,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
         # json_read(payload_vcd_object)
 
     # dg_types: tuple = get_all_jsons('types', cmdb_token)
-    from vm_passport import get_mongodb_objects
+    # from vm_passport import get_mongodb_objects
     dg_types: tuple = get_mongodb_objects('framework.types')
 
     portal_vdces: list = portal_api("projects", portal_name)["stdout"]["projects"]
