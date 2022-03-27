@@ -93,7 +93,6 @@ if __name__ == '__main__':
         PassportsOS(sys.argv[1], all_objects)
     except EOFError as error:
         print(error)
-
     try:
         LabelsOS(sys.argv[1])
     # except EOFError as error:
