@@ -1,17 +1,11 @@
 #!/usr/bin/python3
 
-import os
 import sys
-from tools import *
-from env import portal_info
 from vm_passport import PassportsVM
 from os_passport import PassportsOS
 from os_labels import LabelsOS
-from getObjects import get_dg_objects
-from vdcPassports import PassportsVDC
 from pprb3Versions import pprb3_versions
 from view_settings import visible_settings
-from vm_passport import get_mongodb_objects
 
 # from platformReleases import releases
 
