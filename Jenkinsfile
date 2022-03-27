@@ -52,7 +52,7 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh "./prepare-image-pd15.sh"
+//                             sh "./prepare-image-pd15.sh"
                             sh "python3 main.py PD15"
                         }
                     }
