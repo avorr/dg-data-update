@@ -28,12 +28,8 @@ pipeline {
     stages {
         stage('Run Parallel') {
             parallel {
+/*
                 stage("Update CMDB Info Portal-PD15") {
-                    when {
-                        expression {
-                            return Deploy
-                        }
-                    }
                     environment {
                         PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev'
 //                         OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
@@ -61,7 +57,7 @@ pipeline {
                         }
                     }
                 }
-
+*/
                 stage("Update CMDB Info Portal-PD20") {
                     environment {
                         PORTAL_URL_PD20 = "https://portal.gostech.novalocal"
@@ -94,12 +90,8 @@ pipeline {
                    }
                }
 
+/*
                 stage("Update CMDB Info Portal-PD23") {
-                    when {
-                        expression {
-                            return Deploy
-                        }
-                    }
                     environment {
                         PORTAL_URL_PD23 = "https://portal.gostech.novalocal"
                         OS_METRICS_PD23 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
@@ -134,7 +126,7 @@ pipeline {
         }
     }
 }
-
+*/
     // }
 
     // post {
