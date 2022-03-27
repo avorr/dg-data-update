@@ -79,7 +79,7 @@ pipeline {
                             registryUrl 'https://base.sw.sbc.space/'
                             image 'pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.1'
                             registryCredentialsId 'tuz_pid_pidefs'
-                            args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1 --add-host archive.ubuntu.com:91.189.88.152 --add-host security.ubuntu.com:91.189.88.142"
+                            args "-u root --privileged --add-host p-infra-bitwarden-01.common.novalocal:172.26.105.1"
                             reuseNode true
                         }
                     }
@@ -125,7 +125,7 @@ pipeline {
                         }
                     }
                     steps {
-                            sh "./prepare-image-fortivpn.sh"
+//                             sh "./prepare-image-fortivpn.sh"
                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=3ec488ab55be088c5abb2b137a749d2ef6320c09cefc513d5c02b861a77ee8cd"
                             sh "sleep 10"
                             sh "python3 main.py PD23"

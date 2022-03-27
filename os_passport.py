@@ -4,7 +4,6 @@ import json
 import time
 import requests
 import datetime
-from functools import reduce
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from env import portal_info
@@ -12,13 +11,8 @@ from vm_passport import cmdb_api
 from vm_passport import objects
 from vm_passport import category_id
 from vm_passport import get_dg_token
-# from vm_passport import get_all_jsons
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
-
-def json_read(json_object: dict):
-    print(json.dumps(json_object, indent=4))
 
 
 def PassportsOS(portal_name: str, all_objects: tuple) -> None:
@@ -62,12 +56,9 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                         info['namespace'] == metric['metric']['namespace']:
                     info['info'].append((metric['metric']['resource'], metric['metric']['type'], metric['value']))
 
-    # cmdb_projects = get_all_jsons('types', cmdb_token)
-
     cmdb_projects: tuple = get_mongodb_objects('framework.types')
 
     for cluster in os_info:
-        # if not not any(map(lambda x: any(map(lambda y: y['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}", x['results'])), cmdb_projects)):
         if not any(map(lambda y: y['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
                        cmdb_projects)):
 
@@ -184,24 +175,8 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
 
             create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
 
-            print(create_type)
-
-            # allTypesPages = get_all_jsons('types', cmdb_token)[0]['pager']['total_pages']
-            # newAllTypesPages = list()
-            # for page in range(1, allTypesPages + 1):
-            #     responsePage = cmdb_api('GET', f'types/?page={page}', cmdb_token)
-            #     newAllTypesPages.append(responsePage)
-
-            # newTypeId = None
-            # for newTypes in newAllTypesPages:
-            #     for newItem in newTypes['results']:
-            #         if newItem['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}":
-            #             newTypeId = newItem['public_id']
-
             print(create_type['result_id'], 'new type id')
 
-            # os_portal_category_id = category_id(f'OS-{portal_name}', f'OS-{portal_name}', 'far fa-folder-open',
-            #                                       os_passports_category_id['public_id'], all_categories)
             data_category_template: dict = {
                 "public_id": os_portal_category_id['public_id'],
                 "name": os_portal_category_id['name'],
@@ -213,7 +188,7 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 "parent": os_passports_category_id['public_id'],
                 "types": os_portal_category_id['types']
             }
-            #
+
             if not create_type['result_id']:
                 return
 
@@ -229,42 +204,13 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                 print(create_object)
                 time.sleep(0.1)
 
-    # all_objects = get_all_jsons('objects', cmdb_token)
-    # from objects import all_objects
-
-    # from pymongo import MongoClient
-    # connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
-    # cluster = MongoClient(connection_sring)
-    # db = cluster['cmdb']
-    # bdObjects = db.get_collection('framework.objects')
-    #
-    # all_objects = tuple(bdObjects.find({}))
-    # from vm_passport import get_mongodb_objects
     all_objects: tuple = get_mongodb_objects('framework.objects')
-
-    # cmdb_projects: tuple = get_mongodb_objects('framework.types')
-    # cmdb_projects = get_all_jsons('types', cmdb_token)
-
-    # all_cmdb_cluster_types = reduce(lambda x, y: x + y,
-    #                              map(lambda z: tuple(
-    #                                  filter(lambda f: f'os-cluster-{portal_name}--' in f['name'], z['results'])),
-    #                                  cmdb_projects))
 
     all_cmdb_cluster_types = tuple(filter(lambda f: f'os-cluster-{portal_name}--' in f['name'], cmdb_projects))
 
     for cmdb_cluster in all_cmdb_cluster_types:
         for cluster in os_info:
             if cmdb_cluster['label'] == cluster['cluster']:
-                # print(cmdb_cluster['label'], cluster['cluster'])
-
-                # cmdb_namespaces = tuple(filter(lambda f: f['type_id'] == cmdb_cluster['public_id'],
-                #                                reduce(lambda x, y: x + y, map(lambda z: tuple(
-                #                                    map(lambda j: dict(public_id=j.get('public_id'),
-                #                                                       type_id=j.get('type_id'),
-                #                                                       author_id=j.get('author_id'),
-                #                                                       fields=j.get('fields'),
-                #                                                       creation_time=j.get('creation_time')),
-                #                                        z['results'])), all_objects))))
                 cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
                 for os_namespace in cluster['info']:
                     if os_namespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdb_namespaces):
@@ -277,15 +223,11 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                                               'NAMESPACE', template=True)
                         if cmdb_ns['fields'][0]['value'] == os_namespace['namespace'] and cmdb_ns['fields'] != \
                                 ns_template['fields']:
-                            # unixTime = lambda x: int(datetime.datetime.timestamp(x) * 1000)
-                            # print(unixTime(cmdb_ns['creation_time']))
-
                             update_object_template: dict = {
                                 "type_id": cmdb_ns['type_id'],
                                 "status": cmdb_ns["version"],
                                 "version": cmdb_ns["version"],
                                 "creation_time": {
-                                    # "$date": int(time.mktime(time.strptime(cmdb_ns['creation_time'], '%Y-%m-%dT%H:%M:%S.%f')) * 1000)
                                     "$date": int(datetime.datetime.timestamp(cmdb_ns['creation_time']) * 1000)
                                 },
                                 "author_id": cmdb_ns['author_id'],
@@ -300,7 +242,6 @@ def PassportsOS(portal_name: str, all_objects: tuple) -> None:
                                 "comment": ""
                             }
 
-                            # json_read(update_object_template)
                             time.sleep(0.1)
                             print(f"UPDATE NAMESPACE in {cmdb_ns['type_id']}", os_namespace['namespace'])
                             objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT')
