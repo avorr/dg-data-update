@@ -17,7 +17,8 @@ from vm_passport import cmdb_api
 # from vm_passport import objects
 from vm_passport import category_id
 from vm_passport import get_dg_token
-from vm_passport import get_all_jsons
+from vm_passport import get_mongodb_objects
+# from vm_passport import get_all_jsons
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -128,7 +129,6 @@ def releases() -> None:
         category_id('platform-releases', 'Platform Releases', 'fas fa-list-alt', cmdb_token, all_categories)
 
     # all_pprb3_verions: dict = json.loads(requests.request("GET", portal_info[portal_name]['pprb3_versions']).content)
-    from vm_passport import get_mongodb_objects
 
     # cmdb_projects = get_all_jsons('types', cmdb_token)
 
@@ -261,8 +261,7 @@ def releases() -> None:
                 print('CREATE OBJECT', create_version_objects)
                 time.sleep(0.1)
 
-    # from vm_passport import get_mongodb_objects
-    # all_objects = get_mongodb_objects('framework.objects')
+    all_objects = get_mongodb_objects('framework.objects')
     # cmdb_projects = get_all_jsons('types', cmdb_token)
     # allTypesVersions = reduce(lambda x, y: x + y, map(lambda foo: tuple(
     #     filter(lambda bar: f'pprb3-versions-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))

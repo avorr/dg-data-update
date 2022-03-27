@@ -14,7 +14,7 @@ from vm_passport import cmdb_api
 # from vm_passport import objects
 from vm_passport import category_id
 from vm_passport import get_dg_token
-from vm_passport import get_all_jsons
+# from vm_passport import get_all_jsons
 from vm_passport import get_mongodb_objects
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
