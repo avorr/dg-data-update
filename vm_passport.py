@@ -11,29 +11,18 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from tools import *
 from env import portal_info
+from common_function import cmdb_api, \
+    get_mongodb_objects, \
+    create_category, \
+    get_dg_token, \
+    category_id, \
+    json_serial, \
+    portal_api
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
-def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict = '') -> dict:
-    """
-    Func to use DataGerry rest-api
-    :param method:
-    :param api_method:
-    :param token:
-    :param payload:
-    :return:
-    """
-    cmdb_api_url: str = os.environ["DATA_GERRY_CMDB_URL"]
-    headers_cmdb_api: dict = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer %s' % token
-    }
-    return json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
-                                       data=json.dumps(payload)).content)
-
-
-def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
+def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
             template: bool = False, tags: list = [], vdc_object=None) -> dict:
     """
     Func to create or update or delete objects in DataGerry
@@ -48,7 +37,7 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
     :return:
     """
     if method == 'PUT':
-        return cmdb_api(method, f'object/{vm_info["public_id"]}', cmdb_token, vm_info)
+        return cmdb_api(method, f'object/%s' % vm_info["public_id"], cmdb_token, vm_info)
 
     elif method == 'POST_NEW_VM':
 
@@ -61,70 +50,6 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
         }
 
         return cmdb_api('POST', 'object/', cmdb_token, payload_vm_tmp)
-
-    elif method == 'NAMESPACE':
-        def convert_to_gb(bytes):
-            foo = float(bytes)
-            for i in range(3):
-                foo = foo / 1024
-            return foo
-
-        def get_metric(ns_info: list, looking_metric: str, type_metric: str) -> str:
-            for metric in ns_info:
-                if metric[0] == looking_metric and metric[1] == type_metric:
-                    return metric[2][1]
-
-        # metric = lambda x, y: filter(lambda foo: foo[2][1] if foo[0] == x and foo[1] == y else None, vm_info['info'])
-
-        get_usage = lambda x, y: "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
-
-        fract = lambda x: str(int(x)) if x - int(x) == 0 else "%.2f" % x
-
-        payload_ns_tmp: dict = {
-            "status": True,
-            "type_id": type_id,
-            "version": "1.0.0",
-            "author_id": author_id,
-            "fields": [
-                {
-                    "name": "namespace",
-                    "value": vm_info['namespace']
-                },
-                {
-                    "name": "limits.cpu-hard",
-                    "value": get_metric(vm_info['info'], 'limits.cpu', 'hard')
-                },
-                {
-                    "name": "limits.cpu-used",
-                    "value": get_metric(vm_info['info'], 'limits.cpu', 'used')
-                },
-                {
-                    "name": "cores-usage",
-                    # "value": "%.2f" % ((float(get_metric(vm_info['info'], 'limits.cpu', 'used')) / float(get_metric(vm_info['info'], 'limits.cpu', 'hard'))) * 100)
-                    "value": get_usage(get_metric(vm_info['info'], 'limits.cpu', 'used'),
-                                       get_metric(vm_info['info'], 'limits.cpu', 'hard'))
-                },
-                {
-                    "name": "limits.memory-hard",
-                    "value": fract(convert_to_gb(get_metric(vm_info['info'], 'limits.memory', 'hard')))
-                },
-                {
-                    "name": "limits.memory-used",
-                    "value": fract(convert_to_gb(get_metric(vm_info['info'], 'limits.memory', 'used')))
-                },
-                {
-                    "name": "memory-usage",
-                    # "value": "%.2f" % ((float(get_metric(vm_info['info'], 'limits.memory', 'used')) / float(get_metric(vm_info['info'], 'limits.memory', 'hard'))) * 100)
-                    "value": get_usage(get_metric(vm_info['info'], 'limits.memory', 'used'),
-                                       get_metric(vm_info['info'], 'limits.memory', 'hard'))
-                }
-            ]
-        }
-
-        if template:
-            return payload_ns_tmp
-
-        return cmdb_api('POST', 'object/', cmdb_token, payload_ns_tmp)
 
     extra_disks: str = ''
     if vm_info['volumes']:
@@ -260,7 +185,8 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
             }
         ]
     }
-    if method == 'GET_TEMPLATE':
+
+    if template:
         return payload_vm_tmp
 
     return cmdb_api(method, 'object/', cmdb_token, payload_vm_tmp)
@@ -276,145 +202,6 @@ def objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method
     #         print(f"Status Code {response['status_code']}")
     #         put_tag(vm_info, number_of_recursions)
     #     return dict(vm_name=vm_info['name'], tag_name=vm_info['tag_name'], status_code=response['status_code'])
-
-
-def get_dg_token() -> str:
-    """
-    Function to get app token and user id
-    :return:
-    """
-    from env import cmdb_login, cmdb_password
-    payload_auth: dict = {
-        "user_name": cmdb_login,
-        "password": cmdb_password
-    }
-    user_info = cmdb_api('POST', 'auth/login', payload=payload_auth)
-    return user_info['token'], user_info['user']['public_id']
-
-
-thread_count = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
-
-
-def get_all_jsons(dg_item: str, cmdb_token: str) -> tuple:
-    """
-    Function to get different types of cmdb data in one tuple
-    :param dg_item:
-    :param cmdb_token:
-    :return:
-    """
-    json_count = cmdb_api('GET', f"{dg_item}/", cmdb_token)['pager']['total_pages']
-
-    def get_one_json(page_number: int):
-        return cmdb_api('GET', f'{dg_item}/?page={page_number}', cmdb_token)
-
-    full_info = list()
-    # with ThreadPoolExecutor(max_workers=thread_count(json_count)) as executor:
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        for page_info in executor.map(get_one_json, range(1, json_count + 1)):
-            full_info.append(page_info)
-    return tuple(full_info)
-
-
-def create_category(name: str, label: str, icon: str, cmdb_token: str, parent: int = None) -> dict:
-    """
-    Function to create categories in CMDB
-    :param name:
-    :param label:
-    :param icon:
-    :param cmdb_token:
-    :param parent:
-    :return:
-    """
-    payload_category_tmp: dict = {
-        "name": name,
-        "label": label,
-        "meta": {
-            "icon": icon,
-            "order": None
-        },
-        "parent": parent,
-        "types": list()
-    }
-
-    return cmdb_api('POST', 'categories/', cmdb_token, payload_category_tmp)
-
-
-def category_id(category_name: str, category_label: str, category_icon: str, cmdb_token: str, dg_categories: tuple,
-                parent_category: int = None) -> dict:
-    """
-    Func to create category in cmdb
-    :param category_name:
-    :param category_label:
-    :param category_icon:
-    :param cmdb_token:
-    :param dg_categories:
-    :param parent_category:
-    :return:
-    """
-
-    if not any(map(lambda y: y['name'] == category_name, dg_categories)):
-        print(True)
-        result: dict = create_category(category_name, category_label, category_icon, cmdb_token, parent_category)
-        return {
-            'public_id': result['raw']['public_id'],
-            'name': result['raw']['name'],
-            'label': result['raw']['label'],
-            'types': result['raw']['types']
-        }
-    else:
-        result: dict = max(filter(lambda y: y['name'] == category_name, dg_categories))
-        return {
-            'public_id': result['public_id'],
-            'name': result['name'],
-            'label': result['label'],
-            'types': result['types']
-        }
-
-
-def portal_api(api_name: str, portal_name: str) -> dict:
-    """
-    Func to work with Portal REST-API
-    :param api_name:
-    :param portal_name:
-    :return: dict
-    """
-    headers: dict = {
-        'user-agent': 'CMDB',
-        'Content-type': 'application/json',
-        'Accept': 'text/plain',
-        'authorization': 'Token %s' % portal_info[portal_name]['token']
-    }
-    response = requests.get('%s/api/v1/%s' % (portal_info[portal_name]['url'], api_name), headers=headers, verify=False)
-    return dict(stdout=json.loads(response.content), status_code=response.status_code)
-
-
-def get_mongodb_objects(collection: str, find: dict = None) -> tuple:
-    """
-    Func to work with DataGerry mongodb
-    :param collection:
-    :param find:
-    :return:
-    """
-    mongo_db = MongoClient('mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb')['cmdb']
-    # mongo_db = MongoClient('mongodb://172.26.107.101:30039/cmdb')['cmdb']
-    # mongo_objects = mongo_db.get_collection('framework.%s' % collection)
-    mongo_objects = mongo_db.get_collection(collection)
-    if find:
-        # mongo_objects = mongo_db.get_collection(collection)
-        return tuple(mongo_objects.find(find))
-    # mongo_objects = mongo_db.get_collection(collection)
-    return tuple(mongo_objects.find())
-
-
-def json_serial(obj: datetime) -> str:
-    """
-    JSON serializer for objects not serializable by default json code
-    :param obj: datetime
-    :return: str
-    """
-    if isinstance(obj, (datetime, date)):
-        return obj.isoformat()
-    raise TypeError("Type %s not serializable" % type(obj))
 
 
 def PassportsVM(portal_name: str) -> tuple:
@@ -498,7 +285,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
         for categories in dg_categories:
             for categories_id in categories['results']:
-                print('DELETE DG CAT', cmdb_api('DELETE', "categories/%s" % {categories_id['public_id']}, cmdb_token))
+                print('DELETE DG CAT', cmdb_api('DELETE', "categories/%s" % categories_id['public_id'], cmdb_token))
 
     # dg_types: tuple = get_all_jsons('types', cmdb_token)
 
@@ -583,7 +370,7 @@ def PassportsVM(portal_name: str) -> tuple:
     print('VDC WHERE WERE CHANGES', len(update_dg_types))
 
     portal_tags = portal_api('dict/tags', portal_name)['stdout']['tags']
-    all_objects = get_mongodb_objects('framework.objects')
+    all_objects: tuple = get_mongodb_objects('framework.objects')
 
     for project in projects:
         if not any(map(lambda x: x['name'] == projects[project]['id'], dg_types)):
@@ -822,17 +609,17 @@ def PassportsVM(portal_name: str) -> tuple:
 
             print('payload_category_tmp', payload_category_tmp)
 
-            vm_list: dict = portal_api(f"servers?project_id={projects[project]['id']}", portal_name)
+            vm_list: dict = portal_api("servers?project_id=%s" % projects[project]['id'], portal_name)
 
             for server in vm_list['stdout']['servers']:
                 time.sleep(0.1)
                 try:
-                    create_object = objects(server, cmdb_token, create_type['result_id'], user_id, tags=portal_tags,
+                    create_object = vm_objects(server, cmdb_token, create_type['result_id'], user_id, tags=portal_tags,
                                             vdc_object=vdc_id)
                     print('CREATE OBJECT IN %s' % create_type['result_id'], create_object)
                 except:
                     time.sleep(5)
-                    objects(server, cmdb_token, create_type['result_id'], user_id, tags=portal_tags, vdc_object=vdc_id)
+                    vm_objects(server, cmdb_token, create_type['result_id'], user_id, tags=portal_tags, vdc_object=vdc_id)
 
     if not update_dg_types:
         return all_objects
@@ -841,19 +628,19 @@ def PassportsVM(portal_name: str) -> tuple:
 
         vdc_id = project_id_vdc_types[dg_type['vdc_id']]['vdc_object_id']
 
-        vm_list = portal_api(f"servers?project_id={dg_type['vdc_id']}", portal_name)
+        vm_list = portal_api("servers?project_id=%s" % dg_type['vdc_id'], portal_name)
 
         dg_type_objects = tuple(filter(lambda x: x['type_id'] == dg_type['type_id'], all_objects))
 
         portal_project_vms = \
-            tuple(map(lambda server: objects(server, 'token', dg_type['type_id'], user_id, 'GET_TEMPLATE',
+            tuple(map(lambda server: vm_objects(server, 'token', dg_type['type_id'], user_id, template=True,
                                              tags=portal_tags, vdc_object=vdc_id).get('fields'),
                       vm_list['stdout']['servers']))
 
         for portal_vm in portal_project_vms:
             if not any(map(lambda x: x['fields'][17]['value'] == portal_vm[17]['value'], dg_type_objects)):
                 print('VM FOR CREATE', portal_vm)
-                objects(portal_vm, cmdb_token, dg_type['type_id'], user_id, 'POST_NEW_VM', tags=portal_tags,
+                vm_objects(portal_vm, cmdb_token, dg_type['type_id'], user_id, 'POST_NEW_VM', tags=portal_tags,
                         vdc_object=vdc_id)
 
             for dg_object in dg_type_objects:
@@ -880,7 +667,7 @@ def PassportsVM(portal_name: str) -> tuple:
                     }
 
                     time.sleep(0.1)
-                    print(objects(payload_object_tmp, cmdb_token, dg_type['type_id'], user_id, 'PUT',
+                    print(vm_objects(payload_object_tmp, cmdb_token, dg_type['type_id'], user_id, 'PUT',
                                   tags=portal_tags, vdc_object=vdc_id))
 
         for object in filter(lambda x: x[1][17]['value'] not in map(lambda x: x[17]['value'], portal_project_vms),

@@ -13,11 +13,10 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from tools import *
 from env import portal_info
-from vm_passport import cmdb_api
-# from vm_passport import objects
-from vm_passport import category_id
-from vm_passport import get_dg_token
-from vm_passport import get_mongodb_objects
+from common_function import cmdb_api
+from common_function import category_id
+from common_function import get_dg_token
+from common_function import get_mongodb_objects
 # from vm_passport import get_all_jsons
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -123,7 +122,7 @@ def releases() -> None:
         return cmdb_api('POST', 'object/', cmdb_token, release_object_template)
 
     cmdb_token, user_id = get_dg_token()
-    all_categories = get_mongodb_objects('framework.categories')
+    all_categories: tuple = get_mongodb_objects('framework.categories')
 
     platform_releases_category_id = \
         category_id('platform-releases', 'Platform Releases', 'fas fa-list-alt', cmdb_token, all_categories)
@@ -261,7 +260,7 @@ def releases() -> None:
                 print('CREATE OBJECT', create_version_objects)
                 time.sleep(0.1)
 
-    all_objects = get_mongodb_objects('framework.objects')
+    all_objects: tuple = get_mongodb_objects('framework.objects')
     # cmdb_projects = get_all_jsons('types', cmdb_token)
     # allTypesVersions = reduce(lambda x, y: x + y, map(lambda foo: tuple(
     #     filter(lambda bar: f'pprb3-versions-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))

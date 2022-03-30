@@ -75,6 +75,14 @@ if __name__ == '__main__':
     # print(set(pod_names.keys()))
     # exit()
     # LabelsOS(sys.argv[1])
+
+    # if 0 != 5:
+        # raise TypeError("Type not serializable")
+        # raise EOFError("asasa")
+    # print('aaassaassaasa')
+
+
+    # PassportsOS(sys.argv[1])
     # exit()
 
     if sys.argv[1] == 'PD23':
@@ -88,17 +96,16 @@ if __name__ == '__main__':
         all_objects = PassportsVM(sys.argv[1])
     except EOFError as error:
         print(error)
-    # exit()
     try:
         PassportsOS(sys.argv[1], all_objects)
     except EOFError as error:
         print(error)
     try:
         LabelsOS(sys.argv[1])
-    # except EOFError as error:
-    except:
-        pass
-        # print(error)
+    except EOFError as error:
+    # except:
+    #     pass
+        print(error)
     if sys.argv[1] == 'PD15':
         pprb3_versions(sys.argv[1])
     # releases()
