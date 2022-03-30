@@ -8,10 +8,10 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from tools import *
 from env import portal_info
-from vm_passport import cmdb_api
-from vm_passport import category_id
-from vm_passport import get_dg_token
-from vm_passport import get_mongodb_objects
+from common_function import get_mongodb_objects, \
+    get_dg_token, \
+    category_id, \
+    cmdb_api
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -122,7 +122,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
     cmdb_token, user_id = get_dg_token()
 
-    all_categories = get_mongodb_objects('framework.categories')
+    all_categories: tuple = get_mongodb_objects('framework.categories')
 
     os_passports_category_id: dict = \
         category_id('os-app-labels', 'OS App Labels', 'fas fa-tags', cmdb_token, all_categories)
@@ -334,7 +334,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 print('CREATE OBJECT', create_object)
                 time.sleep(0.1)
 
-    all_objects = get_mongodb_objects('framework.objects')
+    all_objects: tuple = get_mongodb_objects('framework.objects')
 
     all_types_labels = tuple(filter(lambda x: f'os-labels-{portal_name}--' in x['name'], cmdb_projects))
 

@@ -5,8 +5,6 @@ import json
 
 from tools import *
 
-# from creds import *
-
 # cf_login: str = os.environ['CF_LOGIN']
 # cf_password: str = os.environ['CF_PASS']
 
