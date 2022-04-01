@@ -1,10 +1,8 @@
 #!/usr/bin/python3
-import os
+
 import time
 import hashlib
 import requests
-import datetime
-from datetime import datetime, date
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -23,7 +21,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
-            template: bool = False, tags: list = [], vdc_object=None) -> dict:
+               template: bool = False, tags: list = [], vdc_object=None) -> dict:
     """
     Func to create or update or delete objects in DataGerry
     :param vm_info:
@@ -53,12 +51,21 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
 
     extra_disks: str = ''
     if vm_info['volumes']:
-        all_disks = lambda x, y: f"{extra_disks}{x[y]['size']} "
+        # all_disks = lambda x, y: f"{extra_disks}{x[y]['size']} "
+        def all_disks(x, y) -> str:
+            return "%s%s " % (extra_disks, x[y]['size'])
+
         for ex_disk in range(len(vm_info['volumes'])):
             extra_disks = all_disks(vm_info['volumes'], ex_disk)
 
-    sum_disks = lambda x: sum(map(int, x.rstrip().split(' '))) if x else x
-    check_public_ip = lambda x, y: y[x]['address'] if x in y else ''
+    # sum_disks = lambda x: sum(map(int, x.rstrip().split(' '))) if x else x
+    def sum_disks(x):
+        return sum(map(int, x.rstrip().split(' '))) if x else x
+
+    # check_public_ip = lambda x, y: y[x]['address'] if x in y else ''
+    def check_public_ip(x, y):
+        return y[x]['address'] if x in y else ''
+
     if 'security_groups' in vm_info:
         for rule in vm_info['security_groups']:
             all_ports = tuple(filter(lambda x, y='protocol': x[y] and x[y] != 'icmp' if x[y] else x[y], rule['rules']))
@@ -69,8 +76,10 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
     else:
         ingress_ports = egress_ports = ''
 
-    conversion_ports_to_string = lambda x, foo='port_range_max', bar='port_range_min': \
-        f"{x['protocol']} {x[foo]}" if x[foo] == x[bar] else f"{x['protocol']} {x[bar]}-{x[foo]}"
+    # conversion_ports_to_string = lambda x, foo='port_range_max', bar='port_range_min': f"{x['protocol']} {x[foo]}" if x[foo] == x[bar] else f"{x['protocol']} {x[bar]}-{x[foo]}"
+    def conversion_ports_to_string(x, foo='port_range_max', bar='port_range_min') -> str:
+        # return f"{x['protocol']} {x[foo]}" if x[foo] == x[bar] else f"{x['protocol']} {x[bar]}-{x[foo]}"
+        return "%s %s" % (x['protocol'], x[foo]) if x[foo] == x[bar] else "%s %s-%s" % (x['protocol'], x[bar], x[foo])
 
     def get_tag_name(vm_info: list) -> str:
         """
@@ -80,9 +89,9 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
         """
         if vm_info['tag_ids']:
             vm_tag_names = list()
-            for vmTag in vm_info['tag_ids']:
+            for vm_tag in vm_info['tag_ids']:
                 for tag in tags:
-                    if tag['id'] == vmTag:
+                    if tag['id'] == vm_tag:
                         vm_tag_names.append(tag['tag_name'])
             if len(vm_tag_names) == 1:
                 return vm_tag_names[0]
@@ -90,7 +99,9 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
         else:
             return ''
 
-    check_creation_date = lambda x: x[:10] if x != None else ''
+    # check_creation_date = lambda x: x[:10] if x != None else ''
+    def check_creation_date(x: str) -> str:
+        return x[:10] if x else ''
 
     payload_vm_tmp: dict = {
         "status": True,
@@ -108,7 +119,7 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
             },
             {
                 "name": "os-type",
-                "value": f"{vm_info['os_name']} {str(vm_info['os_version'])}"
+                "value": "%s %s" % (vm_info['os_name'], str(vm_info['os_version']))
             },
             {
                 "name": "flavor",
@@ -177,7 +188,6 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
             {
                 "name": "creation-date",
                 "value": check_creation_date(vm_info['order_created_at'])
-                # "value": lambda x=vm_info['order_created_at']: x[:10] if x != None else x == ''
             },
             {
                 "name": "vdc-link",
@@ -315,7 +325,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     # vm_projects_ids = tuple(map(lambda x: x['name'], dg_vm_projects))
 
-    from vdcPassports import PassportsVDC
+    from vdc_passports import PassportsVDC
     all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name)
 
     project_id_vdc_types = dict()
@@ -340,6 +350,12 @@ def PassportsVM(portal_name: str) -> tuple:
             # project_id_vdc_types[project['id']] = {'vdc_object_id': vdc_vm['public_id']}
         # {'vm_project_id': None,
 
+    # foo = list()
+    # for i in portal_projects['projects']:
+    #     if i['name'] == 'gt-common-admins':
+    #         foo.append(i)
+    # portal_projects['projects'] = foo
+
     projects = checksum_vdc(portal_projects['projects'])
 
     del portal_projects
@@ -354,11 +370,11 @@ def PassportsVM(portal_name: str) -> tuple:
     # dg_vdc_checksum = tuple(map(lambda x: dict(vdc_id=x.get('name'), type_id=x.get('public_id'),
     #                                            check_sum=x['render_meta']['sections'][0].get('label')), dg_types))
 
-    dg_vdc_checksum = map(lambda x: {
+    dg_vdc_checksum = tuple(map(lambda x: {
         'vdc_id': x['name'],
         'type_id': x['public_id'],
         'check_sum': x['render_meta']['sections'][0]['label']
-    }, dg_types)
+    }, dg_types))
 
     update_dg_types = list()
 
@@ -615,11 +631,12 @@ def PassportsVM(portal_name: str) -> tuple:
                 time.sleep(0.1)
                 try:
                     create_object = vm_objects(server, cmdb_token, create_type['result_id'], user_id, tags=portal_tags,
-                                            vdc_object=vdc_id)
+                                               vdc_object=vdc_id)
                     print('CREATE OBJECT IN %s' % create_type['result_id'], create_object)
                 except:
                     time.sleep(5)
-                    vm_objects(server, cmdb_token, create_type['result_id'], user_id, tags=portal_tags, vdc_object=vdc_id)
+                    vm_objects(server, cmdb_token, create_type['result_id'], user_id, tags=portal_tags,
+                               vdc_object=vdc_id)
 
     if not update_dg_types:
         return all_objects
@@ -634,18 +651,18 @@ def PassportsVM(portal_name: str) -> tuple:
 
         portal_project_vms = \
             tuple(map(lambda server: vm_objects(server, 'token', dg_type['type_id'], user_id, template=True,
-                                             tags=portal_tags, vdc_object=vdc_id).get('fields'),
+                                                tags=portal_tags, vdc_object=vdc_id).get('fields'),
                       vm_list['stdout']['servers']))
 
         for portal_vm in portal_project_vms:
             if not any(map(lambda x: x['fields'][17]['value'] == portal_vm[17]['value'], dg_type_objects)):
-                print('VM FOR CREATE', portal_vm)
+                print('VM FOR CREATING', portal_vm)
                 vm_objects(portal_vm, cmdb_token, dg_type['type_id'], user_id, 'POST_NEW_VM', tags=portal_tags,
-                        vdc_object=vdc_id)
+                           vdc_object=vdc_id)
 
             for dg_object in dg_type_objects:
                 if dg_object['fields'][17]['value'] == portal_vm[17]['value'] and dg_object['fields'] != portal_vm:
-                    print("VM FOR UPDATE IN %s" % dg_type['type_id'], portal_vm)
+                    print("VM FOR UPDATING IN %s" % dg_type['type_id'], portal_vm)
 
                     payload_object_tmp: dict = {
                         "type_id": dg_type['type_id'],
@@ -668,7 +685,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
                     time.sleep(0.1)
                     print(vm_objects(payload_object_tmp, cmdb_token, dg_type['type_id'], user_id, 'PUT',
-                                  tags=portal_tags, vdc_object=vdc_id))
+                                     tags=portal_tags, vdc_object=vdc_id))
 
         for object in filter(lambda x: x[1][17]['value'] not in map(lambda x: x[17]['value'], portal_project_vms),
                              map(lambda y: (y.get('public_id'), y.get('fields')), dg_type_objects)):
@@ -690,7 +707,7 @@ def PassportsVM(portal_name: str) -> tuple:
         print('##' * 20, 'UPDATE CHECKSUM', '##' * 20)
 
         print(dg_type['type_id'])
-        print(get_info_dg_vdc['info'])
+        # print(get_info_dg_vdc['info'])
 
         print(cmdb_api('PUT', 'types/%s' % dg_type["type_id"], cmdb_token, get_info_dg_vdc['info']))
 

@@ -2,6 +2,8 @@
 
 import os
 import json
+from typing import Tuple, Any
+
 import requests
 import datetime
 from datetime import datetime, date
@@ -62,6 +64,7 @@ def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict =
                                        data=json.dumps(payload)).content)
 
 
+# def get_dg_token() -> tuple[str, str]:
 def get_dg_token() -> str:
     """
     Function to get app token and user id
@@ -76,7 +79,9 @@ def get_dg_token() -> str:
     return user_info['token'], user_info['user']['public_id']
 
 
-thread_count = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
+# thread_count = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
+# def thread_count(x: int) -> int: return int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
+def thread_count(x: int) -> int: return int(x) if x < 10 and x else int((x + 1) ** 0.7)
 
 
 def get_all_jsons(dg_item: str, cmdb_token: str) -> tuple:
