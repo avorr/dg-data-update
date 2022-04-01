@@ -6,8 +6,6 @@ import requests
 from collections import defaultdict
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-from tools import *
-from env import portal_info
 from common_function import portal_api
 from common_function import cmdb_api
 from common_function import category_id
@@ -114,9 +112,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
             return payload_vcd_object
 
         return cmdb_api("POST", "object/", cmdb_token, payload_vcd_object)
-        # json_read(payload_vcd_object)
 
-    # dg_types: tuple = get_all_jsons('types', cmdb_token)
     dg_types: tuple = get_mongodb_objects('framework.types')
 
     portal_vdces: list = portal_api("projects", portal_name)["stdout"]["projects"]
@@ -238,19 +234,6 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
         }
 
         create_type = cmdb_api("POST", "types/", cmdb_token, payload_type_tmp)
-        print(create_type['result_id'])
-
-        # all_types_pages = get_all_jsons("types", cmdb_token)[0]["pager"]["total_pages"]
-        # new_all_types_pages = list()
-        # for page in range(1, all_types_pages + 1):
-        #     responsePage = cmdb_api("GET", f"types/?page={page}", cmdb_token)
-        #     new_all_types_pages.append(responsePage)
-        #
-        # new_type_id = None
-        # for new_type in new_all_types_pages:
-        #     for newItem in new_type['results']:
-        #         if newItem['name'] == f"VDC-{portal_name}":
-        #             new_type_id = newItem['public_id']
 
         print(create_type['result_id'], 'new type id')
         payload_category: dict = {
@@ -295,8 +278,9 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple:
     for dg_object in all_vdc_objects:
         if dg_object['fields'][5]['value'] not in map(lambda x: x['id'], portal_vdces):
             type_for_delete: tuple = get_mongodb_objects('framework.types', {'name': dg_object['fields'][5]['value']})
-            print('DELETE CMDB TYPE', cmdb_api('DELETE', f"types/%s" % max(type_for_delete)['public_id'], cmdb_token))
-            print(f"DELETE VDC OBJECT {dg_object['fields'][0]['value']} FROM TYPE {dg_vdc_type['public_id']}")
+            if type_for_delete:
+                print('DELETE DG TYPE', cmdb_api('DELETE', "types/%s" % max(type_for_delete)['public_id'], cmdb_token))
+                print(f"DELETE VDC OBJECT {dg_object['fields'][0]['value']} FROM TYPE {dg_vdc_type['public_id']}")
             cmdb_api('DELETE', "object/%s" % dg_object['public_id'], cmdb_token)
 
     for vdc in portal_vdces:
