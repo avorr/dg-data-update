@@ -105,7 +105,7 @@ if __name__ == '__main__':
         # except:
         #     pass
         print(error)
-    if sys.argv[1] == 'PD15':
+    if sys.argv[1] in ('PD15', 'PD20'):
         pprb3_versions(sys.argv[1])
     # releases()
     # pprb3_versions(sys.argv[1])
