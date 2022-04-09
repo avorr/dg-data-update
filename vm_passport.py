@@ -19,8 +19,6 @@ from common_function import cmdb_api, \
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-json_read(portal_info)
-
 
 def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
                template: bool = False, tags: list = [], vdc_object=None) -> dict:
@@ -37,7 +35,7 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
     :return:
     """
     if method == 'PUT':
-        return cmdb_api(method, f'object/%s' % vm_info["public_id"], cmdb_token, vm_info)
+        return cmdb_api(method, 'object/%s' % vm_info["public_id"], cmdb_token, vm_info)
 
     elif method == 'POST_NEW_VM':
 
@@ -596,7 +594,8 @@ def PassportsVM(portal_name: str) -> tuple:
                     }
                 },
                 "name": projects[project]['id'],
-                "label": f"{project} | {projects[project]['zone']} | {projects[project]['id']}",
+                # "label": f"{project} | {projects[project]['zone']} | {projects[project]['id']}",
+                "label": "%s | %s | %s" % (project, projects[project]['zone'], projects[project]['id']),
                 "description": f'passport-vm-%s' % portal_name
             }
 
