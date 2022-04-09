@@ -24,6 +24,9 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     :return:
     """
 
+    if not portal_info[portal_name]['metrics']:
+        return
+
     def labels(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
                template: bool = False) -> dict:
         """
@@ -323,7 +326,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             data_cat_template['types'].append(create_type['result_id'])
 
-            put_type_in_category = cmdb_api('PUT', f"categories/{os_portal_category_id['public_id']}", cmdb_token,
+            put_type_in_category = cmdb_api('PUT', "categories/%s" % os_portal_category_id['public_id'], cmdb_token,
                                             data_cat_template)
 
             print('PUT TYPE IN CATEGORY', put_type_in_category)

@@ -15,7 +15,7 @@ mongo_db_login: str = 'admin'
 mongo_db_pass: str = 'nk63QXkzCW'
 
 mongo_db_url: str = 'mongodb://%s:%s@p-infra-internallb.common.novalocal:27017/cmdb?authSource=admin' % \
-                    (mongo_db_login, mongo_db_pass)
+                    (os.environ['DG_MONGO_DB_CRED_USR'], os.environ['DG_MONGO_DB_CRED_PSW'])
 
 env: dict = \
     {

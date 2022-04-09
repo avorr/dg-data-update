@@ -108,6 +108,9 @@ def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, met
 
 
 def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
+    if not portal_info[portal_name]['metrics']:
+        return
+
     cmdb_token, user_id = get_dg_token()
 
     all_categories: tuple = get_mongodb_objects('framework.categories')
