@@ -28,6 +28,3 @@ portal_info: dict = \
             'app_versions': env['APP_VERSIONS_%s' % url[11:]]
         } for url in env if '_URL_' in url
     }
-
-for i in os.environ:
-    print(i)
