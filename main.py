@@ -27,9 +27,9 @@ if __name__ == '__main__':
     # print(foo.get(next(iter(foo))))
 
     # if sys.argv[1] == 'PD15':
+    #     print(True)
     #     from view_settings import visible_settings
     #     visible_settings()
-
     # from allProjects import allProjects
 
     # from vm_passport import get_mongodb_objects
@@ -82,7 +82,6 @@ if __name__ == '__main__':
 
     # PassportsOS(sys.argv[1])
     # all_objects = PassportsVM(sys.argv[1])
-    # exit()
 
     if sys.argv[1] == 'PD23':
         try:

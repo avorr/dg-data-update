@@ -105,7 +105,7 @@ def pprb3_versions(portal_name: str, all_objects: tuple = ()) -> None:
         category_id(f'Pprb3-Versions-{portal_name}', f'Pprb3-Versions-{portal_name}', 'far fa-folder-open',
                     cmdb_token, all_categories, os_passports_category_id['public_id'])
 
-    all_pprb3_verions: dict = json.loads(requests.request("GET", portal_info[portal_name]['pprb3_versions']).content)
+    all_pprb3_verions: dict = json.loads(requests.request("GET", portal_info[portal_name]['app_versions']).content)
 
     # for i in all_pprb3_verions['info']:
     #     if i['modules_version']:

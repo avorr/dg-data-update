@@ -127,7 +127,7 @@ def releases() -> None:
     platform_releases_category_id = \
         category_id('platform-releases', 'Platform Releases', 'fas fa-list-alt', cmdb_token, all_categories)
 
-    # all_pprb3_verions: dict = json.loads(requests.request("GET", portal_info[portal_name]['pprb3_versions']).content)
+    # all_pprb3_verions: dict = json.loads(requests.request("GET", portal_info[portal_name]['app_versions']).content)
 
     # cmdb_projects = get_all_jsons('types', cmdb_token)
 

@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # from tools import *
-from env import portal_info
+from env import portal_info, mongo_db_url
 from pymongo import MongoClient
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -24,7 +24,8 @@ def get_mongodb_objects(collection: str, find: dict = None) -> tuple:
     :param find:
     :return:
     """
-    mongo_db = MongoClient('mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb')['cmdb']
+    # mongo_db = MongoClient('mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb')['cmdb']
+    mongo_db = MongoClient(mongo_db_url)['cmdb']
     # mongo_db = MongoClient('mongodb://172.26.107.101:30039/cmdb')['cmdb']
     # mongo_objects = mongo_db.get_collection('framework.%s' % collection)
     mongo_objects = mongo_db.get_collection(collection)
