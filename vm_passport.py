@@ -19,7 +19,6 @@ from common_function import cmdb_api, \
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-json_read(portal_info)
 
 def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
                template: bool = False, tags: list = [], vdc_object=None) -> dict:
@@ -222,11 +221,6 @@ def PassportsVM(portal_name: str) -> tuple:
     :return: tuple
     """
 
-    if portal_info[portal_name]['metrics'] == 'false':
-        print('#################')
-        print(portal_info[portal_name]['metrics'])
-        print('#################')
-    exit()
     cmdb_token, user_id = get_dg_token()
 
     dg_categories: tuple = get_mongodb_objects('framework.categories')

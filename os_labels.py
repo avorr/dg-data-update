@@ -24,7 +24,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     :return:
     """
 
-    if not portal_info[portal_name]['metrics']:
+    if portal_info[portal_name]['metrics'] == 'false':
         return
 
     def labels(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
