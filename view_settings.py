@@ -58,8 +58,10 @@ def visible_settings() -> None:
     cmdb_users: tuple = get_mongodb_objects('management.users')
     cmdb_users = tuple(map(lambda x: x['public_id'], cmdb_users))
 
-    connection_sring = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
-    cluster = MongoClient(connection_sring)
+    # mongo_db_url = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
+    
+    from env import mongo_db_url
+    cluster = MongoClient(mongo_db_url)
     db = cluster['cmdb']
 
     for user_id in cmdb_users:
