@@ -19,7 +19,8 @@ from common_function import cmdb_api, \
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-
+json_read(portal_info)
+exit()
 def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
                template: bool = False, tags: list = [], vdc_object=None) -> dict:
     """

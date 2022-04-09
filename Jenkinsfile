@@ -84,7 +84,7 @@ pipeline {
                     environment {
                         PORTAL_URL_PD23 = "https://portal.gostech.novalocal"
                         OS_METRICS_PD23 = "urlre131231312"
-                        APP_VERSIONS_PD23 = ""
+                        APP_VERSIONS_PD23 = "test_url_app"
                         PORTAL_TOKEN_PD23 = credentials("PORTAL_TOKEN_PD23")
                         FORTI_VPN_HOST = "193.23.144.132:15443"
                         FORTI_VPN_CRED = credentials("fortivpn_cred_pd23")
