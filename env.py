@@ -11,9 +11,6 @@ from tools import *
 cmdb_login: str = os.environ['CMDB_CRED_USR']
 cmdb_password: str = os.environ['CMDB_CRED_PSW']
 
-mongo_db_login: str = 'admin'
-mongo_db_pass: str = 'nk63QXkzCW'
-
 mongo_db_url: str = 'mongodb://%s:%s@p-infra-internallb.common.novalocal:27017/cmdb?authSource=admin' % \
                     (os.environ['DG_MONGO_DB_CRED_USR'], os.environ['DG_MONGO_DB_CRED_PSW'])
 
