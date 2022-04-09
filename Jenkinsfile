@@ -23,6 +23,7 @@ pipeline {
     environment {
         CMDB_CRED = credentials("cmdb-cred")
         DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
+        DG_MONGO_DB_CRED = credentials("DG_MONGO_DB_CRED")
     }
     stages {
         stage("Run Parallel") {
