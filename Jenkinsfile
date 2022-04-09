@@ -83,8 +83,8 @@ pipeline {
                 stage("Update CMDB Info Portal-PD23") {
                     environment {
                         PORTAL_URL_PD23 = "https://portal.gostech.novalocal"
-                        OS_METRICS_PD23 = None
-                        APP_VERSIONS_PD23 = None
+                        OS_METRICS_PD23 = false
+                        APP_VERSIONS_PD23 = false
                         PORTAL_TOKEN_PD23 = credentials("PORTAL_TOKEN_PD23")
                         FORTI_VPN_HOST = "193.23.144.132:15443"
                         FORTI_VPN_CRED = credentials("fortivpn_cred_pd23")
