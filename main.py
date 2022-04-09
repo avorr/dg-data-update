@@ -40,6 +40,8 @@ if __name__ == '__main__':
     # if sys.argv[1] == 'PD15':
     #     from view_settings import visible_settings
     #     visible_settings()
+    #     exit()
+
     # all_objects = PassportsVM(sys.argv[1])
     # from vm_passport import get_mongodb_objects
     # all_objects: tuple = get_mongodb_objects('framework.objects')
@@ -83,12 +85,12 @@ if __name__ == '__main__':
     # PassportsOS(sys.argv[1])
     # all_objects = PassportsVM(sys.argv[1])
 
-    if sys.argv[1] == 'PD23':
-        try:
-            all_objects = PassportsVM(sys.argv[1])
-            exit()
-        except EOFError as error:
-            print(error)
+    # if sys.argv[1] == 'PD23':
+    #     try:
+    #         all_objects = PassportsVM(sys.argv[1])
+    #         exit()
+    #     except EOFError as error:
+    #         print(error)
 
     try:
         all_objects = PassportsVM(sys.argv[1])
