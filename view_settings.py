@@ -14,7 +14,7 @@ def visible_settings() -> None:
     Main func for creating visible settings in cmdb
     :return: None
     """
-    cmdb_projects: tuple = get_mongodb_objects('framework.types')
+    cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     cmdb_projects_vm: dict = {
         'type': 'vm',
@@ -59,7 +59,7 @@ def visible_settings() -> None:
     cmdb_users = tuple(map(lambda x: x['public_id'], cmdb_users))
 
     # mongo_db_url = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
-    
+
     from env import mongo_db_url
     cluster = MongoClient(mongo_db_url)
     db = cluster['cmdb']
@@ -67,23 +67,27 @@ def visible_settings() -> None:
     for user_id in cmdb_users:
 
         users_settings = db.get_collection('management.users.settings')
-        visible_settings = users_settings.find({'user_id': user_id})
+        display_settings = users_settings.find(
+            {
+                'user_id': user_id
+            }
+        )
 
-        # visible_settings = get_mongodb_objects('management.users.settings', {'user_id': user_id})
+        # display_settings = get_mongodb_objects('management.users.settings', {'user_id': user_id})
 
         view_settings = list()
-        for settings in visible_settings:
+        for settings in display_settings:
             view_settings.append(settings)
-        del visible_settings
+        del display_settings
 
         def create_settings(projects: list) -> None:
             view_settings_for_create = list()
-            for cmdb_type in projects['items']:
+            for cmdb_type in projects["items"]:
                 for settings in view_settings:
 
-                    if 'framework-object-type-%s' % cmdb_type == settings['resource']:
-                        if 'currentState' in settings['payloads'][0]:
-                            if 'fields.additional-disk' in settings['payloads'][0]['currentState']["visibleColumns"]:
+                    if "framework-object-type-%s" % cmdb_type == settings["resource"]:
+                        if "currentState" in settings["payloads"][0]:
+                            if "fields.additional-disk" in settings["payloads"][0]["currentState"]["visibleColumns"]:
 
                                 visible_columns_vm: list = [
                                     "fields.name",
@@ -109,8 +113,14 @@ def visible_settings() -> None:
                                         settings['payloads'][0]['currentState']['pageSize'] != 200:
                                     settings['payloads'][0]['currentState']['pageSize'] = 200
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visible_columns_vm
-                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
-                                                                                     {"$set": settings})
+                                    update_view_settings = users_settings.update_one(
+                                        {
+                                            "_id": settings['_id']
+                                        },
+                                        {
+                                            "$set": settings
+                                        }
+                                    )
                                     print(update_view_settings.raw_result)
                                     time.sleep(0.5)
 
@@ -134,8 +144,14 @@ def visible_settings() -> None:
                                         settings['payloads'][0]['currentState']['pageSize'] != 50:
                                     settings['payloads'][0]['currentState']['pageSize'] = 50
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visible_columns_os
-                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
-                                                                                     {"$set": settings})
+                                    update_view_settings = users_settings.update_one(
+                                        {
+                                            "_id": settings['_id']
+                                        },
+                                        {
+                                            "$set": settings
+                                        }
+                                    )
                                     print(update_view_settings.raw_result)
                                 del baz, zip
 
@@ -163,8 +179,14 @@ def visible_settings() -> None:
                                         settings['payloads'][0]['currentState']['pageSize'] != 500:
                                     settings['payloads'][0]['currentState']['pageSize'] = 500
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visible_columns_label
-                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
-                                                                                     {"$set": settings})
+                                    update_view_settings = users_settings.update_one(
+                                        {
+                                            "_id": settings['_id']
+                                        },
+                                        {
+                                            "$set": settings
+                                        }
+                                    )
                                     print(update_view_settings.raw_result)
                                 del bat, quux
 
@@ -186,8 +208,14 @@ def visible_settings() -> None:
                                         settings['payloads'][0]['currentState']['pageSize'] != 100:
                                     settings['payloads'][0]['currentState']['pageSize'] = 100
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visible_columns_vcd
-                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
-                                                                                     {"$set": settings})
+                                    update_view_settings = users_settings.update_one(
+                                        {
+                                            "_id": settings['_id']
+                                        },
+                                        {
+                                            "$set": settings
+                                        }
+                                    )
                                     print(update_view_settings.raw_result)
                                 del bat, quux
 
@@ -209,8 +237,14 @@ def visible_settings() -> None:
                                         settings['payloads'][0]['currentState']['pageSize'] != 100:
                                     settings['payloads'][0]['currentState']['pageSize'] = 100
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visible_columns_version
-                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
-                                                                                     {"$set": settings})
+                                    update_view_settings = users_settings.update_one(
+                                        {
+                                            "_id": settings['_id']
+                                        },
+                                        {
+                                            "$set": settings
+                                        }
+                                    )
                                     print(update_view_settings.raw_result)
                                 del bat, quux
 
@@ -230,14 +264,21 @@ def visible_settings() -> None:
                                 ]
 
                                 bat = set(settings['payloads'][0]['currentState']["visibleColumns"])
+
                                 quux = set(visible_columns_release)
 
                                 if (bat - quux) or (quux - bat) or \
                                         settings['payloads'][0]['currentState']['pageSize'] != 100:
                                     settings['payloads'][0]['currentState']['pageSize'] = 100
                                     settings['payloads'][0]['currentState']["visibleColumns"] = visible_columns_release
-                                    update_view_settings = users_settings.update_one({"_id": settings['_id']},
-                                                                                     {"$set": settings})
+                                    update_view_settings = users_settings.update_one(
+                                        {
+                                            "_id": settings['_id']
+                                        },
+                                        {
+                                            "$set": settings
+                                        }
+                                    )
                                     print(update_view_settings.raw_result)
                                 del bat, quux
 
@@ -277,6 +318,7 @@ def visible_settings() -> None:
                                     }
                                 ]
                                 settings['payloads'] = payloads_vm
+
                             elif projects['type'] == 'os':
                                 print('######' * 100, '\nTHIS BLOCK IS WORKING\n', '######' * 100)
                                 payloads_os: list = [
@@ -422,8 +464,13 @@ def visible_settings() -> None:
                                 ]
                                 settings['payloads'] = payloads_release
 
-                            update_view_settings = users_settings.update_one({"_id": settings['_id']},
-                                                                             {"$set": settings})
+                            update_view_settings = users_settings.update_one(
+                                {
+                                    "_id": settings['_id']
+                                },
+                                {
+                                    "$set": settings
+                                })
                             print(update_view_settings.raw_result)
 
                 if 'framework-object-type-%s' % cmdb_type not in map(lambda x: x['resource'], view_settings):
@@ -459,47 +506,48 @@ def visible_settings() -> None:
                             ]
                         }
 
-                        settings_view_os['resource'] = f"framework-object-type-{cmdb_type}"
+                        settings_view_os['resource'] = "framework-object-type-%s" % cmdb_type
                         settings_view_os['user_id'] = user_id
                         view_settings_for_create.append(settings_view_os)
 
                     elif projects['type'] == 'vm':
-                        settings_view_vm: dict = {
-                            "setting_type": "APPLICATION",
-                            "resource": "framework-object-type-1009",
-                            "user_id": 17,
-                            "payloads": [
-                                {
-                                    "id": "table-objects-type",
-                                    "tableStates": [],
-                                    "currentState": {
-                                        "name": "",
-                                        "page": 1,
-                                        "pageSize": 200,
-                                        "sort": {
-                                            "name": "public_id",
-                                            "order": -1
-                                        },
-                                        "visibleColumns": [
-                                            "fields.name",
-                                            "fields.vm-name",
-                                            "fields.os-type",
-                                            "fields.flavor",
-                                            "fields.cpu",
-                                            "fields.ram",
-                                            "fields.disk",
-                                            "fields.additional-disk",
-                                            "fields.local-ip",
-                                            "fields.public-ip",
-                                            "fields.tags",
-                                            "fields.state",
-                                            "fields.creation-date",
-                                            "actions"
-                                        ]
+                        settings_view_vm: dict = \
+                            {
+                                "setting_type": "APPLICATION",
+                                "resource": "framework-object-type-1009",
+                                "user_id": 17,
+                                "payloads": [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 200,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                "fields.name",
+                                                "fields.vm-name",
+                                                "fields.os-type",
+                                                "fields.flavor",
+                                                "fields.cpu",
+                                                "fields.ram",
+                                                "fields.disk",
+                                                "fields.additional-disk",
+                                                "fields.local-ip",
+                                                "fields.public-ip",
+                                                "fields.tags",
+                                                "fields.state",
+                                                "fields.creation-date",
+                                                "actions"
+                                            ]
+                                        }
                                     }
-                                }
-                            ]
-                        }
+                                ]
+                            }
 
                         settings_view_vm['resource'] = "framework-object-type-%s" % cmdb_type
                         settings_view_vm['user_id'] = user_id
@@ -507,40 +555,41 @@ def visible_settings() -> None:
 
                     elif projects['type'] == 'label':
 
-                        settings_view_label: dict = {
-                            "setting_type": "APPLICATION",
-                            "resource": "framework-object-type-1009",
-                            "user_id": 17,
-                            "payloads": [
-                                {
-                                    "id": "table-objects-type",
-                                    "tableStates": [],
-                                    "currentState": {
-                                        "name": "",
-                                        "page": 1,
-                                        "pageSize": 500,
-                                        "sort": {
-                                            "name": "public_id",
-                                            "order": -1
-                                        },
-                                        "visibleColumns": [
-                                            "fields.namespace",
-                                            "fields.name",
-                                            "fields.app",
-                                            "fields.SUBSYSTEM",
-                                            "fields.deployment",
-                                            "fields.deploymentconfig",
-                                            "fields.deployDate",
-                                            "fields.distribVersion",
-                                            "fields.version",
-                                            "fields.security.istio.io/tlsMode",
-                                            "fields.jenkinsDeployUser",
-                                            "actions"
-                                        ]
+                        settings_view_label: dict = \
+                            {
+                                "setting_type": "APPLICATION",
+                                "resource": "framework-object-type-1009",
+                                "user_id": 17,
+                                "payloads": [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 500,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                "fields.namespace",
+                                                "fields.name",
+                                                "fields.app",
+                                                "fields.SUBSYSTEM",
+                                                "fields.deployment",
+                                                "fields.deploymentconfig",
+                                                "fields.deployDate",
+                                                "fields.distribVersion",
+                                                "fields.version",
+                                                "fields.security.istio.io/tlsMode",
+                                                "fields.jenkinsDeployUser",
+                                                "actions"
+                                            ]
+                                        }
                                     }
-                                }
-                            ]
-                        }
+                                ]
+                            }
 
                         # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
 
@@ -549,34 +598,35 @@ def visible_settings() -> None:
                         view_settings_for_create.append(settings_view_label)
 
                     elif projects['type'] == 'version':
-                        settings_view_version: dict = {
-                            "setting_type": "APPLICATION",
-                            "resource": "framework-object-type-1009",
-                            "user_id": 17,
-                            "payloads": [
-                                {
-                                    "id": "table-objects-type",
-                                    "tableStates": [],
-                                    "currentState": {
-                                        "name": "",
-                                        "page": 1,
-                                        "pageSize": 50,
-                                        "sort": {
-                                            "name": "public_id",
-                                            "order": -1
-                                        },
-                                        "visibleColumns": [
-                                            "fields.name",
-                                            "fields.vm-name",
-                                            "fields.local-ip",
-                                            "fields.tag",
-                                            "fields.version",
-                                            "actions"
-                                        ]
+                        settings_view_version: dict = \
+                            {
+                                "setting_type": "APPLICATION",
+                                "resource": "framework-object-type-1009",
+                                "user_id": 17,
+                                "payloads": [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 50,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                "fields.name",
+                                                "fields.vm-name",
+                                                "fields.local-ip",
+                                                "fields.tag",
+                                                "fields.version",
+                                                "actions"
+                                            ]
+                                        }
                                     }
-                                }
-                            ]
-                        }
+                                ]
+                            }
                         # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
                         settings_view_version['resource'] = "framework-object-type-%s" % cmdb_type
                         settings_view_version['user_id'] = user_id
@@ -584,33 +634,34 @@ def visible_settings() -> None:
 
                     elif projects['type'] == 'vcd':
 
-                        settings_view_vcd: dict = {
-                            "setting_type": "APPLICATION",
-                            "resource": "framework-object-type-1009",
-                            "user_id": 17,
-                            "payloads": [
-                                {
-                                    "id": "table-objects-type",
-                                    "tableStates": [],
-                                    "currentState": {
-                                        "name": "",
-                                        "page": 1,
-                                        "pageSize": 100,
-                                        "sort": {
-                                            "name": "public_id",
-                                            "order": -1
-                                        },
-                                        "visibleColumns": [
-                                            "fields.name",
-                                            "fields.datacenter-name",
-                                            "fields.networks",
-                                            "fields.dns-nameservers",
-                                            "actions"
-                                        ]
+                        settings_view_vcd: dict = \
+                            {
+                                "setting_type": "APPLICATION",
+                                "resource": "framework-object-type-1009",
+                                "user_id": 17,
+                                "payloads": [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 100,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                "fields.name",
+                                                "fields.datacenter-name",
+                                                "fields.networks",
+                                                "fields.dns-nameservers",
+                                                "actions"
+                                            ]
+                                        }
                                     }
-                                }
-                            ]
-                        }
+                                ]
+                            }
                         # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
                         settings_view_vcd['resource'] = "framework-object-type-%s" % cmdb_type
                         settings_view_vcd['user_id'] = user_id
@@ -619,36 +670,37 @@ def visible_settings() -> None:
 
                     elif projects['type'] == 'release':
 
-                        settings_view_release: dict = {
-                            "setting_type": "APPLICATION",
-                            "resource": "framework-object-type-1009",
-                            "user_id": 17,
-                            "payloads": [
-                                {
-                                    "id": "table-objects-type",
-                                    "tableStates": [],
-                                    "currentState": {
-                                        "name": "",
-                                        "page": 1,
-                                        "pageSize": 100,
-                                        "sort": {
-                                            "name": "public_id",
-                                            "order": -1
-                                        },
-                                        "visibleColumns": [
-                                            "fields.platform-path",
-                                            "fields.tribe",
-                                            "fields.service-code",
-                                            "fields.ke",
-                                            "fields.service-name",
-                                            "fields.marketing-name",
-                                            "fields.distrib-link",
-                                            "actions"
-                                        ]
+                        settings_view_release: dict = \
+                            {
+                                "setting_type": "APPLICATION",
+                                "resource": "framework-object-type-1009",
+                                "user_id": 17,
+                                "payloads": [
+                                    {
+                                        "id": "table-objects-type",
+                                        "tableStates": [],
+                                        "currentState": {
+                                            "name": "",
+                                            "page": 1,
+                                            "pageSize": 100,
+                                            "sort": {
+                                                "name": "public_id",
+                                                "order": -1
+                                            },
+                                            "visibleColumns": [
+                                                "fields.platform-path",
+                                                "fields.tribe",
+                                                "fields.service-code",
+                                                "fields.ke",
+                                                "fields.service-name",
+                                                "fields.marketing-name",
+                                                "fields.distrib-link",
+                                                "actions"
+                                            ]
+                                        }
                                     }
-                                }
-                            ]
-                        }
+                                ]
+                            }
                         # users_settings = max(filter(lambda x: x['name'] == 'management.users.settings', collection))
                         settings_view_release['resource'] = "framework-object-type-%s" % cmdb_type
                         settings_view_release['user_id'] = user_id

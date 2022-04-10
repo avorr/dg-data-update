@@ -80,17 +80,6 @@ if __name__ == '__main__':
     # if 0 != 5:
     # raise TypeError("Type not serializable")
     # raise EOFError("asasa")
-    # print('aaassaassaasa')
-
-    # PassportsOS(sys.argv[1])
-    # all_objects = PassportsVM(sys.argv[1])
-
-    # if sys.argv[1] == 'PD23':
-    #     try:
-    #         all_objects = PassportsVM(sys.argv[1])
-    #         exit()
-    #     except EOFError as error:
-    #         print(error)
 
     try:
         all_objects = PassportsVM(sys.argv[1])
