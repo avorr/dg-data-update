@@ -81,6 +81,9 @@ if __name__ == '__main__':
     # raise TypeError("Type not serializable")
     # raise EOFError("asasa")
 
+    # LabelsOS(sys.argv[1])
+    # visible_settings()
+    # exit()
     try:
         all_objects = PassportsVM(sys.argv[1])
     except EOFError as error:
