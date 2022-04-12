@@ -106,31 +106,31 @@ pipeline {
                     }
                 }
 
-//                 stage("Update CMDB Info Portal-PD24") {
-//                     environment {
-//                         PORTAL_URL_PD24 = "https://portal.pd24.gtp"
-//                         OS_METRICS_PD24 = ""
-//                         APP_VERSIONS_PD24 = ""
-//                         PORTAL_TOKEN_PD24 = credentials("PORTAL_TOKEN_PD24")
-//                         FORTI_VPN_HOST = "178.20.239.116:15443"
-//                         FORTI_VPN_CRED = credentials("fortivpn_cred_pd24")
-//                     }
-//                     agent {
-//                         docker {
-//                             label "pkles-gt0003773"
-//                             registryUrl "https://base.sw.sbc.space/"
-//                             image "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.1"
-//                             registryCredentialsId "tuz_pid_pidefs"
-//                             args "-u root --privileged --add-host p-infra-internallb.common.novalocal:172.26.106.3"
-//                             reuseNode true
-//                         }
-//                     }
-//                     steps {
-//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=36fd0c49c63b3bda068fec30c751291cd498376a523c0a1b5f47252fe8798670"
-//                             sh "sleep 10"
-//                             sh "python3 main.py PD24"
-//                     }
-//                 }
+                stage("Update CMDB Info Portal-PD24") {
+                    environment {
+                        PORTAL_URL_PD24 = "https://portal.pd24.gtp"
+                        OS_METRICS_PD24 = false
+                        APP_VERSIONS_PD24 = false
+                        PORTAL_TOKEN_PD24 = credentials("PORTAL_TOKEN_PD24")
+                        FORTI_VPN_HOST = "178.20.239.116:15443"
+                        FORTI_VPN_CRED = credentials("fortivpn_cred_pd24")
+                    }
+                    agent {
+                        docker {
+                            label "pkles-gt0003772"
+                            registryUrl "https://base.sw.sbc.space/"
+                            image "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
+                            registryCredentialsId "tuz_pid_pidefs"
+                            args "-u root --privileged --add-host p-infra-internallb.common.novalocal:172.26.106.3"
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                            sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=36fd0c49c63b3bda068fec30c751291cd498376a523c0a1b5f47252fe8798670"
+                            sh "sleep 10"
+                            sh "python3 main.py PD24"
+                    }
+                }
             }
         }
     }
