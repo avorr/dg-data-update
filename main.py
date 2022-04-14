@@ -4,12 +4,48 @@ import sys
 from vm_passport import PassportsVM
 from os_passport import PassportsOS
 from os_labels import LabelsOS
-from pprb3Versions import pprb3_versions
+from app_versions import gtp_app_versions
 from view_settings import visible_settings
 
-# from platformReleases import releases
+
+# from gtp_releases import releases
+
+def main() -> None:
+    # LabelsOS(sys.argv[1])
+    # visible_settings()
+    # gtp_app_versions(sys.argv[1])
+    # return
+
+    try:
+        all_objects: tuple = PassportsVM(sys.argv[1])
+    except EOFError as error:
+        print(error)
+
+    try:
+        PassportsOS(sys.argv[1], all_objects)
+    except EOFError as error:
+        print(error)
+
+    try:
+        LabelsOS(sys.argv[1])
+    except EOFError as error:
+        # except:
+        #     pass
+        print(error)
+
+    if sys.argv[1] in ('PD15', 'PD20'):
+        gtp_app_versions(sys.argv[1])
+    # releases()
+    # gtp_app_versions(sys.argv[1])
+
+    try:
+        visible_settings()
+    except EOFError as error:
+        print(error)
+
 
 if __name__ == '__main__':
+    main()
 
     # from allObjects import allObjects as all_objects
     # all(map(PassportsOS, portal_info, all_objects))
@@ -61,7 +97,6 @@ if __name__ == '__main__':
     # PassportsOS(sys.argv[1], all_objects)
     # all_objects = PassportsVM(sys.argv[1])
 
-
     # from cmdb_namespaces import cmdb_namespaces
 
     # pod_names = {
@@ -84,25 +119,31 @@ if __name__ == '__main__':
     # LabelsOS(sys.argv[1])
     # visible_settings()
     # exit()
-    try:
-        all_objects = PassportsVM(sys.argv[1])
-    except EOFError as error:
-        print(error)
-    try:
-        PassportsOS(sys.argv[1], all_objects)
-    except EOFError as error:
-        print(error)
-    try:
-        LabelsOS(sys.argv[1])
-    except EOFError as error:
-        # except:
-        #     pass
-        print(error)
-    if sys.argv[1] in ('PD15', 'PD20'):
-        pprb3_versions(sys.argv[1])
+
+    # try:
+    #     all_objects = PassportsVM(sys.argv[1])
+    # except EOFError as error:
+    #     print(error)
+    # exit()
+    # try:
+    #     PassportsOS(sys.argv[1], all_objects)
+    # except EOFError as error:
+    #     print(error)
+    # try:
+    #     LabelsOS(sys.argv[1])
+    # except EOFError as error:
+
+    # except:
+    #     pass
+
+    # print(error)
+    # if sys.argv[1] in ('PD15', 'PD20'):
+    #     pprb3_versions(sys.argv[1])
+
     # releases()
     # pprb3_versions(sys.argv[1])
-    try:
-        visible_settings()
-    except EOFError as error:
-        print(error)
+
+    # try:
+    #     visible_settings()
+    # except EOFError as error:
+    #     print(error)

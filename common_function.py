@@ -2,19 +2,13 @@
 
 import os
 import json
-from typing import Tuple, Any
-
 import requests
 import datetime
 from datetime import datetime, date
 from concurrent.futures import ThreadPoolExecutor
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-# from tools import *
 from env import portal_info, mongo_db_url
 from pymongo import MongoClient
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def get_mongodb_objects(collection: str, find: dict = None) -> tuple:
@@ -24,15 +18,9 @@ def get_mongodb_objects(collection: str, find: dict = None) -> tuple:
     :param find:
     :return:
     """
-    # mongo_db = MongoClient('mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb')['cmdb']
-    mongo_db = MongoClient(mongo_db_url)['cmdb']
-    # mongo_db = MongoClient('mongodb://172.26.107.101:30039/cmdb')['cmdb']
-    # mongo_objects = mongo_db.get_collection('framework.%s' % collection)
-    mongo_objects = mongo_db.get_collection(collection)
+    mongo_objects = MongoClient(mongo_db_url)['cmdb'].get_collection(collection)
     if find:
-        # mongo_objects = mongo_db.get_collection(collection)
         return tuple(mongo_objects.find(find))
-    # mongo_objects = mongo_db.get_collection(collection)
     return tuple(mongo_objects.find())
 
 
@@ -65,8 +53,7 @@ def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict =
                                        data=json.dumps(payload)).content)
 
 
-# def get_dg_token() -> tuple[str, str]:
-def get_dg_token() -> str:
+def get_dg_token() -> tuple[str, int]:
     """
     Function to get app token and user id
     :return:
@@ -76,8 +63,8 @@ def get_dg_token() -> str:
         "user_name": cmdb_login,
         "password": cmdb_password
     }
-    user_info = cmdb_api('POST', 'auth/login', payload=payload_auth)
-    return user_info['token'], user_info['user']['public_id']
+    user_info = cmdb_api("POST", "auth/login", payload=payload_auth)
+    return user_info["token"], user_info["user"]["public_id"]
 
 
 # thread_count = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
@@ -92,10 +79,10 @@ def get_all_jsons(dg_item: str, cmdb_token: str) -> tuple:
     :param cmdb_token:
     :return:
     """
-    json_count = cmdb_api('GET', f"{dg_item}/", cmdb_token)['pager']['total_pages']
+    json_count = cmdb_api("GET", "%s/" % dg_item, cmdb_token)["pager"]["total_pages"]
 
     def get_one_json(page_number: int):
-        return cmdb_api('GET', f'{dg_item}/?page={page_number}', cmdb_token)
+        return cmdb_api("GET", "%s/?page=%s" % (dg_item, page_number), cmdb_token)
 
     full_info = list()
     # with ThreadPoolExecutor(max_workers=thread_count(json_count)) as executor:
@@ -126,7 +113,7 @@ def create_category(name: str, label: str, icon: str, cmdb_token: str, parent: i
         "types": list()
     }
 
-    return cmdb_api('POST', 'categories/', cmdb_token, payload_category_tmp)
+    return cmdb_api("POST", "categories/", cmdb_token, payload_category_tmp)
 
 
 def category_id(category_name: str, category_label: str, category_icon: str, cmdb_token: str, dg_categories: tuple,
@@ -142,22 +129,21 @@ def category_id(category_name: str, category_label: str, category_icon: str, cmd
     :return:
     """
 
-    if not any(map(lambda y: y['name'] == category_name, dg_categories)):
-        print(True)
+    if not any(map(lambda y: y["name"] == category_name, dg_categories)):
         result: dict = create_category(category_name, category_label, category_icon, cmdb_token, parent_category)
         return {
-            'public_id': result['raw']['public_id'],
-            'name': result['raw']['name'],
-            'label': result['raw']['label'],
-            'types': result['raw']['types']
+            "public_id": result["raw"]["public_id"],
+            "name": result["raw"]["name"],
+            "label": result["raw"]["label"],
+            "types": result["raw"]["types"]
         }
     else:
-        result: dict = max(filter(lambda y: y['name'] == category_name, dg_categories))
+        result: dict = max(filter(lambda y: y["name"] == category_name, dg_categories))
         return {
-            'public_id': result['public_id'],
-            'name': result['name'],
-            'label': result['label'],
-            'types': result['types']
+            "public_id": result["public_id"],
+            "name": result["name"],
+            "label": result["label"],
+            "types": result["types"]
         }
 
 
@@ -169,10 +155,10 @@ def portal_api(api_name: str, portal_name: str) -> dict:
     :return: dict
     """
     headers: dict = {
-        'user-agent': 'CMDB',
-        'Content-type': 'application/json',
-        'Accept': 'text/plain',
-        'authorization': 'Token %s' % portal_info[portal_name]['token']
+        "user-agent": 'CMDB',
+        "Content-type": 'application/json',
+        "Accept": "text/plain",
+        "authorization": "Token %s" % portal_info[portal_name]["token"]
     }
-    response = requests.get('%s/api/v1/%s' % (portal_info[portal_name]['url'], api_name), headers=headers, verify=False)
+    response = requests.get("%s/api/v1/%s" % (portal_info[portal_name]["url"], api_name), headers=headers, verify=False)
     return dict(stdout=json.loads(response.content), status_code=response.status_code)

@@ -4,15 +4,12 @@ import json
 import time
 import requests
 import datetime
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from env import portal_info
 from common_function import cmdb_api, \
     category_id, \
     get_dg_token, \
     get_mongodb_objects
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',

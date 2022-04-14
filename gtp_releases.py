@@ -1,15 +1,14 @@
 #!/usr/bin/python3
 
-import json
+# import json
 import time
-import socket
+# import socket
 import requests
-from functools import reduce
-from datetime import datetime
+# from functools import reduce
+# from datetime import datetime
 # from pymongo import MongoClient
 from docx.api import Document
 from requests.auth import HTTPBasicAuth
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from tools import *
 from env import portal_info
@@ -17,9 +16,11 @@ from common_function import cmdb_api
 from common_function import category_id
 from common_function import get_dg_token
 from common_function import get_mongodb_objects
+
 # from vm_passport import get_all_jsons
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 docx_url: str = "https://base.sw.sbc.space/wiki/plugins/servlet/scroll-office/api/artifacts"
 version_urls: dict = {
@@ -134,7 +135,8 @@ def releases() -> None:
     cmdb_projects: tuple = get_mongodb_objects('framework.types')
 
     for docx in version_urls:
-        if not any(map(lambda y: y['name'] == docx.replace('.', '_'), cmdb_projects)): # and stand['project_name'] == 'gt-dvp-dev-admin-platform':
+        if not any(map(lambda y: y['name'] == docx.replace('.', '_'),
+                       cmdb_projects)):  # and stand['project_name'] == 'gt-dvp-dev-admin-platform':
 
             data_type_template: dict = {
                 "fields": [
@@ -248,7 +250,8 @@ def releases() -> None:
             if not create_type['result_id']:
                 return
             data_cat_template['types'].append(create_type['result_id'])
-            put_type_in_catigories = cmdb_api('PUT', f"categories/{platform_releases_category_id['public_id']}", cmdb_token,
+            put_type_in_catigories = cmdb_api('PUT', f"categories/{platform_releases_category_id['public_id']}",
+                                              cmdb_token,
                                               data_cat_template)
 
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
@@ -354,10 +357,6 @@ if __name__ == '__main__':
 #     except socket.error as Error:
 #         print(dns_name, Error)
 #         return False
-
-
-
-
 
 
 # document = Document('platform-versions.docx')

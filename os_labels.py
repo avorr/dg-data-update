@@ -4,7 +4,6 @@ import time
 import socket
 import requests
 from itertools import zip_longest
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from tools import *
 from env import portal_info
@@ -12,8 +11,6 @@ from common_function import get_mongodb_objects, \
     get_dg_token, \
     category_id, \
     cmdb_api
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
@@ -24,11 +21,11 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     :return:
     """
 
-    if portal_info[portal_name]['metrics'] == 'false':
+    if portal_info[portal_name]["metrics"] == "false":
         return
 
-    def labels(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
-               template: bool = False) -> dict:
+    def create_label(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
+                     template: bool = False) -> dict:
         """
         func to create or update or delete label objects in DataGerry CMDB
         :param labels_info:
@@ -40,9 +37,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
         :return:
         """
 
-        if method == 'PUT':
-            return cmdb_api(method, f'object/{labels_info["public_id"]}', cmdb_token, labels_info)
-            print(f'object/{labels_info["public_id"]}')
+        if method == "PUT":
+            return cmdb_api(method, "object/%s" % labels_info["public_id"], cmdb_token, labels_info)
 
         def get_label(labels: dict, label: str) -> str:
             """
@@ -121,17 +117,17 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
         if template:
             return label_object_template
 
-        return cmdb_api('POST', 'object/', cmdb_token, label_object_template)
+        return cmdb_api("POST", "object/", cmdb_token, label_object_template)
 
     cmdb_token, user_id = get_dg_token()
 
-    all_categories: tuple = get_mongodb_objects('framework.categories')
+    all_categories: tuple = get_mongodb_objects("framework.categories")
 
     os_passports_category_id: dict = \
-        category_id('os-app-labels', 'OS App Labels', 'fas fa-tags', cmdb_token, all_categories)
+        category_id("os-app-labels", "OS App Labels", "fas fa-tags", cmdb_token, all_categories)
 
     os_portal_category_id: dict = \
-        category_id(f'OS-Labels-{portal_name}', f'OS-Labels-{portal_name}', 'fas fa-folder-open', cmdb_token,
+        category_id("OS-Labels-%s" % portal_name, "OS-Labels-%s" % portal_name, "fas fa-folder-open", cmdb_token,
                     all_categories, os_passports_category_id['public_id'])
 
     def get_os_info() -> dict:
@@ -139,10 +135,10 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
         Func to get json from ose exporter
         :return:
         """
-        return json.loads(requests.request("GET", portal_info[portal_name]['metrics']).content)
+        return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
 
     cluster_info: dict = get_os_info()
-    clusters = map(lambda x: x['metric']['cluster'], cluster_info['data']['result'])
+    clusters = map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"])
 
     def get_ose_labels(clusters: map) -> list:
         """
@@ -179,7 +175,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     for cluster in all_labels:
-        if not any(map(lambda y: y['name'] == f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+        if not any(map(lambda y: y['name'] == "os-labels-%s--%s" % (portal_name, cluster['cluster'].replace('.', '_')),
                        cmdb_projects)):
 
             data_type_template: dict = {
@@ -261,7 +257,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                                 "jenkinsDeployUser"
                             ],
                             "type": "section",
-                            "name": f"os-labels-{portal_name}--{cluster['cluster']}",
+                            # "name": f"os-labels-{portal_name}--{cluster['cluster']}",
+                            "name": "os-labels-%s--%s" % (portal_name, cluster['cluster']),
                             "label": cluster['cluster']
                         }
                     ],
@@ -298,27 +295,25 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                         }
                     }
                 },
-                "name": f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
-                "label": cluster['cluster'],
-                "description": f'openshift labels {cluster["cluster"]}'
+                "name": "os-labels-%s--%s" % (portal_name, cluster['cluster'].replace('.', '_')),
+                "label": cluster["cluster"],
+                "description": "openshift labels %s" % cluster["cluster"]
             }
 
-            create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
-
+            create_type: dict = cmdb_api("POST", "types/", cmdb_token, data_type_template)
             print(create_type)
-
             print(create_type["result_id"], 'new type id')
 
             data_cat_template: dict = {
-                "public_id": os_portal_category_id['public_id'],
-                "name": os_portal_category_id['name'],
-                "label": os_portal_category_id['label'],
+                "public_id": os_portal_category_id["public_id"],
+                "name": os_portal_category_id["name"],
+                "label": os_portal_category_id["label"],
                 "meta": {
                     "icon": "fas fa-folder-open",
                     "order": None
                 },
-                "parent": os_passports_category_id['public_id'],
-                "types": os_portal_category_id['types']
+                "parent": os_passports_category_id["public_id"],
+                "types": os_portal_category_id["types"]
             }
 
             if not create_type["result_id"]:
@@ -326,14 +321,17 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             data_cat_template["types"].append(create_type["result_id"])
 
-            put_type_in_category = cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token,
-                                            data_cat_template)
+            put_type_in_category: dict = \
+                cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token, data_cat_template)
 
-            print('PUT TYPE IN CATEGORY', put_type_in_category)
-            print('DATA CATEGORY TEMPLATE', data_cat_template)
+            print(type(put_type_in_category))
+
+            print("PUT TYPE IN CATEGORY", put_type_in_category)
+            print("DATA CATEGORY TEMPLATE", data_cat_template)
 
             for labels in cluster["labels"]:
-                create_object = labels(labels, cmdb_token, create_type["result_id"], user_id)
+                print(labels)
+                create_object: dict = create_label(labels, cmdb_token, create_type["result_id"], user_id)
                 print("CREATE OBJECT", create_object)
                 time.sleep(0.1)
 
@@ -343,62 +341,60 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
     for cmdb_cluster in all_types_labels:
         for cluster in all_labels:
-            if cmdb_cluster['label'] == cluster['cluster'] and cmdb_cluster['label']:
-                print(cmdb_cluster['label'], 'UPDATE LABELS')
-                cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
+            if cmdb_cluster["label"] == cluster["cluster"] and cmdb_cluster["label"]:
+                print(cmdb_cluster["label"], "UPDATE LABELS")
+                cmdb_namespaces = tuple(filter(lambda x: x["type_id"] == cmdb_cluster["public_id"], all_objects))
 
                 ex_labels: dict = {
-                    label['name']: label for label in cluster['labels']
+                    label["name"]: label for label in cluster["labels"]
                 }
 
                 dg_labels: dict = {
-                    pod['fields'][1]['value']: pod for pod in cmdb_namespaces
+                    pod["fields"][1]["value"]: pod for pod in cmdb_namespaces
                 }
 
                 for dg_name, ex_name in zip_longest(set(dg_labels) - set(ex_labels), set(ex_labels) - set(dg_labels)):
                     if not ex_name:
-                        print('DELETE LABEL <--->', dg_labels[dg_name])
-                        cmdb_api('DELETE', "object/%s" % dg_labels[dg_name]['public_id'], cmdb_token)
-                        time.sleep(0.1)
+                        print("DELETE LABEL <--->", dg_labels[dg_name])
+                        cmdb_api("DELETE", "object/%s" % dg_labels[dg_name]["public_id"], cmdb_token)
 
                     elif not dg_name:
-                        create_label = labels(ex_labels[ex_name], cmdb_token, cmdb_cluster['public_id'], user_id)
-                        print('CREATE LABEL <--->', ex_labels[ex_name], create_label)
-                        time.sleep(0.1)
-                    else:
-                        print('UPDATE', dg_name, ex_name)
-                        template: dict = \
-                            labels(ex_labels[ex_name], cmdb_token, cmdb_cluster['public_id'], user_id, template=True)
+                        create_label = create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"], user_id)
+                        print("CREATE LABEL <--->", ex_labels[ex_name], create_label)
 
+                    else:
+                        template: dict = create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"],
+                                                      user_id, template=True)
                         payload_object_tmp: dict = {
-                            "type_id": dg_labels[dg_name]['type_id'],
-                            "status": dg_labels[dg_name]['status'],
-                            "version": dg_labels[dg_name]['version'],
+                            "type_id": dg_labels[dg_name]["type_id"],
+                            "status": dg_labels[dg_name]["status"],
+                            "version": dg_labels[dg_name]["version"],
                             "creation_time": {
-                                "$date": int(time.mktime(dg_labels[dg_name]['creation_time'].timetuple()) * 1000)
+                                "$date": int(time.mktime(dg_labels[dg_name]["creation_time"].timetuple()) * 1000)
                             },
-                            "author_id": dg_labels[dg_name]['author_id'],
+                            "author_id": dg_labels[dg_name]["author_id"],
                             "last_edit_time": {
                                 "$date": int(time.time() * 1000)
                             },
                             "editor_id": user_id,
-                            "active": dg_labels[dg_name]['active'],
-                            "fields": template['fields'],
-                            "public_id": dg_labels[dg_name]['public_id'],
-                            "views": dg_labels[dg_name]['views'],
+                            "active": dg_labels[dg_name]["active"],
+                            "fields": template["fields"],
+                            "public_id": dg_labels[dg_name]["public_id"],
+                            "views": dg_labels[dg_name]["views"],
                             "comment": ""
                         }
-                        print(labels(payload_object_tmp, cmdb_token, dg_labels[dg_name]['type_id'], user_id, 'PUT'))
-                        time.sleep(0.1)
+                        print(
+                            create_label(payload_object_tmp, cmdb_token, dg_labels[dg_name]['type_id'], user_id, 'PUT')
+                        )
 
     # for cmdb_cluster in all_types_labels:
     #     for cluster in all_labels:
     #         if cmdb_cluster['label'] == cluster['cluster']:
     #             cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
     #             for pod_info in cluster['labels']:
-    #                 template = labels(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id, template=True)
+    #                 template = create_label(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id, template=True)
     #                 if template['fields'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
-    #                     create_label = labels(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id)
+    #                     create_label = create_label(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id)
     #                     print('CREATE LABEL <--->', template['fields'][1]['value'], template['fields'])
     #                     time.sleep(0.1)
     #

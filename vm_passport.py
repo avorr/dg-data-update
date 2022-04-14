@@ -2,10 +2,9 @@
 
 import time
 import hashlib
-import requests
+# import requests
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from tools import *
 from env import portal_info
@@ -17,7 +16,9 @@ from common_function import cmdb_api, \
     json_serial, \
     portal_api
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+# requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 
 def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
@@ -230,8 +231,6 @@ def PassportsVM(portal_name: str) -> tuple:
         category_id(portal_name, portal_name, 'fas fa-folder-open', cmdb_token, dg_categories,
                     vm_category_id['public_id'])
 
-    # vdc_category_id = category_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', cmdb_token, dg_categories)
-
     portal_domains_info: dict = portal_api('domains', portal_name)['stdout']
 
     domains_info: dict = {
@@ -298,22 +297,6 @@ def PassportsVM(portal_name: str) -> tuple:
             for categories_id in categories['results']:
                 print('DELETE DG CAT', cmdb_api('DELETE', "categories/%s" % categories_id['public_id'], cmdb_token))
 
-    # dg_types: tuple = get_all_jsons('types', cmdb_token)
-
-    # {'vdc_id': 'os-cluster-PD15--ocp_prod_foms_tech', 'type_id': 86, 'check_sum': 'ocp.prod.foms.tech'}
-
-    # dg_vdc_checksum = \
-    #     map(lambda x: dict(vdc_id=x.get('name'), type_id=x.get('public_id'),
-    #                        check_sum=x['render_meta']['sections'][0].get('label')), dg_types)
-    # x['description'] == 'passport-vm-%s' % portal_name else x, dg_types)
-
-    # get_vdc_checksum = lambda foo: reduce(lambda x, y: x + y, map(lambda bar: tuple(
-    #     map(lambda baz: dict(vdc_id=baz.get('name'), type_id=baz.get('public_id'),
-    #                          check_sum=baz['render_meta']['sections'][0].get('label')), bar['results'])),
-    #                                                               foo)) if foo else foo
-
-    # dg_vdc_checksum = get_vdc_checksum(dg_types)
-
     dg_vm_projects = list()
 
     for vm_type in dg_types:
@@ -324,57 +307,31 @@ def PassportsVM(portal_name: str) -> tuple:
             else:
                 dg_vm_projects.append(vm_type)
 
-    # vm_projects_ids = tuple(map(lambda x: x['name'], dg_vm_projects))
-
     from vdc_passports import PassportsVDC
     all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name)
 
     project_id_vdc_types = dict()
 
     for project in portal_projects['projects']:
-        # if project['id'] not in map(lambda x: x['name'] if x['description'] == 'passport-vm-%s' % portal_name else None,
-        #                             dg_types):
-        #     print('TYPE FOR DELETE', project['id'])
-
-        # if project['id'] in ('803aa26d-5e77-42bd-8320-88056f09690e', '148d5303-579d-48f3-a54e-c8dea68b8e55'):
-        #     print(project)
-        # for vm_project in dg_vm_projects:
         for vdc_vm in all_vdc_objects:
-            if vdc_vm['fields'][5]['value'] == project['id']:  # and vdc_vm['fields'][5]['value'] == vm_project['name']:
+            if vdc_vm['fields'][5]['value'] == project['id']:
                 project_id_vdc_types[project['id']] = {
                     'vdc_object_id': vdc_vm['public_id']
                 }
-
-                # {'vm_project_id': vm_project['public_id'],
-            # if project['id'] not in dg_vm_projects_ids:
-            # print(True, project['id'])
-            # project_id_vdc_types[project['id']] = {'vdc_object_id': vdc_vm['public_id']}
-        # {'vm_project_id': None,
 
     # foo = list()
     # for i in portal_projects['projects']:
     #     if i['name'] == 'gt-common-admins':
     #         foo.append(i)
     # portal_projects['projects'] = foo
-
-    projects = checksum_vdc(portal_projects['projects'])
+    projects: dict = checksum_vdc(portal_projects['projects'])
 
     del portal_projects
 
-    # get_vdc_checksum = lambda foo: reduce(lambda x, y: x + y, map(lambda bar: tuple(
-    #     map(lambda baz: dict(vdc_id=baz.get('name'), type_id=baz.get('public_id'),
-    #                          check_sum=baz['render_meta']['sections'][0].get('label')), bar['results'])),
-    #                                                               foo)) if foo else foo
-
-    # dg_vdc_checksum = get_vdc_checksum(dg_types)
-
-    # dg_vdc_checksum = tuple(map(lambda x: dict(vdc_id=x.get('name'), type_id=x.get('public_id'),
-    #                                            check_sum=x['render_meta']['sections'][0].get('label')), dg_types))
-
     dg_vdc_checksum = tuple(map(lambda x: {
-        'vdc_id': x['name'],
-        'type_id': x['public_id'],
-        'check_sum': x['render_meta']['sections'][0]['label']
+        "vdc_id": x["name"],
+        "type_id": x["public_id"],
+        "check_sum": x["render_meta"]["sections"][0]["label"]
     }, dg_types))
 
     update_dg_types = list()
@@ -386,7 +343,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     print('VDC WHERE WERE CHANGES', len(update_dg_types))
 
-    portal_tags = portal_api('dict/tags', portal_name)['stdout']['tags']
+    portal_tags: list = portal_api('dict/tags', portal_name)['stdout']['tags']
     all_objects: tuple = get_mongodb_objects('framework.objects')
 
     for project in projects:
