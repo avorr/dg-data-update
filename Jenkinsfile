@@ -34,7 +34,7 @@ pipeline {
         DG_MONGO_DB_CRED = credentials("DG_MONGO_DB_CRED")
         REGISTRY =  "https://base.sw.sbc.space/"
         IMAGE =  "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
-        REGISTRY_CRED = tuz_pid_pidefs
+        REGISTRY_CRED = "tuz_pid_pidefs"
         MONGO_DB =  "p-infra-internallb.common.novalocal:172.26.106.3"
     }
     stages {
