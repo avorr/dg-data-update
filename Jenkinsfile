@@ -20,18 +20,22 @@ pipeline {
         ansiColor("xterm")
     }
 
-    parameters {
-        string(name: "REGISTRY", defaultValue: "https://base.sw.sbc.space/", description: 'How should I greet the world?')
-        string(name: "IMAGE", defaultValue: "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2", description: 'How should I greet the world?')
-        string(name: "REGISTRY_CRED", defaultValue: "tuz_pid_pidefs", description: 'How should I greet the world?')
-        string(name: "MONGO_DB", defaultValue: "p-infra-internallb.common.novalocal:172.26.106.3", description: 'How should I greet the world?')
-    }
+//     parameters {
+//         string(name: "REGISTRY", defaultValue: "https://base.sw.sbc.space/", description: 'How should I greet the world?')
+//         string(name: "IMAGE", defaultValue: "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2", description: 'How should I greet the world?')
+//         string(name: "REGISTRY_CRED", defaultValue: "tuz_pid_pidefs", description: 'How should I greet the world?')
+//         string(name: "MONGO_DB", defaultValue: "p-infra-internallb.common.novalocal:172.26.106.3", description: 'How should I greet the world?')
+//     }
 
     environment {
         PYTHONWARNINGS = "ignore:Unverified HTTPS request"
         CMDB_CRED = credentials("cmdb-cred")
         DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
         DG_MONGO_DB_CRED = credentials("DG_MONGO_DB_CRED")
+        REGISTRY =  "https://base.sw.sbc.space/"
+        IMAGE =  "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
+        REGISTRY_CRED = tuz_pid_pidefs
+        MONGO_DB =  "p-infra-internallb.common.novalocal:172.26.106.3"
     }
     stages {
         stage("Run Parallel") {
@@ -47,13 +51,13 @@ pipeline {
                         docker {
                             label "pkles-gt0000369"
 //                             registryUrl "https://base.sw.sbc.space/"
-                            registryUrl params.REGISTRY
+                            registryUrl REGISTRY
 //                             image "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
-                            image params.IMAGE
+                            image IMAGE
 //                             registryCredentialsId "tuz_pid_pidefs"
-                            registryCredentialsId params.REGISTRY_CRED
+                            registryCredentialsId REGISTRY_CRED
 //                             args "-u root --privileged --add-host p-infra-internallb.common.novalocal:172.26.106.3"
-                            args "-u root --privileged --add-host $params.MONGO_DB"
+                            args "-u root --privileged --add-host $MONGO_DB"
                             reuseNode true
                         }
                     }
@@ -65,44 +69,33 @@ pipeline {
                     }
                 }
 
-                stage("Update CMDB Info Portal-PD20") {
-                    environment {
-                        PORTAL_URL_PD20 = "https://portal.gostech.novalocal"
-                        OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-                        APP_VERSIONS_PD20 = "http://p-infra-jenkinsslave-03.common.novalocal:5002/PD20versions"
-                        PORTAL_TOKEN_PD20 = credentials("PORTAL_TOKEN_PD20")
-                        FORTI_VPN_HOST = "37.18.109.130:18443"
-                        FORTI_VPN_CRED = credentials("fortivpn_cred")
-                    }
-                    agent {
-                        docker {
+//                 stage("Update CMDB Info Portal-PD20") {
+//                     environment {
+//                         PORTAL_URL_PD20 = "https://portal.gostech.novalocal"
+//                         OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+//                         APP_VERSIONS_PD20 = "http://p-infra-jenkinsslave-03.common.novalocal:5002/PD20versions"
+//                         PORTAL_TOKEN_PD20 = credentials("PORTAL_TOKEN_PD20")
+//                         FORTI_VPN_HOST = "37.18.109.130:18443"
+//                         FORTI_VPN_CRED = credentials("fortivpn_cred")
+//                     }
+//                     agent {
+//                         docker {
 //                             label "pkles-gt0000369"
 //                             registryUrl "https://base.sw.sbc.space/"
 //                             image "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
 //                             registryCredentialsId "tuz_pid_pidefs"
 //                             args "-u root --privileged --add-host p-infra-internallb.common.novalocal:172.26.106.3"
 //                             reuseNode true
-
-                            label "pkles-gt0000369"
-//                             registryUrl "https://base.sw.sbc.space/"
-                            registryUrl params.REGISTRY
-//                             image "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
-                            image params.IMAGE
-//                             registryCredentialsId "tuz_pid_pidefs"
-                            registryCredentialsId params.REGISTRY_CRED
-//                             args "-u root --privileged --add-host p-infra-internallb.common.novalocal:172.26.106.3"
-                            args "-u root --privileged --add-host $params.MONGO_DB"
-                            reuseNode true
-                        }
-                    }
-                    steps {
-                        catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
-                            sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
-                            sh "sleep 10"
-                            sh "python3 main.py PD20"
-                       }
-                   }
-               }
+//                         }
+//                     }
+//                     steps {
+//                         catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
+//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
+//                             sh "sleep 10"
+//                             sh "python3 main.py PD20"
+//                        }
+//                    }
+//                }
 
 //                 stage("Update CMDB Info Portal-PD23") {
 //                     environment {
