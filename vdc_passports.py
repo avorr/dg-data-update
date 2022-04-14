@@ -2,17 +2,13 @@
 
 import time
 import datetime
-import requests
 from collections import defaultdict
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from common_function import portal_api
 from common_function import cmdb_api
 from common_function import category_id
 from common_function import get_dg_token
 from common_function import get_mongodb_objects
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple | None:

@@ -1,12 +1,9 @@
 #!/usr/bin/python3
 
 import time
-import requests
 from tools import *
+from pymongo import MongoClient
 from common_function import get_mongodb_objects
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def visible_settings() -> None:
@@ -55,10 +52,8 @@ def visible_settings() -> None:
         elif type['render_meta']['sections'][0]['fields'][0] == 'platform-path':
             cmdb_projects_release['items'].append(type['public_id'])
 
-    cmdb_users: tuple = get_mongodb_objects('management.users')
-    cmdb_users = tuple(map(lambda x: x['public_id'], cmdb_users))
-
-    # mongo_db_url = 'mongodb://p-infra-bitwarden-01.common.novalocal:27017/cmdb'
+    cmdb_users: tuple = get_mongodb_objects("management.users")
+    cmdb_users = tuple(map(lambda x: x["public_id"], cmdb_users))
 
     from env import mongo_db_url
     cluster = MongoClient(mongo_db_url)
