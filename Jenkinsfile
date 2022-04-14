@@ -20,6 +20,10 @@ pipeline {
         ansiColor("xterm")
     }
 
+    parameters {
+        string(name: "REGISTRY", defaultValue: "https://base.sw.sbc.space/", description: 'How should I greet the world?')
+    }
+
     environment {
         PYTHONWARNINGS = "ignore:Unverified HTTPS request"
         CMDB_CRED = credentials("cmdb-cred")
@@ -39,7 +43,8 @@ pipeline {
                     agent {
                         docker {
                             label "pkles-gt0000369"
-                            registryUrl "https://base.sw.sbc.space/"
+//                             registryUrl "https://base.sw.sbc.space/"
+                            registryUrl ${params.REGISTRY}
                             image "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
                             registryCredentialsId "tuz_pid_pidefs"
                             args "-u root --privileged --add-host p-infra-internallb.common.novalocal:172.26.106.3"
