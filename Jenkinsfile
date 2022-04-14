@@ -22,6 +22,9 @@ pipeline {
 
     parameters {
         string(name: "REGISTRY", defaultValue: "https://base.sw.sbc.space/", description: 'How should I greet the world?')
+        string(name: "IMAGE", defaultValue: "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2", description: 'How should I greet the world?')
+        string(name: "REGISTRY_CRED", defaultValue: "tuz_pid_pidefs", description: 'How should I greet the world?')
+        string(name: "MONGO_DB", defaultValue: "p-infra-internallb.common.novalocal:172.26.106.3", description: 'How should I greet the world?')
     }
 
     environment {
@@ -45,9 +48,12 @@ pipeline {
                             label "pkles-gt0000369"
 //                             registryUrl "https://base.sw.sbc.space/"
                             registryUrl params.REGISTRY
-                            image "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
-                            registryCredentialsId "tuz_pid_pidefs"
-                            args "-u root --privileged --add-host p-infra-internallb.common.novalocal:172.26.106.3"
+//                             image "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.2"
+                            image params.IMAGE
+//                             registryCredentialsId "tuz_pid_pidefs"
+                            registryCredentialsId params.REGISTRY_CRED
+//                             args "-u root --privileged --add-host p-infra-internallb.common.novalocal:172.26.106.3"
+                            args "-u root --privileged --add-host $params.MONGO_DB"
                             reuseNode true
                         }
                     }
