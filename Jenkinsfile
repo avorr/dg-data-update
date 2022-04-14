@@ -1,18 +1,8 @@
 #!groovy
 
-//variables from jenkins
 properties([disableConcurrentBuilds()])
-// agent = env.agent // work agent
-// token = env.token // sbercaud token
-
-// pkles-gt0000369
-// pkles-gt0003771
-// pkles-gt0003772
-// pkles-gt0003773
-
 
 pipeline {
-//     agent none
     agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
     options {
         buildDiscarder(logRotator(numToKeepStr: "30", artifactNumToKeepStr: "30"))
@@ -161,58 +151,3 @@ pipeline {
 
 //                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred_pd23', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
 // }
-
-
-
-
- /*
-        stage("Update CMDB Info Portal-PD15") {
-            environment {
-                CMDB_CRED = credentials('cmdb-cred')
-                DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
-                PORTAL_TOKEN_PD15 = credentials('PORTAL_TOKEN_PD15')
-                PORTAL_URL_PD15 = 'https://portal.gos.sbercloud.dev/api/v1/'
-                OS_METRICS_PD15 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
-            }
-
-            agent {
-                docker {
-                    label "pkles-gt0000369"
-                    image "base.sw.sbc.space/base/redhat/rhel7:4.5-433"
-                    registryUrl "https://base.sw.sbc.space"
-                    registryCredentialsId "pidmsk"
-                    args "-u root --privileged"
-                    reuseNode true
-                }
-            }
-            steps {
-                    sh 'bash install-python3.9.sh'
-                    sh 'venv/bin/python3.9 main.py'
-            }
-        }
-/*
-        stage("Update CMDB Info Portal-PD20") {
-            environment {
-                CMDB_CRED = credentials('cmdb-cred')
-                DATA_GERRY_CMDB_URL = 'https://cmdb.common.gos-tech.xyz/rest/'
-                PORTAL_TOKEN_PD20 = credentials('PORTAL_TOKEN_PD20')
-                PORTAL_URL_PD20 = 'https://portal.gostech.novalocal/api/v1/'
-                OS_METRICS_PD20 = 'http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)'
-            }
-
-            agent {
-                docker {
-                    label "pkles-gt0000011-pd20"
-                    image "base.sw.sbc.space/base/redhat/rhel7:4.5-433"
-                    registryUrl "https://base.sw.sbc.space"
-                    registryCredentialsId "pidmsk"
-                    args "-u root --privileged"
-                    reuseNode true
-                }
-            }
-            steps {
-                    sh 'bash install-python3.9.sh'
-                    sh 'venv/bin/python3.9 main.py'
-            }
-        }
-*/
