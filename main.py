@@ -20,6 +20,7 @@ def main() -> None:
         all_objects: tuple = PassportsVM(sys.argv[1])
     except EOFError as error:
         print(error)
+    exit()
 
     try:
         PassportsOS(sys.argv[1], all_objects)
@@ -43,7 +44,6 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-
     # if 0 != 5:
     # raise TypeError("Type not serializable")
     # raise EOFError("asasa")
