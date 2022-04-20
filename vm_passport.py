@@ -91,7 +91,6 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
         else:
             return ""
 
-    # check_creation_date = lambda x: x[:10] if x != None else ""
     def check_creation_date(x: str) -> str:
         return x[:10] if x else ""
 
@@ -222,9 +221,6 @@ def PassportsVM(portal_name: str) -> tuple:
                                            vm_category_id["public_id"])
 
     portal_domains_info: dict = portal_api("domains", portal_name)["stdout"]
-
-    print(portal_domains_info)
-    return
 
     domains_info: dict = {
         domain["id"]: domain["name"] for domain in portal_domains_info["domains"]
@@ -574,8 +570,6 @@ def PassportsVM(portal_name: str) -> tuple:
             payload_category_tmp["types"].append(create_type["result_id"])
 
             cmdb_api("PUT", "categories/%s" % category_search["public_id"], cmdb_token, payload_category_tmp)
-
-            print("payload_category_tmp", payload_category_tmp)
 
             vm_list: dict = portal_api("servers?project_id=%s" % projects[project]["id"], portal_name)
 
