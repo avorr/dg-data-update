@@ -41,44 +41,9 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    # main()
+    main()
 
     # if 0 != 5:
     # raise TypeError("Type not serializable")
     # raise EOFError("asasa")
-
-    foo = {
-        'foo': 'kek',
-        'foo1': 'kek2',
-        'foo3': [
-            1,
-            2
-        ],
-        'foo4': {
-          1: '23221',
-          2: '23221',
-          3: '23221'
-        }
-    }
-    # print(foo.keys())
-    match foo.keys():
-        case 'foo', 'foo1', 'foo3', 'foo4':
-            print(foo)
-        case ['foo', 'foo1', 'foo3', 'foo4']:
-            print(True)
-
-    d = {0: "zero", 1: "one", 2: "two", 3: "three"}
-    match d:
-        case {0: "zero1", **remainder}:
-            print(remainder)
-            # print(remainder)
-            pass
-        case {0: "zero"}:
-            print('2121')
-        case {1: "one"}:
-            print('#####')
-
-
-
-
 
