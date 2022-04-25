@@ -20,7 +20,6 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     :param all_objects:
     :return:
     """
-
     if portal_info[portal_name]["metrics"] == "false":
         return
 
