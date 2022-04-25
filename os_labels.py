@@ -138,6 +138,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
         return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
 
     cluster_info: dict = get_os_info()
+    # from cluster_info import cluster_info
+
     clusters = map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"])
 
     def get_ose_labels(clusters: map) -> list:
@@ -387,32 +389,3 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                         print(
                             create_label(payload_object_tmp, cmdb_token, dg_labels[dg_name]["type_id"], user_id, "PUT")
                         )
-
-    # for cmdb_cluster in all_types_labels:
-    #     for cluster in all_labels:
-    #         if cmdb_cluster['label'] == cluster['cluster']:
-    #             cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
-    #             for pod_info in cluster['labels']:
-    #                 template = create_label(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id, template=True)
-    #                 if template['fields'] not in map(lambda x: x.get('fields'), cmdb_namespaces):
-    #                     create_label = create_label(pod_info, cmdb_token, cmdb_cluster['public_id'], user_id)
-    #                     print('CREATE LABEL <--->', template['fields'][1]['value'], template['fields'])
-    #                     time.sleep(0.1)
-    #
-    #             for cmdb_label in cmdb_namespaces:
-    #                 if cmdb_label['fields'][1]['value'] not in map(lambda x: x['name'], cluster['labels']):
-    #                     print('DELETE LABEL <--->', cmdb_label['fields'][1]['value'])
-    #                     cmdb_api('DELETE', f"object/{cmdb_label['public_id']}", cmdb_token)
-    #                     time.sleep(0.1)
-
-    # def format_pod_name(pod_info: list) -> list:
-    #     pod_info_tmp = pod_info[:]
-    #     pod_info_tmp[1]['value'] = pod_info[1]['value'][:-6]
-    #     if pod_info[5]['value']:
-    #         number_value = 0
-    #         for value in pod_info[1]['value'][::-1]:
-    #             number_value += 1
-    #             if value == '-':
-    #                 pod_info_tmp[1]['value'] = pod_info[1]['value'][:-number_value]
-    #                 return pod_info_tmp
-    #     return pod_info_tmp
