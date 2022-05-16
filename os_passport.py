@@ -43,9 +43,15 @@ def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, met
 
     # metric = lambda x, y: filter(lambda foo: foo[2][1] if foo[0] == x and foo[1] == y else None, ns_info['info'])
 
-    get_usage = lambda x, y: "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
+    # get_usage = lambda x, y: "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
 
-    fract = lambda x: str(int(x)) if x - int(x) == 0 else "%.2f" % x
+    def get_usage(x: str, y: str) -> str:
+        return "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
+
+    # fract = lambda x: str(int(x)) if x - int(x) == 0 else "%.2f" % x
+
+    def fract(x: float) -> str:
+        return str(int(x)) if x - int(x) == 0 else "%.2f" % x
 
     payload_ns_tmp: dict = {
         "status": True,
@@ -122,6 +128,17 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
         return json.loads(requests.request("GET", portal_info[portal_name]['metrics']).content)
 
     cluster_info: dict = get_os_info()
+
+    #### temporary
+    def clear_info(old_info: list) -> list:
+        new_info = list()
+        for info in old_info:
+            if 'cluster' in info['metric']:
+                new_info.append(info)
+        return new_info
+
+    cluster_info['data']['result'] = clear_info(cluster_info['data']['result'])
+    #### temporary
     clusters = map(lambda x: x['metric']['cluster'], cluster_info['data']['result'])
 
     os_info = list()
@@ -260,7 +277,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                 },
                 "name": f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
                 "label": cluster['cluster'],
-                "description": f'openshift cluster {cluster["cluster"]}'
+                "description": 'openshift cluster %s' % cluster["cluster"]
             }
 
             create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
@@ -284,7 +301,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
 
             data_category_template['types'].append(create_type['result_id'])
 
-            put_type_in_category = cmdb_api('PUT', f"categories/{os_portal_category_id['public_id']}", cmdb_token,
+            put_type_in_category = cmdb_api('PUT', "categories/%s" % os_portal_category_id['public_id'], cmdb_token,
                                             data_category_template)
             print('put_type_in_category', put_type_in_category)
             print('data_category_template', data_category_template)
@@ -297,7 +314,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
     if not all_objects:
         all_objects: tuple = get_mongodb_objects('framework.objects')
 
-    all_cmdb_cluster_types = tuple(filter(lambda f: f'os-cluster-{portal_name}--' in f['name'], cmdb_projects))
+    all_cmdb_cluster_types = tuple(filter(lambda f: "os-cluster-%s--" % portal_name in f["name"], cmdb_projects))
 
     for cmdb_cluster in all_cmdb_cluster_types:
         for cluster in os_info:
@@ -334,11 +351,11 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                             }
 
                             time.sleep(0.1)
-                            print(f"UPDATE NAMESPACE in {cmdb_ns['type_id']}", os_namespace['namespace'])
+                            print("UPDATE NAMESPACE in %s" % cmdb_ns['type_id'], os_namespace['namespace'])
                             ns_objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT')
 
                 for cmdb_ns in cmdb_namespaces:
                     if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
                         print('DELETE NAMESPACE', cmdb_ns['fields'][0]['value'])
-                        cmdb_api('DELETE', f"object/{cmdb_ns['public_id']}", cmdb_token)
+                        cmdb_api('DELETE', "object/%s" % cmdb_ns['public_id'], cmdb_token)
                         time.sleep(0.1)
