@@ -11,7 +11,6 @@ from view_settings import visible_settings
 # from gtp_releases import releases
 
 def main() -> None:
-    # LabelsOS(sys.argv[1])
     # visible_settings()
     # gtp_app_versions(sys.argv[1])
     # return

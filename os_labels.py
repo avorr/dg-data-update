@@ -137,7 +137,17 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
         return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
 
     cluster_info: dict = get_os_info()
-    # from cluster_info import cluster_info
+
+    #### temporary
+    def clear_info(old_info: list) -> list:
+        new_info = list()
+        for info in old_info:
+            if 'cluster' in info['metric']:
+                new_info.append(info)
+        return new_info
+
+    cluster_info['data']['result'] = clear_info(cluster_info['data']['result'])
+    #### temporary
 
     clusters = map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"])
 
@@ -301,7 +311,6 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
             }
 
             create_type: dict = cmdb_api("POST", "types/", cmdb_token, data_type_template)
-            print(create_type)
             print(create_type["result_id"], 'new type id')
 
             data_cat_template: dict = {
