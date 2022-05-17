@@ -249,7 +249,7 @@ def PassportsVM(portal_name: str) -> tuple:
         :return:
         """
         # vdc_checksum = portal_api(f"projects/{vdc_info["id"]}/checksum", portal_name)
-        vdc_checksum: dict = portal_api(f"servers?project_id=%s" % vdc_info["id"], portal_name)
+        vdc_checksum: dict = portal_api("servers?project_id=%s" % vdc_info["id"], portal_name)
         return dict(info=vdc_info, checksum=hashlib.md5(json.dumps(vdc_checksum["stdout"]).encode()).hexdigest())
 
     def checksum_vdc(cloud_projects: dict) -> dict:
@@ -290,9 +290,11 @@ def PassportsVM(portal_name: str) -> tuple:
 
     for vm_type in dg_types:
         if vm_type["description"] == "passport-vm-%s" % portal_name:
-            if vm_type["name"] not in map(lambda x: x["id"], portal_projects["projects"]):
-                print("DELETE TYPE %s from CMDB" % vm_type["name"],
-                      cmdb_api("DELETE", "types/%s" % vm_type["public_id"], cmdb_token))
+            if vm_type["name"] not in tuple(map(lambda x: x["id"], portal_projects["projects"])):
+                print(
+                    "DELETE TYPE %s from CMDB" % vm_type["name"],
+                    cmdb_api("DELETE", "types/%s" % vm_type["public_id"], cmdb_token)
+                )
             else:
                 dg_vm_projects.append(vm_type)
 
