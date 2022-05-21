@@ -43,7 +43,8 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
-                            sh "python3 main.py PD15"
+//                             sh "python3 main.py PD15"
+                            sh "./main.py PD15"
                         }
                     }
                 }
@@ -70,7 +71,8 @@ pipeline {
                         catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
                             sh "sleep 5"
-                            sh "python3 main.py PD20"
+//                             sh "python3 main.py PD20"
+                            sh "./main.py PD20"
                        }
                    }
                }
@@ -96,7 +98,8 @@ pipeline {
                     steps {
                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=03d57a4c8e580bd17424283763d7e0da8a844715290f789a056906f7f4654260"
                             sh "sleep 5"
-                            sh "python3 main.py PD23"
+//                             sh "python3 main.py PD23"
+                            sh "./main.py PD23"
                     }
                 }
 
@@ -121,7 +124,8 @@ pipeline {
                     steps {
                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=36fd0c49c63b3bda068fec30c751291cd498376a523c0a1b5f47252fe8798670"
                             sh "sleep 5"
-                            sh "python3 main.py PD24"
+//                             sh "python3 main.py PD24"
+                            sh "./main.py PD24"
                     }
                 }
 
