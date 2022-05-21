@@ -12,7 +12,7 @@ from common_function import cmdb_api, \
     get_mongodb_objects
 
 
-def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
+def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = "POST",
                template: bool = False) -> dict:
     """
     Func to create or update or delete ns_objects in DataGerry
@@ -26,10 +26,10 @@ def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, met
     :param vdc_object:
     :return:
     """
-    if method == 'PUT':
-        return cmdb_api(method, 'object/%s' % ns_info["public_id"], cmdb_token, ns_info)
+    if method == "PUT":
+        return cmdb_api(method, "object/%s" % ns_info["public_id"], cmdb_token, ns_info)
 
-    # elif method == 'NAMESPACE':
+    # elif method == "NAMESPACE":
     def convert_to_gb(bytes):
         foo = float(bytes)
         for i in range(3):
@@ -41,7 +41,7 @@ def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, met
             if metric[0] == looking_metric and metric[1] == type_metric:
                 return metric[2][1]
 
-    # metric = lambda x, y: filter(lambda foo: foo[2][1] if foo[0] == x and foo[1] == y else None, ns_info['info'])
+    # metric = lambda x, y: filter(lambda foo: foo[2][1] if foo[0] == x and foo[1] == y else None, ns_info["info"])
 
     # get_usage = lambda x, y: "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
 
@@ -61,33 +61,33 @@ def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, met
         "fields": [
             {
                 "name": "namespace",
-                "value": ns_info['namespace']
+                "value": ns_info["namespace"]
             },
             {
                 "name": "limits.cpu-hard",
-                "value": get_metric(ns_info['info'], 'limits.cpu', 'hard')
+                "value": get_metric(ns_info["info"], "limits.cpu", "hard")
             },
             {
                 "name": "limits.cpu-used",
-                "value": get_metric(ns_info['info'], 'limits.cpu', 'used')
+                "value": get_metric(ns_info["info"], "limits.cpu", "used")
             },
             {
                 "name": "cores-usage",
-                "value": get_usage(get_metric(ns_info['info'], 'limits.cpu', 'used'),
-                                   get_metric(ns_info['info'], 'limits.cpu', 'hard'))
+                "value": get_usage(get_metric(ns_info["info"], "limits.cpu", "used"),
+                                   get_metric(ns_info["info"], "limits.cpu", "hard"))
             },
             {
                 "name": "limits.memory-hard",
-                "value": fract(convert_to_gb(get_metric(ns_info['info'], 'limits.memory', 'hard')))
+                "value": fract(convert_to_gb(get_metric(ns_info["info"], "limits.memory", "hard")))
             },
             {
                 "name": "limits.memory-used",
-                "value": fract(convert_to_gb(get_metric(ns_info['info'], 'limits.memory', 'used')))
+                "value": fract(convert_to_gb(get_metric(ns_info["info"], "limits.memory", "used")))
             },
             {
                 "name": "memory-usage",
-                "value": get_usage(get_metric(ns_info['info'], 'limits.memory', 'used'),
-                                   get_metric(ns_info['info'], 'limits.memory', 'hard'))
+                "value": get_usage(get_metric(ns_info["info"], "limits.memory", "used"),
+                                   get_metric(ns_info["info"], "limits.memory", "hard"))
             }
         ]
     }
@@ -95,37 +95,37 @@ def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, met
     if template:
         return payload_ns_tmp
 
-    return cmdb_api('POST', 'object/', cmdb_token, payload_ns_tmp)
+    return cmdb_api("POST", "object/", cmdb_token, payload_ns_tmp)
 
     # print(response.status_code)
     # print(response.json())
     # try:
-    #     return cmdb_api('POST', 'object/', cmdb_token, payload_vm_tmp)
+    #     return cmdb_api("POST", "object/", cmdb_token, payload_vm_tmp)
     # except:
     #     number_of_recursions += 1
-    #     if response['status_code'] != 201 and number_of_recursions != 5:
+    #     if response["status_code"] != 201 and number_of_recursions != 5:
     #         time.sleep(1)
-    #         print(f"Status Code {response['status_code']}")
+    #         print(f"Status Code {response["status_code"]}")
     #         put_tag(ns_info, number_of_recursions)
-    #     return dict(vm_name=ns_info['name'], tag_name=ns_info['tag_name'], status_code=response['status_code'])
+    #     return dict(vm_name=ns_info["name"], tag_name=ns_info["tag_name"], status_code=response["status_code"])
 
 
 def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
-    if portal_info[portal_name]['metrics'] == 'false':
+    if portal_info[portal_name]["metrics"] == "false":
         return
 
     cmdb_token, user_id = get_dg_token()
 
-    all_categories: tuple = get_mongodb_objects('framework.categories')
+    all_categories: tuple = get_mongodb_objects("framework.categories")
 
     os_passports_category_id: dict = \
-        category_id('passports-os', 'Passports OpenShift', 'fab fa-redhat', cmdb_token, all_categories)
+        category_id("passports-os", "Passports OpenShift", "fab fa-redhat", cmdb_token, all_categories)
     os_portal_category_id: dict = \
-        category_id(f'OS-%s' % portal_name, f'OS-%s' % portal_name, 'far fa-folder-open', cmdb_token, all_categories,
-                    os_passports_category_id['public_id'])
+        category_id("OS-%s" % portal_name, "OS-%s" % portal_name, "far fa-folder-open", cmdb_token, all_categories,
+                    os_passports_category_id["public_id"])
 
     def get_os_info() -> dict:
-        return json.loads(requests.request("GET", portal_info[portal_name]['metrics']).content)
+        return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
 
     cluster_info: dict = get_os_info()
 
@@ -133,40 +133,40 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
     def clear_info(old_info: list) -> list:
         new_info = list()
         for info in old_info:
-            if 'cluster' in info['metric']:
+            if "cluster" in info["metric"]:
                 new_info.append(info)
         return new_info
 
-    cluster_info['data']['result'] = clear_info(cluster_info['data']['result'])
+    cluster_info["data"]["result"] = clear_info(cluster_info["data"]["result"])
     #### temporary
-    clusters = map(lambda x: x['metric']['cluster'], cluster_info['data']['result'])
+    clusters = map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"])
 
     os_info = list()
     for cluster in set(clusters):
         metrics = list()
         os_info.append(dict(cluster=cluster, info=metrics))
-        for info in cluster_info['data']['result']:
-            if cluster == info['metric']['cluster']:
-                metrics.append(info['metric']['namespace'])
+        for info in cluster_info["data"]["result"]:
+            if cluster == info["metric"]["cluster"]:
+                metrics.append(info["metric"]["namespace"])
 
     for info in os_info:
-        info['info'] = list(set(info['info']))
+        info["info"] = list(set(info["info"]))
         i = -1
-        for namespace in info['info']:
+        for namespace in info["info"]:
             i += 1
-            info['info'][i] = dict(namespace=namespace, info=list())
+            info["info"][i] = dict(namespace=namespace, info=list())
 
     for item in os_info:
-        for info in item['info']:
-            for metric in cluster_info['data']['result']:
-                if item['cluster'] == metric['metric']['cluster'] and \
-                        info['namespace'] == metric['metric']['namespace']:
-                    info['info'].append((metric['metric']['resource'], metric['metric']['type'], metric['value']))
+        for info in item["info"]:
+            for metric in cluster_info["data"]["result"]:
+                if item["cluster"] == metric["metric"]["cluster"] and \
+                        info["namespace"] == metric["metric"]["namespace"]:
+                    info["info"].append((metric["metric"]["resource"], metric["metric"]["type"], metric["value"]))
 
-    cmdb_projects: tuple = get_mongodb_objects('framework.types')
+    cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     for cluster in os_info:
-        if not any(map(lambda y: y['name'] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+        if not any(map(lambda y: y["name"] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
                        cmdb_projects)):
 
             data_type_template: dict = {
@@ -226,14 +226,14 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                             ],
                             "type": "section",
                             "name": f"os-cluster-{portal_name}--{cluster['cluster']}",
-                            "label": cluster['cluster']
+                            "label": cluster["cluster"]
                         }
                     ],
                     "externals": [
                         {
                             "name": "cluster link",
                             "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects" %
-                                    cluster['cluster'],
+                                    cluster["cluster"],
                             "label": "Cluster link",
                             "icon": "fas fa-external-link-alt",
                             "fields": []
@@ -241,7 +241,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                         {
                             "name": "namespace link",
                             "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects/{}" %
-                                    cluster['cluster'],
+                                    cluster["cluster"],
                             "label": "Namespace link",
                             "icon": "fas fa-external-link-alt",
                             "fields": ["namespace"]
@@ -276,86 +276,86 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                     }
                 },
                 "name": f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
-                "label": cluster['cluster'],
-                "description": 'openshift cluster %s' % cluster["cluster"]
+                "label": cluster["cluster"],
+                "description": "openshift cluster %s" % cluster["cluster"]
             }
 
-            create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
+            create_type = cmdb_api("POST", "types/", cmdb_token, data_type_template)
 
-            print(create_type['result_id'], 'new type id')
+            print(create_type["result_id"], "new type id")
 
             data_category_template: dict = {
-                "public_id": os_portal_category_id['public_id'],
-                "name": os_portal_category_id['name'],
-                "label": os_portal_category_id['label'],
+                "public_id": os_portal_category_id["public_id"],
+                "name": os_portal_category_id["name"],
+                "label": os_portal_category_id["label"],
                 "meta": {
                     "icon": "far fa-folder-open",
                     "order": None
                 },
-                "parent": os_passports_category_id['public_id'],
-                "types": os_portal_category_id['types']
+                "parent": os_passports_category_id["public_id"],
+                "types": os_portal_category_id["types"]
             }
 
-            if not create_type['result_id']:
+            if not create_type["result_id"]:
                 return
 
-            data_category_template['types'].append(create_type['result_id'])
+            data_category_template["types"].append(create_type["result_id"])
 
-            put_type_in_category = cmdb_api('PUT', "categories/%s" % os_portal_category_id['public_id'], cmdb_token,
+            put_type_in_category = cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token,
                                             data_category_template)
-            print('put_type_in_category', put_type_in_category)
-            print('data_category_template', data_category_template)
+            print("put_type_in_category", put_type_in_category)
+            print("data_category_template", data_category_template)
 
-            for namespace in cluster['info']:
-                create_object = ns_objects(namespace, cmdb_token, create_type['result_id'], user_id, 'NAMESPACE')
+            for namespace in cluster["info"]:
+                create_object = ns_objects(namespace, cmdb_token, create_type["result_id"], user_id, "NAMESPACE")
                 print(create_object)
                 time.sleep(0.1)
 
     if not all_objects:
-        all_objects: tuple = get_mongodb_objects('framework.objects')
+        all_objects: tuple = get_mongodb_objects("framework.objects")
 
     all_cmdb_cluster_types = tuple(filter(lambda f: "os-cluster-%s--" % portal_name in f["name"], cmdb_projects))
 
     for cmdb_cluster in all_cmdb_cluster_types:
         for cluster in os_info:
-            if cmdb_cluster['label'] == cluster['cluster']:
-                cmdb_namespaces = tuple(filter(lambda x: x['type_id'] == cmdb_cluster['public_id'], all_objects))
-                for os_namespace in cluster['info']:
-                    if os_namespace['namespace'] not in map(lambda x: x.get('fields')[0]['value'], cmdb_namespaces):
-                        print('NAMESPACE FOR CREATE', os_namespace['namespace'])
-                        ns_objects(os_namespace, cmdb_token, cmdb_cluster['public_id'], user_id, 'NAMESPACE')
+            if cmdb_cluster["label"] == cluster["cluster"]:
+                cmdb_namespaces = tuple(filter(lambda x: x["type_id"] == cmdb_cluster["public_id"], all_objects))
+                for os_namespace in cluster["info"]:
+                    if os_namespace["namespace"] not in map(lambda x: x.get("fields")[0]["value"], cmdb_namespaces):
+                        print("NAMESPACE FOR CREATE", os_namespace["namespace"])
+                        ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id, "NAMESPACE")
                         time.sleep(0.1)
 
                     for cmdb_ns in cmdb_namespaces:
-                        ns_template = ns_objects(os_namespace, cmdb_token, cmdb_cluster['public_id'], user_id,
+                        ns_template = ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id,
                                                  template=True)
-                        if cmdb_ns['fields'][0]['value'] == os_namespace['namespace'] and cmdb_ns['fields'] != \
-                                ns_template['fields']:
+                        if cmdb_ns["fields"][0]["value"] == os_namespace["namespace"] and cmdb_ns["fields"] != \
+                                ns_template["fields"]:
                             update_object_template: dict = {
-                                "type_id": cmdb_ns['type_id'],
+                                "type_id": cmdb_ns["type_id"],
                                 "status": cmdb_ns["version"],
                                 "version": cmdb_ns["version"],
                                 "creation_time": {
-                                    "$date": int(datetime.datetime.timestamp(cmdb_ns['creation_time']) * 1000)
+                                    "$date": int(datetime.datetime.timestamp(cmdb_ns["creation_time"]) * 1000)
                                 },
-                                "author_id": cmdb_ns['author_id'],
+                                "author_id": cmdb_ns["author_id"],
                                 "last_edit_time": {
                                     "$date": int(time.time() * 1000)
                                 },
                                 "editor_id": user_id,
                                 "active": cmdb_ns["active"],
-                                "fields": ns_template['fields'],
-                                "public_id": cmdb_ns['public_id'],
+                                "fields": ns_template["fields"],
+                                "public_id": cmdb_ns["public_id"],
                                 "views": cmdb_ns["views"],
                                 "comment": ""
                             }
 
                             time.sleep(0.1)
-                            print("UPDATE NAMESPACE in %s" % cmdb_ns['type_id'], os_namespace['namespace'])
-                            ns_objects(update_object_template, cmdb_token, cmdb_cluster['public_id'], user_id, 'PUT')
+                            print("UPDATE NAMESPACE in %s" % cmdb_ns["type_id"], os_namespace["namespace"])
+                            ns_objects(update_object_template, cmdb_token, cmdb_cluster["public_id"], user_id, "PUT")
 
                 for cmdb_ns in cmdb_namespaces:
-                    if cmdb_ns['fields'][0]['value'] not in map(lambda x: x['namespace'], cluster['info']):
-                        print('DELETE NAMESPACE', cmdb_ns['fields'][0]['value'])
-                        cmdb_api('DELETE', "object/%s" % cmdb_ns['public_id'], cmdb_token)
+                    if cmdb_ns["fields"][0]["value"] not in map(lambda x: x["namespace"], cluster["info"]):
+                        print("DELETE NAMESPACE", cmdb_ns["fields"][0]["value"])
+                        cmdb_api("DELETE", "object/%s" % cmdb_ns["public_id"], cmdb_token)
                         time.sleep(0.1)
