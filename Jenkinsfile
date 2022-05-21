@@ -44,6 +44,7 @@ pipeline {
                     steps {
                         catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
 //                             sh "python3 main.py PD15"
+                            sh "sleep 100000"
                             sh "./main.py PD15"
                         }
                     }
