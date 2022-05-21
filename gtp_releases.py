@@ -135,8 +135,7 @@ def releases() -> None:
     cmdb_projects: tuple = get_mongodb_objects('framework.types')
 
     for docx in version_urls:
-        if not any(map(lambda y: y['name'] == docx.replace('.', '_'),
-                       cmdb_projects)):  # and stand['project_name'] == 'gt-dvp-dev-admin-platform':
+        if not any(tuple(map(lambda y: y['name'] == docx.replace('.', '_'), cmdb_projects))):
 
             data_type_template: dict = {
                 "fields": [

@@ -149,7 +149,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     cluster_info['data']['result'] = clear_info(cluster_info['data']['result'])
     #### temporary
 
-    clusters = map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"])
+    clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"]))
 
     def get_ose_labels(clusters: map) -> list:
         """
@@ -185,8 +185,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     for cluster in all_labels:
-        if not any(map(lambda y: y['name'] == f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
-                       cmdb_projects)):
+        if not any(tuple(map(lambda y: y['name'] == f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                             cmdb_projects))):
 
             data_type_template: dict = {
                 "fields": [

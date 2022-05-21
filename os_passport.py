@@ -139,7 +139,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
 
     cluster_info["data"]["result"] = clear_info(cluster_info["data"]["result"])
     #### temporary
-    clusters = map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"])
+    clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"]))
 
     os_info = list()
     for cluster in set(clusters):
@@ -166,8 +166,8 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     for cluster in os_info:
-        if not any(map(lambda y: y["name"] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
-                       cmdb_projects)):
+        if not any(tuple(map(lambda y: y["name"] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                             cmdb_projects))):
 
             data_type_template: dict = {
                 "fields": [
@@ -321,7 +321,8 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
             if cmdb_cluster["label"] == cluster["cluster"]:
                 cmdb_namespaces = tuple(filter(lambda x: x["type_id"] == cmdb_cluster["public_id"], all_objects))
                 for os_namespace in cluster["info"]:
-                    if os_namespace["namespace"] not in map(lambda x: x.get("fields")[0]["value"], cmdb_namespaces):
+                    if os_namespace["namespace"] not in tuple(map(lambda x: x.get("fields")[0]["value"],
+                                                                  cmdb_namespaces)):
                         print("NAMESPACE FOR CREATE", os_namespace["namespace"])
                         ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id, "NAMESPACE")
                         time.sleep(0.1)
@@ -355,7 +356,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                             ns_objects(update_object_template, cmdb_token, cmdb_cluster["public_id"], user_id, "PUT")
 
                 for cmdb_ns in cmdb_namespaces:
-                    if cmdb_ns["fields"][0]["value"] not in map(lambda x: x["namespace"], cluster["info"]):
+                    if cmdb_ns["fields"][0]["value"] not in tuple(map(lambda x: x["namespace"], cluster["info"])):
                         print("DELETE NAMESPACE", cmdb_ns["fields"][0]["value"])
                         cmdb_api("DELETE", "object/%s" % cmdb_ns["public_id"], cmdb_token)
                         time.sleep(0.1)

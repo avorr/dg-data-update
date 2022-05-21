@@ -275,7 +275,7 @@ def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple | None:
     del all_objects
 
     for dg_object in all_vdc_objects:
-        if dg_object['fields'][5]['value'] not in map(lambda x: x['id'], portal_vdces):
+        if dg_object['fields'][5]['value'] not in tuple(map(lambda x: x['id'], portal_vdces)):
             type_for_delete: tuple = get_mongodb_objects('framework.types', {'name': dg_object['fields'][5]['value']})
             if type_for_delete:
                 print('DELETE DG TYPE', cmdb_api('DELETE', "types/%s" % max(type_for_delete)['public_id'], cmdb_token))
