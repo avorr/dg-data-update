@@ -129,7 +129,7 @@ def category_id(category_name: str, category_label: str, category_icon: str, cmd
     :return:
     """
 
-    if not any(map(lambda y: y["name"] == category_name, dg_categories)):
+    if not any(tuple(map(lambda y: y["name"] == category_name, dg_categories))):
         result: dict = create_category(category_name, category_label, category_icon, cmdb_token, parent_category)
         return {
             "public_id": result["raw"]["public_id"],

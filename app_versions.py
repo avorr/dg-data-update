@@ -93,8 +93,8 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     for stand in all_app_verions['info']:
-        if not any(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}", cmdb_projects)) \
-                and stand['modules_version']:
+        if not any(tuple(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
+                             cmdb_projects))) and stand['modules_version']:
 
             payload_type_template: dict = {
                 "fields": [
@@ -251,15 +251,15 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                             print("UPDATE APP VERSION IN  %s TYPE" % dg_object['type_id'])
 
                     if '%s--%s' % (pprb3_module['tag'], pprb3_module['id']) not in \
-                            map(lambda x: '%s--%s' % (x['fields'][3]['value'], x['fields'][5]['value']),
-                                dg_pprb3_objects):
+                            tuple(map(lambda x: '%s--%s' % (x['fields'][3]['value'], x['fields'][5]['value']),
+                                      dg_pprb3_objects)):
                         print('CREATE APP VERSION in %s' % app_type['public_id'])
                         create_object(pprb3_module, cmdb_token, app_type['public_id'], user_id)
                         time.sleep(0.1)
 
                 for dg_object in dg_pprb3_objects:
                     if "%s--%s" % (dg_object['fields'][3]['value'], dg_object['fields'][5]['value']) not in \
-                            map(lambda x: '%s--%s' % (x['tag'], x['id']), app_verions['modules_version']):
+                            tuple(map(lambda x: '%s--%s' % (x['tag'], x['id']), app_verions['modules_version'])):
                         print("DELETE APP VERSION %s--%s" % (dg_object['fields'][3]['value'],
                                                              dg_object['fields'][5]['value']))
                         cmdb_api("DELETE", "object/%s" % dg_object['public_id'], cmdb_token)
