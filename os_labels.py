@@ -267,12 +267,39 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                                 "jenkinsDeployUser"
                             ],
                             "type": "section",
-                            # "name": f"os-labels-{portal_name}--{cluster['cluster']}",
-                            "name": "os-labels-%s--%s" % (portal_name, cluster['cluster']),
+                            "name": f"os-labels-{portal_name}--{cluster['cluster']}",
+                            # "name": "os-labels-%s--%s" % (portal_name, cluster['cluster']),
                             "label": cluster['cluster']
                         }
                     ],
-                    "externals": [],
+                    "externals": [
+                        {
+                            "name": "cluster link",
+                            "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects" %
+                                    cluster['cluster'],
+                            "label": "Cluster link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": []
+                        },
+                        {
+                            "name": "namespace link",
+                            "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects/{}" %
+                                    cluster['cluster'],
+                            "label": "Namespace link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": ["namespace"]
+                        },
+                        {
+                            "name": "pod link",
+                            "href": "https://console-openshift-console.apps.%s/k8s/ns/{}/pods/{}" % cluster['cluster'],
+                            "label": "Pod link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": [
+                                "namespace",
+                                "name"
+                            ]
+                        }
+                    ],
                     "summary": {
                         "fields": [
                             "namespace",

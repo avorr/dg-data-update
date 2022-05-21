@@ -277,7 +277,7 @@ def PassportsVM(portal_name: str) -> tuple:
         for delete_dg_type in dg_types:
             # if delete_dg_type["public_id"] in list(range(171, 262)):
             # if delete_dg_type["description"] == "passport-vm-%s" % portal_name:
-            if "openshift cluster" in delete_dg_type["description"]:
+            if "openshift labels" in delete_dg_type["description"]:
                 print(delete_dg_type["description"])
                 # if "pd20-" in delete_dg_type["label"]:
                 print("DELETE CMDB TYPE", cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token))
