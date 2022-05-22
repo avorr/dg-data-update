@@ -2,6 +2,7 @@
 
 import time
 import hashlib
+from loguru import logger
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
@@ -278,20 +279,24 @@ def PassportsVM(portal_name: str) -> tuple:
             # if delete_dg_type["public_id"] in list(range(171, 262)):
             # if delete_dg_type["description"] == "passport-vm-%s" % portal_name:
             if "openshift labels" in delete_dg_type["description"]:
-                print(delete_dg_type["description"])
+                # print(delete_dg_type["description"])
                 # if "pd20-" in delete_dg_type["label"]:
-                print("DELETE CMDB TYPE", cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token))
+                logger.info(
+                    "DELETE CMDB TYPE", cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
+                )
 
         for categories in dg_categories:
             for categories_id in categories["results"]:
-                print("DELETE DG CAT", cmdb_api("DELETE", "categories/%s" % categories_id["public_id"], cmdb_token))
+                logger.info(
+                    "DELETE DG CAT", cmdb_api("DELETE", "categories/%s" % categories_id["public_id"], cmdb_token)
+                )
 
     dg_vm_projects = list()
 
     for vm_type in dg_types:
         if vm_type["description"] == "passport-vm-%s" % portal_name:
             if vm_type["name"] not in tuple(map(lambda x: x["id"], portal_projects["projects"])):
-                print(
+                logger.info(
                     "DELETE TYPE %s from CMDB" % vm_type["name"],
                     cmdb_api("DELETE", "types/%s" % vm_type["public_id"], cmdb_token)
                 )
@@ -299,7 +304,7 @@ def PassportsVM(portal_name: str) -> tuple:
                 dg_vm_projects.append(vm_type)
 
     from vdc_passports import PassportsVDC
-    all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name)
+    all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name, cmdb_token, user_id)
 
     project_id_vdc_types = dict()
 
@@ -332,7 +337,7 @@ def PassportsVM(portal_name: str) -> tuple:
             if projects[project]["id"] == dg_vdc["vdc_id"] and projects[project]["checksum"] != dg_vdc["check_sum"]:
                 update_dg_types.append(dict(type_id=dg_vdc["type_id"], vdc_id=dg_vdc["vdc_id"]))
 
-    print("VDC WHERE WERE CHANGES", len(update_dg_types))
+    logger.info(f"Vdc where there are changes = {len(update_dg_types)}")
 
     portal_tags: list = portal_api("dict/tags", portal_name)["stdout"]["tags"]
     all_objects: tuple = get_mongodb_objects("framework.objects")
@@ -549,8 +554,7 @@ def PassportsVM(portal_name: str) -> tuple:
             }
 
             create_type = cmdb_api("POST", "types/", cmdb_token, payload_type_tmp)
-            print(create_type, "create_type")
-            print(create_type["result_id"], "new type id")
+            logger.info(f'Create new type {create_type["result_id"]}')
 
             dg_categories: tuple = get_mongodb_objects("framework.categories")
 
@@ -572,6 +576,7 @@ def PassportsVM(portal_name: str) -> tuple:
             payload_category_tmp["types"].append(create_type["result_id"])
 
             cmdb_api("PUT", "categories/%s" % category_search["public_id"], cmdb_token, payload_category_tmp)
+            logger.info(f'Put new type {create_type["result_id"]} in category {category_search["label"]}')
 
             vm_list: dict = portal_api("servers?project_id=%s" % projects[project]["id"], portal_name)
 
@@ -580,7 +585,9 @@ def PassportsVM(portal_name: str) -> tuple:
                 try:
                     create_object = vm_objects(server, cmdb_token, create_type["result_id"], user_id, tags=portal_tags,
                                                vdc_object=vdc_id)
-                    print("CREATE OBJECT IN %s" % create_type["result_id"], create_object)
+                    logger.info(
+                        f'Create object {create_object} in {create_type["result_id"]}'
+                    )
                 except:
                     time.sleep(5)
                     vm_objects(server, cmdb_token, create_type["result_id"], user_id, tags=portal_tags,
@@ -604,13 +611,18 @@ def PassportsVM(portal_name: str) -> tuple:
 
         for portal_vm in portal_project_vms:
             if not any(map(lambda x: x["fields"][17]["value"] == portal_vm[17]["value"], dg_type_objects)):
-                print("VM FOR CREATING", portal_vm)
+                logger.info(
+                    f'Vm-object {portal_vm[2]["value"]} for creating in {dg_type["type_id"]}'
+                )
                 vm_objects(portal_vm, cmdb_token, dg_type["type_id"], user_id, "POST_NEW_VM", tags=portal_tags,
                            vdc_object=vdc_id)
 
             for dg_object in dg_type_objects:
                 if dg_object["fields"][17]["value"] == portal_vm[17]["value"] and dg_object["fields"] != portal_vm:
-                    print("VM FOR UPDATING IN %s" % dg_type["type_id"], portal_vm)
+                    # print("VM FOR UPDATING IN %s" % dg_type["type_id"], portal_vm)
+                    logger.info(
+                        f'Vm-object {portal_vm[2]["value"]} for updating in {dg_type["type_id"]}'
+                    )
 
                     payload_object_tmp: dict = {
                         "type_id": dg_type["type_id"],
@@ -632,12 +644,15 @@ def PassportsVM(portal_name: str) -> tuple:
                     }
 
                     time.sleep(0.1)
-                    print(vm_objects(payload_object_tmp, cmdb_token, dg_type["type_id"], user_id, "PUT",
-                                     tags=portal_tags, vdc_object=vdc_id))
+                    vm_objects(payload_object_tmp, cmdb_token, dg_type["type_id"], user_id, "PUT",
+                               tags=portal_tags, vdc_object=vdc_id)
 
         for object in filter(lambda x: x[1][17]["value"] not in map(lambda x: x[17]["value"], portal_project_vms),
                              map(lambda y: (y.get("public_id"), y.get("fields")), dg_type_objects)):
-            print("Delete object", object)
+            # print("Delete object", object)
+            logger.info(
+                f'Delete vm-object {object[1][0]["value"]}'
+            )
             cmdb_api("DELETE", "object/%s" % object[0], cmdb_token)
 
         get_info_dg_vdc = max(filter(lambda y: y["name"] == dg_type["vdc_id"], dg_types))
@@ -652,10 +667,10 @@ def PassportsVM(portal_name: str) -> tuple:
             time.strftime(f"%Y-%m-%dT%H:%M:%S.{str(time.time())[-5:]}0", time.localtime(time.time()))
         get_info_dg_vdc["info"]["creation_time"] = json_serial(get_info_dg_vdc["info"]["creation_time"])
 
-        print("##" * 20, "UPDATE CHECKSUM", "##" * 20)
+        # print("##" * 20, "UPDATE CHECKSUM", "##" * 20)
+        logger.info(f'Update checksum for {dg_type["type_id"]} in CMDB')
+        cmdb_api("PUT", "types/%s" % dg_type["type_id"], cmdb_token, get_info_dg_vdc["info"])
 
-        print(dg_type["type_id"])
-
-        print(cmdb_api("PUT", "types/%s" % dg_type["type_id"], cmdb_token, get_info_dg_vdc["info"]))
+        # print(dg_type["type_id"])
 
     return all_objects

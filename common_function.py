@@ -4,6 +4,7 @@ import os
 import json
 import requests
 import datetime
+from loguru import logger
 from datetime import datetime, date
 from concurrent.futures import ThreadPoolExecutor
 
@@ -49,6 +50,13 @@ def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict =
         'Content-Type': 'application/json',
         'Authorization': 'Bearer %s' % token
     }
+
+    if api_method == "POST":
+        logger.info(f'CREATE {method}')
+    elif api_method == "PUT":
+        logger.info(f'UPDATE {method}')
+    elif api_method == "DELETE":
+        logger.info(f'DELETE {method}')
     return json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
                                        data=json.dumps(payload)).content)
 
@@ -64,6 +72,9 @@ def get_dg_token() -> tuple[str, int]:
         "password": cmdb_password
     }
     user_info = cmdb_api("POST", "auth/login", payload=payload_auth)
+    logger.info(
+        f'''Create DataGerry auth-token for "{user_info["user"]["user_name"]}", user-id -> {user_info['user']['public_id']}'''
+    )
     return user_info["token"], user_info["user"]["public_id"]
 
 
