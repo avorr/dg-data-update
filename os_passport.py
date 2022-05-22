@@ -4,6 +4,7 @@ import json
 import time
 import requests
 import datetime
+from loguru import logger
 
 from env import portal_info
 from common_function import cmdb_api, \
@@ -120,9 +121,8 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
 
     os_passports_category_id: dict = \
         category_id("passports-os", "Passports OpenShift", "fab fa-redhat", cmdb_token, all_categories)
-    os_portal_category_id: dict = \
-        category_id("OS-%s" % portal_name, "OS-%s" % portal_name, "far fa-folder-open", cmdb_token, all_categories,
-                    os_passports_category_id["public_id"])
+    os_portal_category_id: dict = category_id("OS-%s" % portal_name, "OS-%s" % portal_name, "far fa-folder-open",
+                                              cmdb_token, all_categories, os_passports_category_id["public_id"])
 
     def get_os_info() -> dict:
         return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
@@ -282,7 +282,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
 
             create_type = cmdb_api("POST", "types/", cmdb_token, data_type_template)
 
-            print(create_type["result_id"], "new type id")
+            logger.info(f'Create new type {create_type["result_id"]} with id')
 
             data_category_template: dict = {
                 "public_id": os_portal_category_id["public_id"],
@@ -303,8 +303,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
 
             put_type_in_category = cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token,
                                             data_category_template)
-            print("put_type_in_category", put_type_in_category)
-            print("data_category_template", data_category_template)
+            logger.info(f'Put new type {create_type["result_id"]} in category {data_category_template["name"]}')
 
             for namespace in cluster["info"]:
                 create_object = ns_objects(namespace, cmdb_token, create_type["result_id"], user_id, "NAMESPACE")
@@ -323,7 +322,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                 for os_namespace in cluster["info"]:
                     if os_namespace["namespace"] not in tuple(map(lambda x: x.get("fields")[0]["value"],
                                                                   cmdb_namespaces)):
-                        print("NAMESPACE FOR CREATE", os_namespace["namespace"])
+                        logger.info(f'Create ns-object {os_namespace["namespace"]}')
                         ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id, "NAMESPACE")
                         time.sleep(0.1)
 
@@ -352,11 +351,11 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                             }
 
                             time.sleep(0.1)
-                            print("UPDATE NAMESPACE in %s" % cmdb_ns["type_id"], os_namespace["namespace"])
+                            logger.info(f'Update ns-object {os_namespace["namespace"]} in {cmdb_ns["type_id"]}')
                             ns_objects(update_object_template, cmdb_token, cmdb_cluster["public_id"], user_id, "PUT")
 
                 for cmdb_ns in cmdb_namespaces:
                     if cmdb_ns["fields"][0]["value"] not in tuple(map(lambda x: x["namespace"], cluster["info"])):
-                        print("DELETE NAMESPACE", cmdb_ns["fields"][0]["value"])
+                        logger.info(f'Delete ns-object {cmdb_ns["fields"][0]["value"]}')
                         cmdb_api("DELETE", "object/%s" % cmdb_ns["public_id"], cmdb_token)
                         time.sleep(0.1)
