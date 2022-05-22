@@ -8,4 +8,4 @@ RUN apt-get update && apt-get -y install \
                                  screen \
                                  openfortivpn && apt-get clean -q && apt-get -y autoremove --purge
 
-RUN pip3 install --no-cache --upgrade requests pymongo
+RUN pip3 install --no-cache --upgrade requests pymongo loguru
