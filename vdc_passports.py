@@ -11,8 +11,8 @@ from common_function import get_dg_token
 from common_function import get_mongodb_objects
 
 
-def PassportsVDC(portal_name: str, all_objects: tuple = ()) -> tuple | None:
-    cmdb_token, user_id = get_dg_token()
+def PassportsVDC(portal_name: str, cmdb_token: str, user_id: str, all_objects: tuple = ()) -> tuple | None:
+    # cmdb_token, user_id = get_dg_token()
     all_categories: tuple = get_mongodb_objects('framework.categories')
 
     vdc_category_id: dict = \
