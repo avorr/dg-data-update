@@ -16,7 +16,7 @@ def main() -> None:
     # visible_settings()
     # return
     # gtp_app_versions(sys.argv[1])
-    # return
+
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
     except EOFError as error:

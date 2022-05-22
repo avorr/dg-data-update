@@ -3,6 +3,7 @@
 import time
 import socket
 import requests
+from loguru import logger
 from itertools import zip_longest
 
 from tools import *
@@ -122,12 +123,12 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
-    os_passports_category_id: dict = \
-        category_id("os-app-labels", "OS App Labels", "fas fa-tags", cmdb_token, all_categories)
+    os_passports_category_id: dict = category_id("os-app-labels", "OS App Labels", "fas fa-tags",
+                                                 cmdb_token, all_categories)
 
-    os_portal_category_id: dict = \
-        category_id("OS-Labels-%s" % portal_name, "OS-Labels-%s" % portal_name, "fas fa-folder-open", cmdb_token,
-                    all_categories, os_passports_category_id['public_id'])
+    os_portal_category_id: dict = category_id("OS-Labels-%s" % portal_name, "OS-Labels-%s" % portal_name,
+                                              "fas fa-folder-open", cmdb_token, all_categories,
+                                              os_passports_category_id['public_id'])
 
     def get_os_info() -> dict:
         """
@@ -146,7 +147,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 new_info.append(info)
         return new_info
 
-    cluster_info['data']['result'] = clear_info(cluster_info['data']['result'])
+    cluster_info['data']['result']: list = clear_info(cluster_info['data']['result'])
     #### temporary
 
     clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"]))
@@ -338,7 +339,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
             }
 
             create_type: dict = cmdb_api("POST", "types/", cmdb_token, data_type_template)
-            print(create_type["result_id"], 'new type id')
+            logger.info(f'Create new label-type with id {create_type["result_id"]}')
 
             data_cat_template: dict = {
                 "public_id": os_portal_category_id["public_id"],
@@ -357,17 +358,12 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             data_cat_template["types"].append(create_type["result_id"])
 
-            put_type_in_category: dict = \
-                cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token, data_cat_template)
-
-            print("PUT TYPE IN CATEGORY", put_type_in_category)
-            print("DATA CATEGORY TEMPLATE", data_cat_template)
+            cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token, data_cat_template)
+            logger.info(f'Put new label-type id {create_type["result_id"]} in {data_cat_template["name"]}')
 
             for labels in cluster["labels"]:
-                print(
-                    "CREATE OBJECT",
-                    create_label(labels, cmdb_token, create_type["result_id"], user_id)
-                )
+                create_label(labels, cmdb_token, create_type["result_id"], user_id)
+                logger.info(f'Create label-object {labels} in {create_type["result_id"]}')
                 time.sleep(0.1)
 
     if not all_objects:
@@ -378,7 +374,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     for cmdb_cluster in all_types_labels:
         for cluster in all_labels:
             if cmdb_cluster["label"] == cluster["cluster"] and cmdb_cluster["label"]:
-                print(cmdb_cluster["label"], "UPDATE LABELS")
+                logger.info(f'Update label-objects in {cmdb_cluster["label"]}')
                 cmdb_namespaces = tuple(filter(lambda x: x["type_id"] == cmdb_cluster["public_id"], all_objects))
 
                 ex_labels: dict = {
@@ -391,14 +387,12 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
                 for dg_name, ex_name in zip_longest(set(dg_labels) - set(ex_labels), set(ex_labels) - set(dg_labels)):
                     if not ex_name:
-                        print("DELETE LABEL <--->", dg_labels[dg_name])
+                        logger.info(f"Delete label {dg_labels[dg_name]}")
                         cmdb_api("DELETE", "object/%s" % dg_labels[dg_name]["public_id"], cmdb_token)
 
                     elif not dg_name:
-                        print(
-                            "CREATE LABEL <--->", ex_labels[ex_name],
-                            create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"], user_id)
-                        )
+                        create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"], user_id)
+                        logger.info(f"Create label {ex_labels[ex_name]}")
 
                     else:
                         template: dict = create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"],
@@ -421,6 +415,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                             "views": dg_labels[dg_name]["views"],
                             "comment": ""
                         }
-                        print(
-                            create_label(payload_object_tmp, cmdb_token, dg_labels[dg_name]["type_id"], user_id, "PUT")
+
+                        create_label(payload_object_tmp, cmdb_token, dg_labels[dg_name]["type_id"], user_id, "PUT")
+                        logger.info(
+                            f'Update label-object {payload_object_tmp["fields"][1]} in {dg_labels[dg_name]["type_id"]}'
                         )
