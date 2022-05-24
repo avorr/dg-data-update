@@ -3,6 +3,7 @@
 import time
 import socket
 import requests
+from loguru import logger
 
 from tools import *
 from env import portal_info
@@ -182,9 +183,7 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
             }
 
             create_type = cmdb_api("POST", "types/", cmdb_token, payload_type_template)
-
-            print(create_type)
-            print(create_type['result_id'], 'new type id')
+            logger.info(f'Create new type id {create_type["result_id"]}')
 
             data_cat_template: dict = {
                 "public_id": os_portal_category_id['public_id'],
@@ -200,16 +199,15 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
 
             if not create_type['result_id']:
                 return
-            data_cat_template['types'].append(create_type['result_id'])
-            put_type_in_category = \
-                cmdb_api('PUT', "categories/%s" % os_portal_category_id['public_id'], cmdb_token, data_cat_template)
 
-            print('PUT TYPE IN CATEGORY', put_type_in_category)
-            print('DATA CATEGORY TEMPLATE', data_cat_template)
+            data_cat_template['types'].append(create_type['result_id'])
+
+            logger.info(f'Put type {create_type["result_id"]} in category {os_portal_category_id["name"]}')
+            cmdb_api('PUT', "categories/%s" % os_portal_category_id['public_id'], cmdb_token, data_cat_template)
 
             for version in stand['modules_version']:
                 create_app_version_object = create_object(version, cmdb_token, create_type['result_id'], user_id)
-                print('CREATE OBJECT', create_app_version_object)
+                logger.info(f'Create new object {create_app_version_object}')
                 time.sleep(0.1)
 
     all_objects: tuple = get_mongodb_objects("framework.objects")
@@ -248,20 +246,21 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                                 "comment": ""
                             }
                             create_object(update_object_template, cmdb_token, app_type['public_id'], user_id, 'PUT')
-                            print("UPDATE APP VERSION IN  %s TYPE" % dg_object['type_id'])
+                            logger.info(f'Update app version in {dg_object["type_id"]} type')
 
                     if '%s--%s' % (pprb3_module['tag'], pprb3_module['id']) not in \
                             tuple(map(lambda x: '%s--%s' % (x['fields'][3]['value'], x['fields'][5]['value']),
                                       dg_pprb3_objects)):
-                        print('CREATE APP VERSION in %s' % app_type['public_id'])
+                        logger.info(f'Create app version in {app_type["public_id"]}')
                         create_object(pprb3_module, cmdb_token, app_type['public_id'], user_id)
                         time.sleep(0.1)
 
                 for dg_object in dg_pprb3_objects:
                     if "%s--%s" % (dg_object['fields'][3]['value'], dg_object['fields'][5]['value']) not in \
                             tuple(map(lambda x: '%s--%s' % (x['tag'], x['id']), app_verions['modules_version'])):
-                        print("DELETE APP VERSION %s--%s" % (dg_object['fields'][3]['value'],
-                                                             dg_object['fields'][5]['value']))
+                        logger.info(
+                            f'DELETE APP VERSION {dg_object["fields"][3]["value"]}--{dg_object["fields"][5]["value"]}'
+                        )
                         cmdb_api("DELETE", "object/%s" % dg_object['public_id'], cmdb_token)
                         time.sleep(0.1)
 
