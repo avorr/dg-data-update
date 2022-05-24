@@ -186,9 +186,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
         return all_labels
 
-    # all_labels: list = get_ose_labels(clusters)
-    # write_to_file(f'{all_labels=}')
-    from all_labels import all_labels
+    all_labels: list = get_ose_labels(clusters)
 
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
