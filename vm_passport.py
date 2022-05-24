@@ -299,11 +299,11 @@ def PassportsVM(portal_name: str) -> tuple:
             else:
                 dg_vm_projects.append(vm_type)
 
-    foo = list()
-    for i in portal_projects["projects"]:
-        if i["name"] == "gt-common-admins":
-            foo.append(i)
-    portal_projects["projects"] = foo
+    # foo = list()
+    # for i in portal_projects["projects"]:
+    #     if i["name"] == "gt-common-admins":
+    #         foo.append(i)
+    # portal_projects["projects"] = foo
 
     from vdc_passports import PassportsVDC
     all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name, cmdb_token, user_id, portal_projects["projects"])
