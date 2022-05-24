@@ -259,7 +259,7 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                     if "%s--%s" % (dg_object['fields'][3]['value'], dg_object['fields'][5]['value']) not in \
                             tuple(map(lambda x: '%s--%s' % (x['tag'], x['id']), app_verions['modules_version'])):
                         logger.info(
-                            f'DELETE APP VERSION {dg_object["fields"][3]["value"]}--{dg_object["fields"][5]["value"]}'
+                            f'Delete app version {dg_object["fields"][3]["value"]}--{dg_object["fields"][5]["value"]}'
                         )
                         cmdb_api("DELETE", "object/%s" % dg_object['public_id'], cmdb_token)
                         time.sleep(0.1)

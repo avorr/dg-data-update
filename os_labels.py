@@ -192,7 +192,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
     for cluster in all_labels:
         if not any(tuple(map(lambda y: y['name'] == f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
-                             cmdb_projects))) and cluster['cluster'] == 'k8s.uat.solutions.tech':
+                             cmdb_projects))):
 
             data_type_template: dict = {
                 "fields": [
