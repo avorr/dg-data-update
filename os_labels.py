@@ -392,7 +392,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
                     elif not dg_name:
                         create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"], user_id)
-                        logger.info(f"Create label {ex_labels[ex_name]}")
+                        logger.info(f'Create label-object {ex_labels[ex_name]["name"]}')
 
                     else:
                         template: dict = create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"],

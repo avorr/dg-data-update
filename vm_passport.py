@@ -70,7 +70,6 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, met
     else:
         ingress_ports = egress_ports = ""
 
-    # conversion_ports_to_string = lambda x, foo="port_range_max", bar="port_range_min": f"{x["protocol"]} {x[foo]}" if x[foo] == x[bar] else f"{x["protocol"]} {x[bar]}-{x[foo]}"
     def conversion_ports_to_string(x: dict, foo="port_range_max", bar="port_range_min") -> str:
         return f"{x['protocol']} {x[foo]}" if x[foo] == x[bar] else f"{x['protocol']} {x[bar]}-{x[foo]}"
 
@@ -278,33 +277,28 @@ def PassportsVM(portal_name: str) -> tuple:
         for delete_dg_type in dg_types:
             # if delete_dg_type["public_id"] in list(range(171, 262)):
             # if delete_dg_type["description"] == "passport-vm-%s" % portal_name:
-            if "openshift labels" in delete_dg_type["description"]:
+            # if "openshift labels" in delete_dg_type["description"]:
                 # print(delete_dg_type["description"])
                 # if "pd20-" in delete_dg_type["label"]:
-                logger.info(
-                    "DELETE CMDB TYPE", cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
-                )
+            logger.info("DELETE CMDB TYPE")
+            cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
 
-        for categories in dg_categories:
-            for categories_id in categories["results"]:
-                logger.info(
-                    "DELETE DG CAT", cmdb_api("DELETE", "categories/%s" % categories_id["public_id"], cmdb_token)
-                )
+        for category in dg_categories:
+            logger.info("Delete DataGerry category")
+            cmdb_api("DELETE", "categories/%s" % category["public_id"], cmdb_token)
 
     dg_vm_projects = list()
 
     for vm_type in dg_types:
         if vm_type["description"] == "passport-vm-%s" % portal_name:
             if vm_type["name"] not in tuple(map(lambda x: x["id"], portal_projects["projects"])):
-                logger.info(
-                    "DELETE TYPE %s from CMDB" % vm_type["name"],
-                    cmdb_api("DELETE", "types/%s" % vm_type["public_id"], cmdb_token)
-                )
+                cmdb_api("DELETE", "types/%s" % vm_type["public_id"], cmdb_token)
+                logger.info("DELETE TYPE %s from CMDB" % vm_type["name"])
             else:
                 dg_vm_projects.append(vm_type)
 
     from vdc_passports import PassportsVDC
-    all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name, cmdb_token, user_id)
+    all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name, cmdb_token, user_id, portal_projects["projects"])
 
     project_id_vdc_types = dict()
 
@@ -612,7 +606,6 @@ def PassportsVM(portal_name: str) -> tuple:
 
             for dg_object in dg_type_objects:
                 if dg_object["fields"][17]["value"] == portal_vm[17]["value"] and dg_object["fields"] != portal_vm:
-                    # print("VM FOR UPDATING IN %s" % dg_type["type_id"], portal_vm)
                     logger.info(f'Vm-object {portal_vm[2]["value"]} for updating in {dg_type["type_id"]}')
 
                     payload_object_tmp: dict = {
@@ -640,7 +633,6 @@ def PassportsVM(portal_name: str) -> tuple:
 
         for object in filter(lambda x: x[1][17]["value"] not in map(lambda x: x[17]["value"], portal_project_vms),
                              map(lambda y: (y.get("public_id"), y.get("fields")), dg_type_objects)):
-            # print("Delete object", object)
             logger.info(f'Delete vm-object {object[1][0]["value"]}')
             cmdb_api("DELETE", "object/%s" % object[0], cmdb_token)
 
@@ -656,10 +648,7 @@ def PassportsVM(portal_name: str) -> tuple:
             time.strftime(f"%Y-%m-%dT%H:%M:%S.{str(time.time())[-5:]}0", time.localtime(time.time()))
         get_info_dg_vdc["info"]["creation_time"] = json_serial(get_info_dg_vdc["info"]["creation_time"])
 
-        # print("##" * 20, "UPDATE CHECKSUM", "##" * 20)
         logger.info(f'Update checksum for {dg_type["type_id"]} in CMDB')
         cmdb_api("PUT", "types/%s" % dg_type["type_id"], cmdb_token, get_info_dg_vdc["info"])
-
-        # print(dg_type["type_id"])
 
     return all_objects
