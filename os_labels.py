@@ -68,48 +68,53 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
             "fields": [
                 {
                     "name": "namespace",
-                    "value": get_label(labels_info, 'namespace')
+                    "value": get_label(labels_info, "namespace")
                 },
                 {
                     "name": "name",
-                    "value": get_label(labels_info, 'name')
+                    "value": get_label(labels_info, "name")
                 },
                 {
                     "name": "app",
-                    "value": get_label(labels_info, 'app')
+                    "value": get_label(labels_info, "app")
                 },
                 {
                     "name": "SUBSYSTEM",
-                    "value": get_label(labels_info, 'SUBSYSTEM')
+                    "value": get_label(labels_info, "SUBSYSTEM")
 
                 },
                 {
                     "name": "deployment",
-                    "value": get_label(labels_info, 'deployment')
+                    "value": get_label(labels_info, "deployment")
                 },
                 {
                     "name": "deploymentconfig",
-                    "value": get_label(labels_info, 'deploymentconfig')
+                    "value": get_label(labels_info, "deploymentconfig")
                 },
                 {
                     "name": "deployDate",
-                    "value": get_label(labels_info, 'deployDate')
+                    "value": get_label(labels_info, "deployDate")
                 },
                 {
                     "name": "distribVersion",
-                    "value": get_label(labels_info, 'distribVersion')
+                    "value": get_label(labels_info, "distribVersion")
                 },
                 {
                     "name": "version",
-                    "value": get_label(labels_info, 'version')
+                    "value": get_label(labels_info, "version")
+                },
+
+                {
+                    "name": "build",
+                    "value": get_label(labels_info, "build")
                 },
                 {
                     "name": "security.istio.io/tlsMode",
-                    "value": get_label(labels_info, 'security.istio.io/tlsMode')
+                    "value": get_label(labels_info, "security.istio.io/tlsMode")
                 },
                 {
                     "name": "jenkinsDeployUser",
-                    "value": get_label(labels_info, 'jenkinsDeployUser')
+                    "value": get_label(labels_info, "jenkinsDeployUser")
                 }
             ]
         }
@@ -181,13 +186,15 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
         return all_labels
 
-    all_labels: list = get_ose_labels(clusters)
+    # all_labels: list = get_ose_labels(clusters)
+    # write_to_file(f'{all_labels=}')
+    from all_labels import all_labels
 
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     for cluster in all_labels:
         if not any(tuple(map(lambda y: y['name'] == f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
-                             cmdb_projects))):
+                             cmdb_projects))) and cluster['cluster'] == 'k8s.uat.solutions.tech':
 
             data_type_template: dict = {
                 "fields": [
@@ -238,6 +245,11 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                     },
                     {
                         "type": "text",
+                        "name": "build",
+                        "label": "build"
+                    },
+                    {
+                        "type": "text",
                         "name": "security.istio.io/tlsMode",
                         "label": "security.istio.io/tlsMode"
                     },
@@ -264,12 +276,12 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                                 "deployDate",
                                 "distribVersion",
                                 "version",
+                                "build",
                                 "security.istio.io/tlsMode",
                                 "jenkinsDeployUser"
                             ],
                             "type": "section",
                             "name": f"os-labels-{portal_name}--{cluster['cluster']}",
-                            # "name": "os-labels-%s--%s" % (portal_name, cluster['cluster']),
                             "label": cluster['cluster']
                         }
                     ],
@@ -312,6 +324,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                             "deployDate",
                             "distribVersion",
                             "version",
+                            "build",
                             "security.istio.io/tlsMode",
                             "jenkinsDeployUser"
                         ]
@@ -363,7 +376,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
             for labels in cluster["labels"]:
                 create_label(labels, cmdb_token, create_type["result_id"], user_id)
-                logger.info(f'Create label-object {labels} in {create_type["result_id"]}')
+                logger.info(f'Create label-object {labels["name"]} in {create_type["result_id"]}')
                 time.sleep(0.1)
 
     if not all_objects:

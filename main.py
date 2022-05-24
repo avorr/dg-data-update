@@ -34,7 +34,6 @@ def main() -> None:
         #     pass
         print(error)
 
-    # if sys.argv[1] in ('PD15', 'PD20', 'PD24'):
     try:
         gtp_app_versions(sys.argv[1])
     except EOFError as error:
