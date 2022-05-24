@@ -233,6 +233,8 @@ def PassportsVM(portal_name: str) -> tuple:
 
     portal_groups_info: dict = portal_api("groups", portal_name)["stdout"]
 
+    dg_categories: tuple = get_mongodb_objects("framework.categories")
+
     for group_id in portal_groups_info["groups"]:
         if not any(map(lambda y: y["name"] == "group_id--%s" % group_id["id"], dg_categories)):
             for domain in dg_categories:
@@ -278,8 +280,8 @@ def PassportsVM(portal_name: str) -> tuple:
             # if delete_dg_type["public_id"] in list(range(171, 262)):
             # if delete_dg_type["description"] == "passport-vm-%s" % portal_name:
             # if "openshift labels" in delete_dg_type["description"]:
-                # print(delete_dg_type["description"])
-                # if "pd20-" in delete_dg_type["label"]:
+            # print(delete_dg_type["description"])
+            # if "pd20-" in delete_dg_type["label"]:
             logger.info("DELETE CMDB TYPE")
             cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
 
@@ -297,6 +299,12 @@ def PassportsVM(portal_name: str) -> tuple:
             else:
                 dg_vm_projects.append(vm_type)
 
+    foo = list()
+    for i in portal_projects["projects"]:
+        if i["name"] == "gt-common-admins":
+            foo.append(i)
+    portal_projects["projects"] = foo
+
     from vdc_passports import PassportsVDC
     all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name, cmdb_token, user_id, portal_projects["projects"])
 
@@ -309,11 +317,6 @@ def PassportsVM(portal_name: str) -> tuple:
                     "vdc_object_id": vdc_vm["public_id"]
                 }
 
-    # foo = list()
-    # for i in portal_projects["projects"]:
-    #     if i["name"] == "gt-common-admins":
-    #         foo.append(i)
-    # portal_projects["projects"] = foo
     projects: dict = checksum_vdc(portal_projects["projects"])
 
     del portal_projects

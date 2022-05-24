@@ -51,4 +51,3 @@ if __name__ == '__main__':
     # if 0 != 5:
     # raise TypeError("Type not serializable")
     # raise EOFError("asasa")
-

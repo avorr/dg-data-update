@@ -5,6 +5,7 @@ import datetime
 from loguru import logger
 from collections import defaultdict
 
+from env import portal_info
 from common_function import cmdb_api
 from common_function import category_id
 from common_function import get_mongodb_objects
@@ -193,7 +194,17 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, portal_projects:
                         "label": "VDC-%s" % portal_name
                     }
                 ],
-                "externals": [],
+                "externals": [
+                    {
+                        "name": "vdc link",
+                        "href": "%s/client/orders/{}" % portal_info[portal_name]['url'],
+                        "label": "Vdc link",
+                        "icon": "fas fa-external-link-alt",
+                        "fields": [
+                            "project-id"
+                        ]
+                    }
+                ],
                 "summary": {
                     "fields": [
                         "name",
@@ -246,7 +257,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, portal_projects:
         payload_category['types'].append(create_type['result_id'])
 
         put_type_in_cat = cmdb_api('PUT', "categories/%s" % vdc_category_id['public_id'], dg_token, payload_category)
-        logger.info(f"Put type {put_type_in_cat} in category {payload_category['name']}")
+        logger.info(f"Put type {put_type_in_cat['result']['public_id']} in category {payload_category['name']}")
 
         for vdc in portal_projects:
             create_vdc_object = create_vdc(vdc, dg_token, create_type['result_id'], user_id)
