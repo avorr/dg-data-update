@@ -9,7 +9,7 @@ def json_read(json_variable: dict) -> None:
     :param json_variable:
     :return: None
     """
-    print(json.dumps(json_variable, indent=4))
+    print(json.dumps(json_variable, indent=4, default=str))
 
 
 def write_to_file(variable: str) -> None:

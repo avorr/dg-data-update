@@ -163,6 +163,7 @@ def visible_settings() -> None:
                                     'fields.distribVersion',
                                     'fields.version',
                                     'fields.build',
+                                    'fields.image',
                                     'fields.security.istio.io/tlsMode',
                                     'fields.jenkinsDeployUser',
                                     'actions'
@@ -369,6 +370,7 @@ def visible_settings() -> None:
                                                 'fields.distribVersion',
                                                 'fields.version',
                                                 'fields.build',
+                                                'fields.image',
                                                 'fields.security.istio.io/tlsMode',
                                                 'fields.jenkinsDeployUser',
                                                 'actions'
@@ -580,6 +582,7 @@ def visible_settings() -> None:
                                                 "fields.distribVersion",
                                                 "fields.version",
                                                 "fields.build",
+                                                "fields.image",
                                                 "fields.security.istio.io/tlsMode",
                                                 "fields.jenkinsDeployUser",
                                                 "actions"
