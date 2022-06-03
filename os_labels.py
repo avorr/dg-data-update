@@ -103,10 +103,13 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                     "name": "version",
                     "value": get_label(labels_info, "version")
                 },
-
                 {
                     "name": "build",
                     "value": get_label(labels_info, "build")
+                },
+                {
+                    "name": "image",
+                    "value": get_label(labels_info, "image")
                 },
                 {
                     "name": "security.istio.io/tlsMode",
@@ -248,6 +251,11 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                     },
                     {
                         "type": "text",
+                        "name": "image",
+                        "label": "image"
+                    },
+                    {
+                        "type": "text",
                         "name": "security.istio.io/tlsMode",
                         "label": "security.istio.io/tlsMode"
                     },
@@ -275,6 +283,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                                 "distribVersion",
                                 "version",
                                 "build",
+                                "image",
                                 "security.istio.io/tlsMode",
                                 "jenkinsDeployUser"
                             ],
@@ -323,6 +332,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                             "distribVersion",
                             "version",
                             "build",
+                            "image",
                             "security.istio.io/tlsMode",
                             "jenkinsDeployUser"
                         ]
@@ -398,7 +408,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
                 for dg_name, ex_name in zip_longest(set(dg_labels) - set(ex_labels), set(ex_labels) - set(dg_labels)):
                     if not ex_name:
-                        logger.info(f"Delete label {dg_labels[dg_name]}")
+                        logger.info(f"Delete label {dg_labels[dg_name]['fields'][1]['value']}")
                         cmdb_api("DELETE", "object/%s" % dg_labels[dg_name]["public_id"], cmdb_token)
 
                     elif not dg_name:
@@ -429,5 +439,6 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
                         create_label(payload_object_tmp, cmdb_token, dg_labels[dg_name]["type_id"], user_id, "PUT")
                         logger.info(
-                            f'Update label-object {payload_object_tmp["fields"][1]} in {dg_labels[dg_name]["type_id"]}'
+                            f'Update label-object {payload_object_tmp["fields"][1]["value"]} '
+                            f'in {dg_labels[dg_name]["type_id"]}'
                         )
