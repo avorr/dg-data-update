@@ -173,3 +173,33 @@ def portal_api(api_name: str, portal_name: str) -> dict:
     }
     response = requests.get("%s/api/v1/%s" % (portal_info[portal_name]["url"], api_name), headers=headers, verify=False)
     return dict(stdout=json.loads(response.content), status_code=response.status_code)
+
+
+###############################################################
+
+
+def get_label(labels: dict, label: str) -> str:
+    if 'labels' in labels:
+        if label in labels:
+            return labels[label]
+        elif label in labels['labels']:
+            return labels['labels'][label]
+        else:
+            return ''
+    else:
+        if label in labels:
+            return labels[label]
+        else:
+            return ''
+
+
+def check_resolves(dns_name: str) -> bool:
+    """
+    Function for checking resolving dns names
+    """
+    try:
+        socket.gethostbyname(dns_name)
+        return True
+    except socket.error as Error:
+        print(dns_name, Error)
+        return False

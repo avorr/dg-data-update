@@ -13,9 +13,9 @@ from view_settings import visible_settings
 def main() -> None:
     # all_objects: tuple = PassportsVM(sys.argv[1])
     # LabelsOS(sys.argv[1])
+    # gtp_app_versions(sys.argv[1])
     # visible_settings()
     # return
-    # gtp_app_versions(sys.argv[1])
 
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])

@@ -1,7 +1,6 @@
 #!/usr/local/bin/python3
 
 import time
-import socket
 import requests
 from loguru import logger
 
@@ -82,19 +81,19 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
     cmdb_token, user_id = get_dg_token()
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
-    os_passports_category_id = category_id('pprb3-app-versions', 'Pprb3 App Versions',
+    os_passports_category_id = category_id('vm-apps-versions', 'VM Apps Versions',
                                            'fas fa-server', cmdb_token, all_categories)
 
     os_portal_category_id = \
-        category_id("Pprb3-Versions-%s" % portal_name, "Pprb3-Versions-%s" % portal_name, "far fa-folder-open",
+        category_id("Apps-Version-%s" % portal_name, "Apps-Version-%s" % portal_name, "far fa-folder-open",
                     cmdb_token, all_categories, os_passports_category_id['public_id'])
 
-    all_app_verions: dict = json.loads(requests.request("GET", portal_info[portal_name]["app_versions"]).content)
+    all_apps_versions: dict = json.loads(requests.request("GET", portal_info[portal_name]["app_versions"]).content)
 
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
-    for stand in all_app_verions['info']:
-        if not any(tuple(map(lambda y: y['name'] == f"pprb3-versions-{portal_name}--{stand['project_id']}",
+    for stand in all_apps_versions['info']:
+        if not any(tuple(map(lambda y: y['name'] == f"apps-versions-{portal_name}--{stand['project_id']}",
                              cmdb_projects))) and stand['modules_version']:
 
             payload_type_template: dict = {
@@ -146,7 +145,7 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                                 "vm-id"
                             ],
                             "type": "section",
-                            "name": f"pprb3-versions-{portal_name}--{stand['project_id']}",
+                            "name": f"apps-versions-{portal_name}--{stand['project_id']}",
                             "label": stand['project_id']
                         }
                     ],
@@ -177,9 +176,9 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                         }
                     }
                 },
-                "name": f"pprb3-versions-{portal_name}--{stand['project_id']}",
+                "name": f"apps-versions-{portal_name}--{stand['project_id']}",
                 "label": stand["project_name"],
-                "description": "pprb3 versions %s" % stand["project_id"]
+                "description": "apps versions %s" % stand["project_id"]
             }
 
             create_type = cmdb_api("POST", "types/", cmdb_token, payload_type_template)
@@ -212,21 +211,21 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
 
     all_objects: tuple = get_mongodb_objects("framework.objects")
 
-    all_app_types = tuple(filter(lambda x: f'pprb3-versions-%s--' % portal_name in x['name'], cmdb_projects))
+    all_app_types = tuple(filter(lambda x: f'apps-versions-%s--' % portal_name in x['name'], cmdb_projects))
 
     for app_type in all_app_types:
-        for app_verions in all_app_verions["info"]:
-            if app_type['name'][21:] == app_verions['project_id'] and app_verions["modules_version"]:
+        for apps_versions in all_apps_versions["info"]:
+            if app_type['name'][21:] == apps_versions['project_id'] and apps_versions["modules_version"]:
 
-                dg_pprb3_objects = tuple(filter(lambda x: x['type_id'] == app_type['public_id'], all_objects))
+                dg_apps_objects = tuple(filter(lambda x: x['type_id'] == app_type['public_id'], all_objects))
 
-                for pprb3_module in app_verions['modules_version']:
-                    for dg_object in dg_pprb3_objects:
-                        pprb3_object_tmp: dict = \
-                            create_object(pprb3_module, cmdb_token, app_type['public_id'], user_id, template=True)
-                        if pprb3_module['id'] == dg_object['fields'][5]['value'] and \
-                                pprb3_module['tag'] == dg_object['fields'][3]['value'] and \
-                                pprb3_object_tmp['fields'] != dg_object['fields']:
+                for app_module in apps_versions['modules_version']:
+                    for dg_object in dg_apps_objects:
+                        app_object_template: dict = \
+                            create_object(app_module, cmdb_token, app_type['public_id'], user_id, template=True)
+                        if app_module['id'] == dg_object['fields'][5]['value'] and \
+                                app_module['tag'] == dg_object['fields'][3]['value'] and \
+                                app_object_template['fields'] != dg_object['fields']:
                             update_object_template: dict = {
                                 "type_id": dg_object['type_id'],
                                 "status": dg_object['status'],
@@ -240,7 +239,7 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                                 },
                                 "editor_id": user_id,
                                 "active": dg_object["active"],
-                                "fields": pprb3_object_tmp['fields'],
+                                "fields": app_object_template['fields'],
                                 "public_id": dg_object['public_id'],
                                 "views": dg_object["views"],
                                 "comment": ""
@@ -248,16 +247,16 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                             create_object(update_object_template, cmdb_token, app_type['public_id'], user_id, 'PUT')
                             logger.info(f'Update app version in {dg_object["type_id"]} type')
 
-                    if '%s--%s' % (pprb3_module['tag'], pprb3_module['id']) not in \
-                            tuple(map(lambda x: '%s--%s' % (x['fields'][3]['value'], x['fields'][5]['value']),
-                                      dg_pprb3_objects)):
+                    if f'{app_module["tag"]}--{app_module["id"]}' not in \
+                            tuple(map(lambda x: f'{x["fields"][3]["value"]}--{x["fields"][5]["value"]}',
+                                      dg_apps_objects)):
                         logger.info(f'Create app version in {app_type["public_id"]}')
-                        create_object(pprb3_module, cmdb_token, app_type['public_id'], user_id)
+                        create_object(app_module, cmdb_token, app_type['public_id'], user_id)
                         time.sleep(0.1)
 
-                for dg_object in dg_pprb3_objects:
-                    if "%s--%s" % (dg_object['fields'][3]['value'], dg_object['fields'][5]['value']) not in \
-                            tuple(map(lambda x: '%s--%s' % (x['tag'], x['id']), app_verions['modules_version'])):
+                for dg_object in dg_apps_objects:
+                    if f'{dg_object["fields"][3]["value"]}--{dg_object["fields"][5]["value"]}' not in \
+                            tuple(map(lambda x: f'{x["tag"]}--{x["id"]}', apps_versions['modules_version'])):
                         logger.info(
                             f'Delete app version {dg_object["fields"][3]["value"]}--{dg_object["fields"][5]["value"]}'
                         )
@@ -267,30 +266,3 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
 
 if __name__ == '__main__':
     gtp_app_versions(next(iter(portal_info)))
-
-
-def get_label(labels: dict, label: str) -> str:
-    if 'labels' in labels:
-        if label in labels:
-            return labels[label]
-        elif label in labels['labels']:
-            return labels['labels'][label]
-        else:
-            return ''
-    else:
-        if label in labels:
-            return labels[label]
-        else:
-            return ''
-
-
-def check_resolves(dns_name: str) -> bool:
-    """
-    Function for checking resolving dns names
-    """
-    try:
-        socket.gethostbyname(dns_name)
-        return True
-    except socket.error as Error:
-        print(dns_name, Error)
-        return False
