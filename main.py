@@ -21,7 +21,6 @@ def main() -> None:
         all_objects: tuple = PassportsVM(sys.argv[1])
     except EOFError as error:
         print(error)
-
     try:
         PassportsOS(sys.argv[1], all_objects)
     except EOFError as error:

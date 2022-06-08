@@ -279,7 +279,7 @@ def PassportsVM(portal_name: str) -> tuple:
         for delete_dg_type in dg_types:
             # if delete_dg_type["public_id"] in list(range(171, 262)):
             # if delete_dg_type["description"] == "passport-vm-%s" % portal_name:
-            if "pprb3 versions" in delete_dg_type["description"]:
+            if "VDC-PD" in delete_dg_type["description"]:
             # print(delete_dg_type["description"])
             # if "pd20-" in delete_dg_type["label"]:
                 logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
@@ -307,7 +307,8 @@ def PassportsVM(portal_name: str) -> tuple:
     # portal_projects["projects"] = foo
 
     from vdc_passports import PassportsVDC
-    all_vdc_objects, dg_vdc_type = PassportsVDC(portal_name, cmdb_token, user_id, portal_projects["projects"])
+    all_vdc_objects, dg_vdc_type = \
+        PassportsVDC(portal_name, cmdb_token, user_id, domains_info, portal_projects["projects"])
 
     project_id_vdc_types = dict()
 
