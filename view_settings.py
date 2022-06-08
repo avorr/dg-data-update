@@ -195,6 +195,8 @@ def visible_settings() -> None:
                                     'fields.datacenter-name',
                                     'fields.networks',
                                     'fields.dns-nameservers',
+                                    'fields.domain',
+                                    'fields.group',
                                     'actions'
                                 ]
 
@@ -427,6 +429,8 @@ def visible_settings() -> None:
                                                 'fields.datacenter-name',
                                                 'fields.networks',
                                                 'fields.dns-nameservers',
+                                                'fields.domain',
+                                                'fields.group',
                                                 'actions'
                                             ]
                                         }
@@ -657,6 +661,8 @@ def visible_settings() -> None:
                                                 "fields.datacenter-name",
                                                 "fields.networks",
                                                 "fields.dns-nameservers",
+                                                "fields.domain",
+                                                "fields.group",
                                                 "actions"
                                             ]
                                         }
