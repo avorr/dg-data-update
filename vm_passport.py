@@ -317,7 +317,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     for project in portal_projects["projects"]:
         for vdc_vm in all_vdc_objects:
-            if vdc_vm["fields"][5]["value"] == project["id"]:
+            if vdc_vm["fields"][7]["value"] == project["id"]:
                 project_id_vdc_types[project["id"]] = {
                     "vdc_object_id": vdc_vm["public_id"]
                 }
