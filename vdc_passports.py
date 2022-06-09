@@ -302,8 +302,8 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
     del all_objects
 
     for dg_object in all_vdc_objects:
-        if dg_object["fields"][5]["value"] not in tuple(map(lambda x: x["id"], portal_projects)):
-            type_for_delete: tuple = get_mongodb_objects("framework.types", {"name": dg_object["fields"][5]["value"]})
+        if dg_object["fields"][7]["value"] not in tuple(map(lambda x: x["id"], portal_projects)):
+            type_for_delete: tuple = get_mongodb_objects("framework.types", {"name": dg_object["fields"][7]["value"]})
             if type_for_delete:
                 cmdb_api("DELETE", "types/%s" % max(type_for_delete)["public_id"], dg_token)
                 logger.info(f'Delete vdc object {dg_object["fields"][0]["value"]} from type {dg_vdc_type["public_id"]}')
@@ -315,7 +315,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
 
             vdc_template: dict | str = create_vdc(vdc, dg_token, dg_vdc_type['public_id'], user_id, template=True,
                                                   domains=domains_info)
-            if vdc["id"] == dg_object["fields"][5]['value'] and dg_object["fields"] != vdc_template["fields"]:
+            if vdc["id"] == dg_object["fields"][7]['value'] and dg_object["fields"] != vdc_template["fields"]:
                 payload_object_tmp: dict = {
                     "type_id": dg_object['type_id'],
                     "status": dg_object['status'],
