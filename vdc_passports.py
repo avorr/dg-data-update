@@ -338,7 +338,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                 create_vdc(payload_object_tmp, dg_token, dg_object['public_id'], user_id, 'PUT', domains=domains_info)
                 logger.info(f'Update object {dg_object["public_id"]} IN TYPE {dg_object["type_id"]}')
 
-        if vdc["id"] not in map(lambda x: x['fields'][5]['value'], all_vdc_objects):
+        if vdc["id"] not in map(lambda x: x['fields'][7]['value'], all_vdc_objects):
             # all_vdc_objects.append({})
             create_vdc(vdc, dg_token, dg_vdc_type["public_id"], user_id, domains=domains_info)
             logger.info(f'Create vdc {vdc["name"]} in type {dg_vdc_type["public_id"]}')
