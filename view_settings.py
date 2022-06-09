@@ -38,19 +38,20 @@ def visible_settings() -> None:
         'items': list()
     }
 
-    for type in cmdb_projects:
-        if type['render_meta']['sections'][0]['fields'][2] == 'os-type':
-            cmdb_projects_vm['items'].append(type['public_id'])
-        elif type['render_meta']['sections'][0]['fields'][1] == 'limits.cpu-hard':
-            cmdb_projects_os['items'].append(type['public_id'])
-        elif type['render_meta']['sections'][0]['fields'][3] == 'SUBSYSTEM':
-            cmdb_projects_label['items'].append(type['public_id'])
-        elif type['render_meta']['sections'][0]['fields'][4] == 'version':
-            cmdb_projects_version['items'].append(type['public_id'])
-        elif type['render_meta']['sections'][0]['fields'][1] == 'datacenter-name':
-            cmdb_projects_vdc['items'].append(type['public_id'])
-        elif type['render_meta']['sections'][0]['fields'][0] == 'platform-path':
-            cmdb_projects_release['items'].append(type['public_id'])
+    for dg_type in cmdb_projects:
+        if dg_type["name"] != "Release-Artifact":
+            if dg_type['render_meta']['sections'][0]['fields'][2] == 'os-type':
+                cmdb_projects_vm['items'].append(dg_type['public_id'])
+            elif dg_type['render_meta']['sections'][0]['fields'][1] == 'limits.cpu-hard':
+                cmdb_projects_os['items'].append(dg_type['public_id'])
+            elif dg_type['render_meta']['sections'][0]['fields'][3] == 'SUBSYSTEM':
+                cmdb_projects_label['items'].append(dg_type['public_id'])
+            elif dg_type['render_meta']['sections'][0]['fields'][4] == 'version':
+                cmdb_projects_version['items'].append(dg_type['public_id'])
+            elif dg_type['render_meta']['sections'][0]['fields'][1] == 'datacenter-name':
+                cmdb_projects_vdc['items'].append(dg_type['public_id'])
+            elif dg_type['render_meta']['sections'][0]['fields'][0] == 'platform-path':
+                cmdb_projects_release['items'].append(dg_type['public_id'])
 
     cmdb_users: tuple = get_mongodb_objects("management.users")
     cmdb_users = tuple(map(lambda x: x["public_id"], cmdb_users))
