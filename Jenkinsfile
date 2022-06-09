@@ -94,9 +94,11 @@ pipeline {
                         }
                     }
                     steps {
+                        catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=03d57a4c8e580bd17424283763d7e0da8a844715290f789a056906f7f4654260"
                             sh "sleep 5"
                             sh "./main.py PD23"
+                        }
                     }
                 }
 
