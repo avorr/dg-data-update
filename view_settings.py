@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3
 
 import time
-from tools import *
+# from tools import *
 from pymongo import MongoClient
 from common_function import get_mongodb_objects
 
@@ -158,12 +158,14 @@ def visible_settings() -> None:
                                     'fields.name',
                                     'fields.app',
                                     'fields.SUBSYSTEM',
-                                    'fields.deployment',
+                                    # 'fields.deployment',
                                     'fields.deploymentconfig',
                                     'fields.deployDate',
                                     'fields.distribVersion',
                                     'fields.version',
                                     'fields.build',
+                                    'fields.restartPolicy',
+                                    'fields.imagePullPolicy',
                                     'fields.image',
                                     'fields.security.istio.io/tlsMode',
                                     'fields.jenkinsDeployUser',
@@ -367,12 +369,14 @@ def visible_settings() -> None:
                                                 'fields.name',
                                                 'fields.app',
                                                 'fields.SUBSYSTEM',
-                                                'fields.deployment',
+                                                # 'fields.deployment',
                                                 'fields.deploymentconfig',
                                                 'fields.deployDate',
                                                 'fields.distribVersion',
                                                 'fields.version',
                                                 'fields.build',
+                                                'fields.restartPolicy',
+                                                'fields.imagePullPolicy',
                                                 'fields.image',
                                                 'fields.security.istio.io/tlsMode',
                                                 'fields.jenkinsDeployUser',
@@ -581,12 +585,14 @@ def visible_settings() -> None:
                                                 "fields.name",
                                                 "fields.app",
                                                 "fields.SUBSYSTEM",
-                                                "fields.deployment",
+                                                # "fields.deployment",
                                                 "fields.deploymentconfig",
                                                 "fields.deployDate",
                                                 "fields.distribVersion",
                                                 "fields.version",
                                                 "fields.build",
+                                                "fields.restartPolicy",
+                                                "fields.imagePullPolicy",
                                                 "fields.image",
                                                 "fields.security.istio.io/tlsMode",
                                                 "fields.jenkinsDeployUser",

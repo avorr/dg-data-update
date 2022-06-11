@@ -108,6 +108,14 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                     "value": get_label(labels_info, "build")
                 },
                 {
+                    "name": "restartPolicy",
+                    "value": get_label(labels_info, "restartPolicy")
+                },
+                {
+                    "name": "imagePullPolicy",
+                    "value": get_label(labels_info, "imagePullPolicy")
+                },
+                {
                     "name": "image",
                     "value": get_label(labels_info, "image")
                 },
@@ -180,9 +188,22 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 print(dns_name, Error)
                 return False
 
+        def check_port(checked_host: str, port: int) -> bool:
+            """
+            function to check server's port availability
+            :param checked_host:
+            :return: bool
+            """
+            if not checked_host:
+                return False
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(3)
+                return s.connect_ex((checked_host, port)) == 0
+
         all_labels = list()
         for cluster_name in set(clusters):
-            if check_resolves("query-runner.apps.%s" % cluster_name):
+            if check_resolves("query-runner.apps.%s" % cluster_name) and \
+                    check_port("query-runner.apps.%s" % cluster_name, 443):
                 get_labels = requests.request("GET", "https://query-runner.apps.%s/pods" % cluster_name, verify=False)
                 if get_labels.status_code == 200:
                     all_labels.append(dict(cluster=cluster_name, labels=json.loads(get_labels.content)))
@@ -251,6 +272,16 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                     },
                     {
                         "type": "text",
+                        "name": "restartPolicy",
+                        "label": "restartPolicy"
+                    },
+                    {
+                        "type": "text",
+                        "name": "imagePullPolicy",
+                        "label": "imagePullPolicy"
+                    },
+                    {
+                        "type": "text",
                         "name": "image",
                         "label": "image"
                     },
@@ -283,6 +314,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                                 "distribVersion",
                                 "version",
                                 "build",
+                                "restartPolicy",
+                                "imagePullPolicy",
                                 "image",
                                 "security.istio.io/tlsMode",
                                 "jenkinsDeployUser"
@@ -326,12 +359,14 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                             "name",
                             "app",
                             "SUBSYSTEM",
-                            "deployment",
+                            # "deployment",
                             "deploymentconfig",
                             "deployDate",
                             "distribVersion",
                             "version",
                             "build",
+                            "restartPolicy",
+                            "imagePullPolicy",
                             "image",
                             "security.istio.io/tlsMode",
                             "jenkinsDeployUser"
@@ -356,7 +391,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 },
                 "name": f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
                 "label": cluster["cluster"],
-                "description": "openshift labels %s" % cluster["cluster"]
+                "description": "k8s labels %s" % cluster["cluster"]
             }
 
             create_type: dict = cmdb_api("POST", "types/", cmdb_token, data_type_template)
