@@ -280,16 +280,16 @@ def PassportsVM(portal_name: str) -> tuple:
             # if delete_dg_type["public_id"] in list(range(171, 262)):
             # if delete_dg_type["description"] == "passport-vm-%s" % portal_name:
             # if "VDC-PD" in delete_dg_type["description"] or "vm-passport" in delete_dg_type["description"]:
-            if "openshift labels" in delete_dg_type["description"]:
+            if "k8s labels" in delete_dg_type["description"]:
             # print(delete_dg_type["description"])
             # if "pd20-" in delete_dg_type["label"]:
                 logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
                 cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
 
-        for category in dg_categories:
-            if 'Pprb3' in category['name']:
-                logger.info(f'Delete DataGerry category {category["name"]}')
-                cmdb_api("DELETE", "categories/%s" % category["public_id"], cmdb_token)
+        # for category in dg_categories:
+        #     if 'labels' in category['name'].lower():
+        #         logger.info(f'Delete DataGerry category {category["name"]}')
+        #         cmdb_api("DELETE", "categories/%s" % category["public_id"], cmdb_token)
 
 
     dg_vm_projects = list()
