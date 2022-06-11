@@ -24,7 +24,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     if portal_info[portal_name]["metrics"] == "false":
         return
 
-    def create_label(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = 'POST',
+    def create_label(labels_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = "POST",
                      template: bool = False) -> dict:
         """
         func to create or update or delete label objects in DataGerry CMDB
@@ -47,18 +47,18 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
             :param label:
             :return:
             """
-            if 'labels' in labels:
+            if "labels" in labels:
                 if label in labels:
                     return labels[label]
-                elif label in labels['labels']:
-                    return labels['labels'][label]
+                elif label in labels["labels"]:
+                    return labels["labels"][label]
                 else:
-                    return ''
+                    return ""
             else:
                 if label in labels:
                     return labels[label]
                 else:
-                    return ''
+                    return ""
 
         label_object_template: dict = {
             "status": True,
@@ -139,12 +139,12 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
-    os_passports_category_id: dict = category_id("os-app-labels", "OS App Labels", "fas fa-tags",
+    os_passports_category_id: dict = category_id("k8s-apps-labels", "K8s App Labels", "fas fa-tags",
                                                  cmdb_token, all_categories)
 
-    os_portal_category_id: dict = category_id("OS-Labels-%s" % portal_name, "OS-Labels-%s" % portal_name,
+    os_portal_category_id: dict = category_id("K8s-Labels-%s" % portal_name, "K8s-Labels-%s" % portal_name,
                                               "fas fa-folder-open", cmdb_token, all_categories,
-                                              os_passports_category_id['public_id'])
+                                              os_passports_category_id["public_id"])
 
     def get_os_info() -> dict:
         """
@@ -159,11 +159,11 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     def clear_info(old_info: list) -> list:
         new_info = list()
         for info in old_info:
-            if 'cluster' in info['metric']:
+            if "cluster" in info["metric"]:
                 new_info.append(info)
         return new_info
 
-    cluster_info['data']['result']: list = clear_info(cluster_info['data']['result'])
+    cluster_info["data"]["result"]: list = clear_info(cluster_info["data"]["result"])
     #### temporary
 
     clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"]))
@@ -215,7 +215,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     for cluster in all_labels:
-        if not any(tuple(map(lambda y: y['name'] == f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+        if not any(tuple(map(lambda y: y["name"] == f'k8s-labels-{portal_name}--{cluster["cluster"].replace(".", "_")}',
                              cmdb_projects))):
 
             data_type_template: dict = {
@@ -321,15 +321,15 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                                 "jenkinsDeployUser"
                             ],
                             "type": "section",
-                            "name": f"os-labels-{portal_name}--{cluster['cluster']}",
-                            "label": cluster['cluster']
+                            "name": f"k8s-labels-{portal_name}--{cluster['cluster']}",
+                            "label": cluster["cluster"]
                         }
                     ],
                     "externals": [
                         {
                             "name": "cluster link",
                             "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects" %
-                                    cluster['cluster'],
+                                    cluster["cluster"],
                             "label": "Cluster link",
                             "icon": "fas fa-external-link-alt",
                             "fields": []
@@ -337,14 +337,14 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                         {
                             "name": "namespace link",
                             "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects/{}" %
-                                    cluster['cluster'],
+                                    cluster["cluster"],
                             "label": "Namespace link",
                             "icon": "fas fa-external-link-alt",
                             "fields": ["namespace"]
                         },
                         {
                             "name": "pod link",
-                            "href": "https://console-openshift-console.apps.%s/k8s/ns/{}/pods/{}" % cluster['cluster'],
+                            "href": "https://console-openshift-console.apps.%s/k8s/ns/{}/pods/{}" % cluster["cluster"],
                             "label": "Pod link",
                             "icon": "fas fa-external-link-alt",
                             "fields": [
@@ -389,7 +389,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                         }
                     }
                 },
-                "name": f"os-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                "name": f"k8s-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
                 "label": cluster["cluster"],
                 "description": "k8s labels %s" % cluster["cluster"]
             }
@@ -425,7 +425,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
     if not all_objects:
         all_objects: tuple = get_mongodb_objects("framework.objects")
 
-    all_types_labels = tuple(filter(lambda x: "os-labels-%s--" % portal_name in x["name"], cmdb_projects))
+    all_types_labels = tuple(filter(lambda x: "k8s-labels-%s--" % portal_name in x["name"], cmdb_projects))
 
     for cmdb_cluster in all_types_labels:
         for cluster in all_labels:
@@ -443,7 +443,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
                 for dg_name, ex_name in zip_longest(set(dg_labels) - set(ex_labels), set(ex_labels) - set(dg_labels)):
                     if not ex_name:
-                        logger.info(f"Delete label {dg_labels[dg_name]['fields'][1]['value']}")
+                        logger.info(f'Delete label {dg_labels[dg_name]["fields"][1]["value"]}')
                         cmdb_api("DELETE", "object/%s" % dg_labels[dg_name]["public_id"], cmdb_token)
 
                     elif not dg_name:
