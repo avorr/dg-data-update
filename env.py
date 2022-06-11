@@ -2,7 +2,7 @@
 
 import os
 
-from tools import *
+# from tools import *
 
 # cf_login: str = os.environ['CF_LOGIN']
 # cf_password: str = os.environ['CF_PASS']
