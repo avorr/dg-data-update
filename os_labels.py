@@ -139,7 +139,7 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
 
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
-    os_passports_category_id: dict = category_id("k8s-apps-labels", "K8s App Labels", "fas fa-tags",
+    os_passports_category_id: dict = category_id("k8s-apps-labels", "K8s Apps Labels", "fas fa-tags",
                                                  cmdb_token, all_categories)
 
     os_portal_category_id: dict = category_id("K8s-Labels-%s" % portal_name, "K8s-Labels-%s" % portal_name,
