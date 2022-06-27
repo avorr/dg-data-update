@@ -77,7 +77,8 @@ pipeline {
 
                 stage("Update CMDB Info Portal-PD23") {
                     environment {
-                        PORTAL_URL_PD23 = "https://portal.gostech.novalocal"
+//                         PORTAL_URL_PD23 = "https://portal.gostech.novalocal"
+                        PORTAL_URL_PD23 = "https://portal.pd23.gtp"
                         OS_METRICS_PD23 = "http://p-infra-victoriametrics-01.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                         APP_VERSIONS_PD23 = "http://p-infra-jenkinsslave-01.common.novalocal:5002/versions-pd23"
                         PORTAL_TOKEN_PD23 = credentials("PORTAL_TOKEN_PD23")
