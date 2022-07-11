@@ -136,7 +136,6 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
         for info in old_info:
             if "cluster" in info["metric"] and "namespace" in info["metric"] and "resource" in info["metric"]:
             # if "cluster" in info["metric"] and "namespace" in info["metric"]:
-                print(info["metric"])
                 new_info.append(info)
         return new_info
 
