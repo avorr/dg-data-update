@@ -7,7 +7,7 @@ import requests
 # from functools import reduce
 # from datetime import datetime
 # from pymongo import MongoClient
-from docx.api import Document
+# from docx.api import Document
 from requests.auth import HTTPBasicAuth
 
 from tools import *

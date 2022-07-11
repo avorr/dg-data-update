@@ -234,6 +234,15 @@ def PassportsVM(portal_name: str) -> tuple:
     portal_groups_info: dict = portal_api("groups", portal_name)["stdout"]
 
     dg_categories: tuple = get_mongodb_objects("framework.categories")
+    # json_read(portal_groups_info["groups"])
+
+    # print(list(map(lambda x: x['id'], portal_groups_info["groups"])))
+    # exit()
+
+    # for domain in dg_categories:
+    #     if domain["name"][:10] == "group_id--" and domain["name"][10:] in \
+    #             list(map(lambda x: x['id'], portal_groups_info["groups"])):
+    #         print(domain["name"])
 
     for group_id in portal_groups_info["groups"]:
         if not any(map(lambda y: y["name"] == "group_id--%s" % group_id["id"], dg_categories)):
@@ -242,6 +251,9 @@ def PassportsVM(portal_name: str) -> tuple:
                     create_category("group_id--%s" % group_id["id"], group_id["name"],
                                     "fas fa-folder-open", cmdb_token, domain["public_id"])
 
+                # if domain["name"][:10] == "group_id--" and\
+                # if domain["name"][10:] not in list(map(lambda x: x['id'], portal_groups_info["groups"])):
+                #     print(domain["name"])
     portal_projects: dict = portal_api("projects", portal_name)["stdout"]
 
     def get_vdc_checksum(vdc_info: dict) -> dict:

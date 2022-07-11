@@ -5,6 +5,7 @@ import time
 import requests
 import datetime
 from loguru import logger
+from collections import defaultdict
 
 from env import portal_info
 from common_function import cmdb_api, \
@@ -133,10 +134,14 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
     def clear_info(old_info: list) -> list:
         new_info = list()
         for info in old_info:
-            if "cluster" in info["metric"]:
+            if "cluster" in info["metric"] and "namespace" in info["metric"] and "resource" in info["metric"]:
+            # if "cluster" in info["metric"] and "namespace" in info["metric"]:
+                print(info["metric"])
                 new_info.append(info)
         return new_info
 
+    # cluster_info["data"]["result"] = tuple(map(lambda x: {'metric': defaultdict(str, x['metric'])},
+    #                                            cluster_info["data"]["result"]))
     cluster_info["data"]["result"] = clear_info(cluster_info["data"]["result"])
     #### temporary
     clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"]))
