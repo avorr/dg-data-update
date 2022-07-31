@@ -16,7 +16,6 @@ def main() -> None:
     # LabelsOS(sys.argv[1])
     # gtp_app_versions(sys.argv[1])
     # visible_settings()
-    # return
 
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
