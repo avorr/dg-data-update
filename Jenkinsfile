@@ -23,8 +23,6 @@ pipeline {
     stages {
 //         stage("Run Parallel") {
 //             parallel {
-
-
                 stage("Update CMDB Info Portal-PD15") {
                     environment {
                         PORTAL_URL_PD15 = "https://portal.gos.sbercloud.dev"
@@ -51,9 +49,8 @@ pipeline {
                 stage("Update CMDB Info Portal-PD20") {
                     environment {
                         PORTAL_URL_PD20 = "https://portal.pd20.gtp"
-//                         OS_METRICS_PD20 = "http://p-infra-nginx-internal.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                         OS_METRICS_PD20 = "http://infra-victoriametrics-01.pd20.common.gtp:8428/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-                        APP_VERSIONS_PD20 = "http://p-infra-jenkinsslave-01.common.novalocal:5002/versions-pd20"
+                        APP_VERSIONS_PD20 = "http://infra-jenkins-07.pd20.common.gtp:5002/versions-pd20"
                         PORTAL_TOKEN_PD20 = credentials("PORTAL_TOKEN_PD20")
                         FORTI_VPN_HOST = "37.18.109.130:18443"
                         FORTI_VPN_CRED = credentials("fortivpn_cred")
@@ -69,7 +66,6 @@ pipeline {
                     }
                     steps {
                         catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
-//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=9b62f7a755070a8bc01cc2f718238d043db90241ce3cdf76621134e85c034bf6"
                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=0e20fa39ca5240b386ed527c9f10506bd7e996ad179ec555e2a3616f82e7c7e0"
                             sh "sleep 5"
                             sh "./main.py PD20"
@@ -128,8 +124,6 @@ pipeline {
                             sh "./main.py PD24"
                     }
                 }
-
-
 
 //             }
 //         }
