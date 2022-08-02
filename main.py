@@ -11,12 +11,11 @@ from view_settings import visible_settings
 # from gtp_releases import releases
 
 def main() -> None:
-    # all_objects: tuple = PassportsVM(sys.argv[1])
+    all_objects: tuple = PassportsVM(sys.argv[1])
     # PassportsOS(sys.argv[1])
     # LabelsOS(sys.argv[1])
     # gtp_app_versions(sys.argv[1])
     # visible_settings()
-
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
     except EOFError as error:
