@@ -121,8 +121,8 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
     os_passports_category_id: dict = \
-        category_id("passports-os", "Passports OpenShift", "fab fa-redhat", cmdb_token, all_categories)
-    os_portal_category_id: dict = category_id("OS-%s" % portal_name, "OS-%s" % portal_name, "far fa-folder-open",
+        category_id("passports-k8s", "Passports K8s", "fab fa-redhat", cmdb_token, all_categories)
+    os_portal_category_id: dict = category_id("K8s-%s" % portal_name, "K8s-%s" % portal_name, "far fa-folder-open",
                                               cmdb_token, all_categories, os_passports_category_id["public_id"])
 
     def get_os_info() -> dict:
