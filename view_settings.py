@@ -12,6 +12,7 @@ def visible_settings() -> None:
     Main func for creating visible settings in cmdb
     :return: None
     """
+
     cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
     cmdb_projects_vm: dict = {
