@@ -736,6 +736,7 @@ def visible_settings() -> None:
         create_settings(cmdb_projects_version)
         create_settings(cmdb_projects_vdc)
         create_settings(cmdb_projects_release)
+        print("WORK!!!")
 
 
 if __name__ == "__main__":
