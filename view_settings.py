@@ -48,7 +48,7 @@ def visible_settings() -> None:
                 cmdb_projects_label["items"].append(dg_type["public_id"])
             elif dg_type["render_meta"]["sections"][0]["fields"][4] == "version":
                 cmdb_projects_version["items"].append(dg_type["public_id"])
-            elif dg_type["render_meta"]["sections"][3]["fields"][1] == "datacenter-name":
+            elif dg_type["render_meta"]["sections"][3]["fields"][2] == "datacenter-name":
                 cmdb_projects_vdc["items"].append(dg_type["public_id"])
             elif dg_type["render_meta"]["sections"][0]["fields"][0] == "platform-path":
                 cmdb_projects_release["items"].append(dg_type["public_id"])
