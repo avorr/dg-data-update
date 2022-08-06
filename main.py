@@ -5,7 +5,7 @@ from vm_passport import PassportsVM
 from os_passport import PassportsOS
 from os_labels import LabelsOS
 from app_versions import gtp_app_versions
-from view_settings import visible_settings
+# from view_settings import visible_settings
 
 
 # from gtp_releases import releases
@@ -39,7 +39,7 @@ def main() -> None:
     # releases()
     # gtp_app_versions(sys.argv[1])
 
-    visible_settings()
+    # visible_settings()
 
 
 if __name__ == '__main__':
