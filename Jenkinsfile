@@ -137,7 +137,7 @@ pipeline {
 //                         FORTI_VPN_CRED = credentials("fortivpn_cred_pd24")
 //                     }
                     steps {
-                            sh "python3 view_settings.py"
+                            sh "/usr/local/bin/python3 view_settings.py"
                             sh "ls -la"
                     }
                 }
