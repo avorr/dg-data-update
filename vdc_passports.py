@@ -17,12 +17,12 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
     all_categories: tuple = get_mongodb_objects('framework.categories')
 
     vdc_category_id: dict = \
-        category_id('passports-vdc', 'Passports VDC', 'fas fa-network-wired', dg_token, all_categories)
+        category_id("passports-vdc", 'Passports VDC', 'fas fa-network-wired', dg_token, all_categories)
 
     def create_vdc(vdc_info: dict, dg_token: str, type_id: str, author_id: int, method: str = 'POST', domains = {},
                    template: bool = False) -> dict | str:
-        if method == 'PUT':
-            return cmdb_api(method, 'object/%s' % type_id, dg_token, vdc_info)
+        if method == "PUT":
+            return cmdb_api(method, "object/%s" % type_id, dg_token, vdc_info)
 
         def networks_info(networks: list, dns_servers: bool, subnet: bool) -> str | tuple[str, str, str, str]:
             networks = tuple(map(lambda x: defaultdict(str, x), networks))
@@ -37,15 +37,15 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
             if subnet:
                 subnet_names, subnet_uuids, network_names, network_uuids = list(), list(), list(), list()
                 for network in networks:
-                    subnet_names.append(network['subnet_name'])
-                    subnet_uuids.append(network['subnet_uuid'])
-                    network_names.append(network['network_name'])
-                    network_uuids.append(network['network_uuid'])
+                    subnet_names.append(network["subnet_name"])
+                    subnet_uuids.append(network["subnet_uuid"])
+                    network_names.append(network["network_name"])
+                    network_uuids.append(network["network_uuid"])
                 return '\n'.join(subnet_names), '\n'.join(subnet_uuids), \
                        '\n'.join(network_names), '\n'.join(network_uuids)
 
             for network in networks:
-                cidrs.append(network['cidr'])
+                cidrs.append(network["cidr"])
             return '\n'.join(cidrs)
 
         subnet_name, subnet_uuid, network_name, network_uuid = networks_info(vdc_info["networks"], False, True)
@@ -59,6 +59,10 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                 {
                     "name": "name",
                     "value": vdc_info["name"]
+                },
+                {
+                    "name": "desc",
+                    "value": vdc_info["desc"] if "desc" in vdc_info else ""
                 },
                 {
                     "name": "datacenter-name",
@@ -126,6 +130,11 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                     "type": "text",
                     "name": "name",
                     "label": "name"
+                },
+                {
+                    "type": "text",
+                    "name": "desc",
+                    "label": "desc"
                 },
                 {
                     "type": "text",
@@ -197,6 +206,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                     {
                         "fields": [
                             "name",
+                            "desc",
                             "datacenter-name",
                             "networks",
                             "dns-nameservers",
@@ -229,6 +239,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                 "summary": {
                     "fields": [
                         "name",
+                        "desc",
                         "datacenter-name",
                         "networks",
                         "domain",
@@ -302,8 +313,8 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
     del all_objects
 
     for dg_object in all_vdc_objects:
-        if dg_object["fields"][7]["value"] not in tuple(map(lambda x: x["id"], portal_projects)):
-            type_for_delete: tuple = get_mongodb_objects("framework.types", {"name": dg_object["fields"][7]["value"]})
+        if dg_object["fields"][8]["value"] not in tuple(map(lambda x: x["id"], portal_projects)):
+            type_for_delete: tuple = get_mongodb_objects("framework.types", {"name": dg_object["fields"][8]["value"]})
             if type_for_delete:
                 cmdb_api("DELETE", "types/%s" % max(type_for_delete)["public_id"], dg_token)
                 logger.info(f'Delete vdc object {dg_object["fields"][0]["value"]} from type {dg_vdc_type["public_id"]}')
@@ -315,7 +326,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
 
             vdc_template: dict | str = create_vdc(vdc, dg_token, dg_vdc_type['public_id'], user_id, template=True,
                                                   domains=domains_info)
-            if vdc["id"] == dg_object["fields"][7]['value'] and dg_object["fields"] != vdc_template["fields"]:
+            if vdc["id"] == dg_object["fields"][8]['value'] and dg_object["fields"] != vdc_template["fields"]:
                 payload_object_tmp: dict = {
                     "type_id": dg_object['type_id'],
                     "status": dg_object['status'],
@@ -338,7 +349,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                 create_vdc(payload_object_tmp, dg_token, dg_object['public_id'], user_id, 'PUT', domains=domains_info)
                 logger.info(f'Update object {dg_object["public_id"]} IN TYPE {dg_object["type_id"]}')
 
-        if vdc["id"] not in map(lambda x: x['fields'][7]['value'], all_vdc_objects):
+        if vdc["id"] not in map(lambda x: x['fields'][8]['value'], all_vdc_objects):
             # all_vdc_objects.append({})
             create_vdc(vdc, dg_token, dg_vdc_type["public_id"], user_id, domains=domains_info)
             logger.info(f'Create vdc {vdc["name"]} in type {dg_vdc_type["public_id"]}')
