@@ -136,8 +136,18 @@ pipeline {
 //                         FORTI_VPN_HOST = "2.63.137.212:15443"
 //                         FORTI_VPN_CRED = credentials("fortivpn_cred_pd24")
 //                     }
+                    agent {
+                        docker {
+                            registryUrl REGISTRY
+                            image IMAGE
+                            registryCredentialsId REGISTRY_CRED
+                            args "-u root --privileged --add-host $MONGO_DB"
+                            reuseNode true
+                        }
+                    }
                     steps {
-                            sh "/usr/local/bin/python3 view_settings.py"
+//                             sh "/usr/local/bin/python3 view_settings.py"
+                            sh "./view_settings.py"
                             sh "ls -la"
                     }
                 }
