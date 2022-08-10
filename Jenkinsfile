@@ -77,7 +77,8 @@ pipeline {
                     environment {
                         PORTAL_URL_PD23 = "https://portal.pd23.gtp"
                         OS_METRICS_PD23 = "http://infra-victoriametrics-01.pd23.common.gtp:8428/api/v1/query?query=up"
-                        APP_VERSIONS_PD23 = "http://infra-jenkins-01.pd23.common.gtp:5002/versions-pd23"
+//                         APP_VERSIONS_PD23 = "http://infra-jenkins-01.pd23.common.gtp:5002/versions-pd23"
+                        APP_VERSIONS_PD23 = "http://infra-victoriametrics-01.pd23.common.gtp:8428/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                         PORTAL_TOKEN_PD23 = credentials("PORTAL_TOKEN_PD23")
                         FORTI_VPN_HOST = "2.63.168.132:15443"
                         FORTI_VPN_CRED = credentials("fortivpn_cred_pd23")
