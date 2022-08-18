@@ -178,7 +178,8 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                 },
                 "name": f"apps-versions-{portal_name}--{stand['project_id']}",
                 "label": stand["project_name"],
-                "description": "apps versions %s" % stand["project_id"]
+                # "description": "apps versions %s" % stand["project_id"]
+                "description": stand["desc"] if "desc" in stand else ""
             }
 
             create_type = cmdb_api("POST", "types/", cmdb_token, payload_type_template)
@@ -223,7 +224,7 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                 for app_module in apps_versions['modules_version']:
                     for dg_object in dg_apps_objects:
                         app_object_template: dict = create_object(app_module, cmdb_token, app_type['public_id'],
-                                                                  user_id, stand["desc"], template=True)
+                                                                  user_id, app_type["description"], template=True)
                         if app_module['id'] == dg_object['fields'][5]['value'] and \
                                 app_module['tag'] == dg_object['fields'][3]['value'] and \
                                 app_object_template['fields'] != dg_object['fields']:
@@ -246,14 +247,14 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                                 "comment": ""
                             }
                             create_object(update_object_template, cmdb_token, app_type['public_id'],
-                                          user_id, stand["desc"], 'PUT')
+                                          user_id, app_type["description"], 'PUT')
                             logger.info(f'Update app version in {dg_object["type_id"]} type')
 
                     if f'{app_module["tag"]}--{app_module["id"]}' not in \
                             tuple(map(lambda x: f'{x["fields"][3]["value"]}--{x["fields"][5]["value"]}',
                                       dg_apps_objects)):
                         logger.info(f'Create app version in {app_type["public_id"]}')
-                        create_object(app_module, cmdb_token, app_type['public_id'], user_id, stand["desc"])
+                        create_object(app_module, cmdb_token, app_type['public_id'], user_id, app_type["description"])
                         time.sleep(0.1)
 
                 for dg_object in dg_apps_objects:
