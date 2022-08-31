@@ -73,33 +73,32 @@ pipeline {
                    }
                }
 
-                stage("Update CMDB Info Portal-PD23") {
-                    environment {
-                        PORTAL_URL_PD23 = "https://portal.pd23.gtp"
-//                         OS_METRICS_PD23 = "http://infra-victoriametrics-01.pd23.common.gtp:8428/api/v1/query?query=up"
-                        OS_METRICS_PD23 = "http://infra-victoriametrics-01.pd23.common.gtp:8428/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-                        APP_VERSIONS_PD23 = "http://infra-jenkins-01.pd23.common.gtp:5002/versions-pd23"
-                        PORTAL_TOKEN_PD23 = credentials("PORTAL_TOKEN_PD23")
-                        FORTI_VPN_HOST = "2.63.168.132:15443"
-                        FORTI_VPN_CRED = credentials("fortivpn_cred_pd23")
-                    }
-                    agent {
-                        docker {
-                            registryUrl REGISTRY
-                            image IMAGE
-                            registryCredentialsId REGISTRY_CRED
-                            args "-u root --privileged --add-host $MONGO_DB"
-                            reuseNode true
-                        }
-                    }
-                    steps {
-                        catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
-                            sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=03d57a4c8e580bd17424283763d7e0da8a844715290f789a056906f7f4654260"
-                            sh "sleep 5"
-                            sh "./main.py PD23"
-                        }
-                    }
-                }
+//                 stage("Update CMDB Info Portal-PD23") {
+//                     environment {
+//                         PORTAL_URL_PD23 = "https://portal.pd23.gtp"
+//                         OS_METRICS_PD23 = "http://infra-victoriametrics-01.pd23.common.gtp:8428/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+//                         APP_VERSIONS_PD23 = "http://infra-jenkins-01.pd23.common.gtp:5002/versions-pd23"
+//                         PORTAL_TOKEN_PD23 = credentials("PORTAL_TOKEN_PD23")
+//                         FORTI_VPN_HOST = "2.63.168.132:15443"
+//                         FORTI_VPN_CRED = credentials("fortivpn_cred_pd23")
+//                     }
+//                     agent {
+//                         docker {
+//                             registryUrl REGISTRY
+//                             image IMAGE
+//                             registryCredentialsId REGISTRY_CRED
+//                             args "-u root --privileged --add-host $MONGO_DB"
+//                             reuseNode true
+//                         }
+//                     }
+//                     steps {
+//                         catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
+//                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=03d57a4c8e580bd17424283763d7e0da8a844715290f789a056906f7f4654260"
+//                             sh "sleep 5"
+//                             sh "./main.py PD23"
+//                         }
+//                     }
+//                 }
 
 //                 stage("Update CMDB Info Portal-PD24") {
 //                     environment {
