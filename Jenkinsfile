@@ -23,28 +23,28 @@ pipeline {
     stages {
 //         stage("Run Parallel") {
 //             parallel {
-                stage("Update CMDB Info Portal-PD15") {
-                    environment {
-                        PORTAL_URL_PD15 = "https://portal.gos.sbercloud.dev"
-                        OS_METRICS_PD15 = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-                        APP_VERSIONS_PD15 = "http://p-infra-jenkinsslave-02.common.novalocal:5002/versions-pd15"
-                        PORTAL_TOKEN_PD15 = credentials("PORTAL_TOKEN_PD15")
-                    }
-                    agent {
-                        docker {
-                            registryUrl REGISTRY
-                            image IMAGE
-                            registryCredentialsId REGISTRY_CRED
-                            args "-u root --privileged --add-host $MONGO_DB"
-                            reuseNode true
-                        }
-                    }
-                    steps {
-                        catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
-                            sh "./main.py PD15"
-                        }
-                    }
-                }
+//                 stage("Update CMDB Info Portal-PD15") {
+//                     environment {
+//                         PORTAL_URL_PD15 = "https://portal.gos.sbercloud.dev"
+//                         OS_METRICS_PD15 = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+//                         APP_VERSIONS_PD15 = "http://p-infra-jenkinsslave-02.common.novalocal:5002/versions-pd15"
+//                         PORTAL_TOKEN_PD15 = credentials("PORTAL_TOKEN_PD15")
+//                     }
+//                     agent {
+//                         docker {
+//                             registryUrl REGISTRY
+//                             image IMAGE
+//                             registryCredentialsId REGISTRY_CRED
+//                             args "-u root --privileged --add-host $MONGO_DB"
+//                             reuseNode true
+//                         }
+//                     }
+//                     steps {
+//                         catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
+//                             sh "./main.py PD15"
+//                         }
+//                     }
+//                 }
 
                 stage("Update CMDB Info Portal-PD20") {
                     environment {
@@ -67,7 +67,7 @@ pipeline {
                     steps {
                         catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
                             sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=0e20fa39ca5240b386ed527c9f10506bd7e996ad179ec555e2a3616f82e7c7e0"
-                            sh "sleep 5"
+                            sh "sleep 5000"
                             sh "./main.py PD20"
                        }
                    }
