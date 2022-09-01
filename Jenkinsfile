@@ -105,7 +105,7 @@ pipeline {
                         PORTAL_URL_PD24 = "https://portal.pd24.gtp"
 //                         OS_METRICS_PD24 = "http://pkles-gt2400214.gostech.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                         OS_METRICS_PD24 = "http://infra-victoriametrics-01.pd24.common.gtp:8428/api/v1/query?query=sum(kube_resourcequota)%20by%20(monitor,%20namespace,%20cluster,%20resource,%20type)"
-                        APP_VERSIONS_PD24 = "http://infra-jenkinsslave-01.common.pd24.gtp:5002/versions-pd24"
+                        APP_VERSIONS_PD24 = "http://172.24.12.145:5002/versions-pd24"
                         PORTAL_TOKEN_PD24 = credentials("PORTAL_TOKEN_PD24")
                         FORTI_VPN_HOST = "2.63.137.212:15443"
                         FORTI_VPN_CRED = credentials("fortivpn_cred_pd24")
