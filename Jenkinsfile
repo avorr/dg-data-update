@@ -50,7 +50,7 @@ pipeline {
                     environment {
                         PORTAL_URL_PD20 = "https://portal.pd20.gtp"
                         OS_METRICS_PD20 = "http://infra-victoriametrics-01.pd20.common.gtp:8428/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-                        APP_VERSIONS_PD20 = "http://infra-jenkins-07.pd20.common.gtp:5002/versions-pd20"
+                        APP_VERSIONS_PD20 = "http://infra-jenkins-01.pd20.common.gtp:5002/versions-pd20"
                         PORTAL_TOKEN_PD20 = credentials("PORTAL_TOKEN_PD20")
                         FORTI_VPN_HOST = "37.18.109.130:18443"
                         FORTI_VPN_CRED = credentials("fortivpn_cred")
