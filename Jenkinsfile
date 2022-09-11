@@ -43,7 +43,7 @@ pipeline {
                 }
             }
         }
-/*
+
         stage("Update CMDB Info Portal-PD20") {
             environment {
                 PORTAL_URL_PD20 = "https://portal.pd20.gtp"
@@ -124,7 +124,7 @@ pipeline {
                 }
             }
         }
-*/
+
         stage("Update visible settings") {
             agent {
                 docker {
@@ -141,24 +141,3 @@ pipeline {
         }
     }
 }
-
-    // }
-
-    // post {
-        // always {
-            // echo '##############################################################'
-            // echo '#################### Clean Work Space ########################'
-            // echo '##############################################################'
-            // script {
-                // echo "clean"
-//                 cleanWs notFailBuild: true
-//                 cleanWs notFailBuild: false
-//                 cleanWs()
-//                 echo env.WORKSPACE
-            // }
-        // }
-    // }
-
-
-//                 withCredentials([usernamePassword(credentialsId: 'fortivpn_cred_pd23', usernameVariable: 'FORTI_USERNAME', passwordVariable: 'FORTI_PASSWORD')]) {
-// }

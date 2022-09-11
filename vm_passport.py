@@ -321,12 +321,13 @@ def PassportsVM(portal_name: str) -> tuple:
                 # print(delete_dg_type["description"])
                 # if "pd20-" in delete_dg_type["label"]:
 
-        # for delete_category in dg_categories:
-        #     logger.info(f"DELETE CMDB TYPE {delete_category}")
-        #     cmdb_api("DELETE", "categories/%s" % delete_category["public_id"], cmdb_token)
+        for delete_category in dg_categories:
+            logger.info(f"DELETE CMDB TYPE {delete_category}")
+            cmdb_api("DELETE", "categories/%s" % delete_category["public_id"], cmdb_token)
 
     # delete_all()
     # return
+
     dg_vm_projects = list()
 
     for vm_type in dg_types:
