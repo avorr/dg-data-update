@@ -5,7 +5,6 @@ import time
 import requests
 import datetime
 from loguru import logger
-from collections import defaultdict
 
 from env import portal_info
 from common_function import cmdb_api, \
@@ -90,6 +89,10 @@ def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, met
                 "name": "memory-usage",
                 "value": get_usage(get_metric(ns_info["info"], "limits.memory", "used"),
                                    get_metric(ns_info["info"], "limits.memory", "hard"))
+            },
+            {
+                "name": "record-update-time",
+                "value": datetime.now().strftime('%d.%m.%Y %H:%M')
             }
         ]
     }
@@ -209,6 +212,11 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                         "type": "text",
                         "name": "memory-usage",
                         "label": "memory usage (%)"
+                    },
+                    {
+                        "type": "text",
+                        "name": "record-update-time",
+                        "label": "record update time"
                     }
                 ],
                 "active": True,
@@ -226,7 +234,8 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                                 "cores-usage",
                                 "limits.memory-hard",
                                 "limits.memory-used",
-                                "memory-usage"
+                                "memory-usage",
+                                "record-update-time"
                             ],
                             "type": "section",
                             "name": f"os-cluster-{portal_name}--{cluster['cluster']}",
@@ -305,8 +314,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
 
             data_category_template["types"].append(create_type["result_id"])
 
-            put_type_in_category = cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token,
-                                            data_category_template)
+            cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token, data_category_template)
             logger.info(f'Put new type {create_type["result_id"]} in category {data_category_template["name"]}')
 
             for namespace in cluster["info"]:

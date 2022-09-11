@@ -3,6 +3,7 @@
 import time
 import requests
 from loguru import logger
+from datetime import datetime
 
 from tools import *
 from env import portal_info
@@ -69,6 +70,10 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                 {
                     "name": "vm-id",
                     "value": version_info['id']
+                },
+                {
+                    "name": "record-update-time",
+                    "value": datetime.now().strftime('%d.%m.%Y %H:%M')
                 }
             ]
         }
@@ -127,6 +132,11 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                         "type": "text",
                         "name": "vm-id",
                         "label": "vm id"
+                    },
+                    {
+                        "type": "text",
+                        "name": "record-update-time",
+                        "label": "record update time"
                     }
                 ],
                 "active": True,
@@ -142,7 +152,8 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                                 "local-ip",
                                 "tag",
                                 "version",
-                                "vm-id"
+                                "vm-id",
+                                "record-update-time"
                             ],
                             "type": "section",
                             "name": f"apps-versions-{portal_name}--{stand['project_id']}",

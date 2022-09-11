@@ -21,6 +21,7 @@ pipeline {
         MONGO_DB =  "p-infra-internallb.common.novalocal:172.26.106.3"
     }
     stages {
+    /*
 //         stage("Run Parallel") {
 //             parallel {
                 stage("Update CMDB Info Portal-PD15") {
@@ -127,7 +128,7 @@ pipeline {
                         }
                     }
                 }
-
+*/
                 stage("Update visible settings") {
                     agent {
                         docker {
