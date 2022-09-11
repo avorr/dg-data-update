@@ -325,8 +325,8 @@ def PassportsVM(portal_name: str) -> tuple:
         #     logger.info(f"DELETE CMDB TYPE {delete_category}")
         #     cmdb_api("DELETE", "categories/%s" % delete_category["public_id"], cmdb_token)
 
-    delete_all()
-    return
+    # delete_all()
+    # return
     dg_vm_projects = list()
 
     for vm_type in dg_types:
