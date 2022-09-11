@@ -5,7 +5,7 @@ import hashlib
 from loguru import logger
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
-
+from datetime import datetime
 from tools import *
 from env import portal_info
 from common_function import cmdb_api, \
@@ -181,6 +181,10 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, ipa
                 "value": check_creation_date(vm_info["order_created_at"])
             },
             {
+                "name": "record-update-time",
+                "value": datetime.now().strftime('%d.%m.%Y %H:%M')
+            },
+            {
                 "name": "vdc-link",
                 "value": vdc_object
             }
@@ -300,10 +304,12 @@ def PassportsVM(portal_name: str) -> tuple:
 
     def delete_all():
         for delete_dg_type in dg_types:
+            logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
+            cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
             # print(delete_dg_type["render_meta"]["sections"][0]["name"])
-            if "apps-versions" in delete_dg_type["render_meta"]["sections"][0]["name"]:
-                logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
-                cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
+            # if "apps-versions" in delete_dg_type["render_meta"]["sections"][0]["name"]:
+            #     logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
+            #     cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
             # if delete_dg_type["public_id"] in list(range(171, 262)):
             # if delete_dg_type["description"] == "passport-vm-%s" % portal_name:
             # if "VDC-PD" in delete_dg_type["description"] or "vm-passport" in delete_dg_type["description"]:
@@ -319,6 +325,8 @@ def PassportsVM(portal_name: str) -> tuple:
         #     logger.info(f"DELETE CMDB TYPE {delete_category}")
         #     cmdb_api("DELETE", "categories/%s" % delete_category["public_id"], cmdb_token)
 
+    # delete_all()
+    # return
     dg_vm_projects = list()
 
     for vm_type in dg_types:
@@ -486,6 +494,11 @@ def PassportsVM(portal_name: str) -> tuple:
                         "label": "creation date"
                     },
                     {
+                        "type": "text",
+                        "name": "record-update-time",
+                        "label": "record update time"
+                    },
+                    {
                         "type": "ref",
                         "name": "vdc-link",
                         "label": "vdc link",
@@ -524,6 +537,7 @@ def PassportsVM(portal_name: str) -> tuple:
                                 "vm-id",
                                 "os-id",
                                 "creation-date",
+                                "record-update-time",
                                 "vdc-link"
                             ],
                             "type": "section",

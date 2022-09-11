@@ -126,6 +126,10 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                 {
                     "name": "jenkinsDeployUser",
                     "value": get_label(labels_info, "jenkinsDeployUser")
+                },
+                {
+                    "name": "record-update-time",
+                    "value": datetime.now().strftime('%d.%m.%Y %H:%M')
                 }
             ]
         }
@@ -294,6 +298,11 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                         "type": "text",
                         "name": "jenkinsDeployUser",
                         "label": "jenkinsDeployUser"
+                    },
+                    {
+                        "type": "text",
+                        "name": "record-update-time",
+                        "label": "record update time"
                     }
                 ],
                 "active": True,
@@ -318,7 +327,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                                 "imagePullPolicy",
                                 "image",
                                 "security.istio.io/tlsMode",
-                                "jenkinsDeployUser"
+                                "jenkinsDeployUser",
+                                "record-update-time"
                             ],
                             "type": "section",
                             "name": f"k8s-labels-{portal_name}--{cluster['cluster']}",

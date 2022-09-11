@@ -2,7 +2,8 @@
 
 import time
 # from tools import *
-# from env import *
+from loguru import logger
+from bson import ObjectId
 from pymongo import MongoClient
 from common_function import get_mongodb_objects
 
@@ -82,6 +83,11 @@ def visible_settings() -> None:
             view_settings_for_create = list()
             for cmdb_type in projects["items"]:
                 for settings in view_settings:
+
+                    if settings["resource"][:22] == "framework-object-type-":
+                        if int(settings["resource"][22:]) not in projects["items"]:
+                            users_settings.delete_one({"_id": ObjectId(settings["_id"])})
+                            logger.info(f"Delete view setting for user {user_id} for type {cmdb_type}")
 
                     if "framework-object-type-%s" % cmdb_type == settings["resource"]:
                         if "currentState" in settings["payloads"][0]:

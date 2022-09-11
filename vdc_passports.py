@@ -1,9 +1,9 @@
 #!/usr/local/bin/python3
 
 import time
-import datetime
 from loguru import logger
 from collections import defaultdict
+from datetime import datetime
 
 # from tools import json_read
 from env import portal_info
@@ -30,7 +30,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                 dns_info = list()
                 for network in networks:
                     dns_info.append(network["dns_nameservers"])
-                return '\n#'.join(map(lambda x: ', '.join(x), dns_info))
+                return ' | '.join(map(lambda x: ', '.join(x), dns_info))
 
             cidrs = list()
 
@@ -41,12 +41,12 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                     subnet_uuids.append(network["subnet_uuid"])
                     network_names.append(network["network_name"])
                     network_uuids.append(network["network_uuid"])
-                return '\n'.join(subnet_names), '\n'.join(subnet_uuids), \
-                       '\n'.join(network_names), '\n'.join(network_uuids)
+                return ' | '.join(subnet_names), ' | '.join(subnet_uuids), \
+                       ' | '.join(network_names), ' | '.join(network_uuids)
 
             for network in networks:
-                cidrs.append(network["cidr"])
-            return '\n'.join(cidrs)
+                cidrs.append(f'{network["cidr"]}({network["network_name"]})')
+            return ' | '.join(cidrs)
 
         subnet_name, subnet_uuid, network_name, network_uuid = networks_info(vdc_info["networks"], False, True)
 
@@ -111,6 +111,10 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                 {
                     "name": "network-uuid",
                     "value": network_uuid
+                },
+                {
+                    "name": "record-update-time",
+                    "value": datetime.now().strftime('%d.%m.%Y %H:%M')
                 }
             ]
         }
@@ -195,6 +199,11 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                     "type": "text",
                     "name": "network-uuid",
                     "label": "network uuid"
+                },
+                {
+                    "type": "text",
+                    "name": "record-update-time",
+                    "label": "record update time"
                 }
             ],
             "active": True,
@@ -218,7 +227,8 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                             "subnet-name",
                             "subnet-uuid",
                             "network-name",
-                            "network-uuid"
+                            "network-uuid",
+                            "record-update-time"
                         ],
                         "type": "section",
                         "name": "VDC-%s" % portal_name,
@@ -332,7 +342,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                     "status": dg_object['status'],
                     "version": dg_object['version'],
                     "creation_time": {
-                        "$date": int(datetime.datetime.timestamp(dg_object['creation_time']) * 1000)
+                        "$date": int(datetime.timestamp(dg_object['creation_time']) * 1000)
                     },
                     "author_id": dg_object['author_id'],
                     "last_edit_time": {
@@ -347,7 +357,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                 }
 
                 create_vdc(payload_object_tmp, dg_token, dg_object['public_id'], user_id, 'PUT', domains=domains_info)
-                logger.info(f'Update object {dg_object["public_id"]} IN TYPE {dg_object["type_id"]}')
+                logger.info(f'Update object {dg_object["public_id"]} in type {dg_object["type_id"]}')
 
         if vdc["id"] not in map(lambda x: x['fields'][8]['value'], all_vdc_objects):
             # all_vdc_objects.append({})
