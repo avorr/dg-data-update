@@ -3,8 +3,8 @@
 import json
 import time
 import requests
-import datetime
 from loguru import logger
+from datetime import datetime
 
 from env import portal_info
 from common_function import cmdb_api, \
