@@ -167,7 +167,8 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                             "vm-name",
                             "local-ip",
                             "tag",
-                            "version"
+                            "version",
+                            "record-update-time"
                         ]
                     }
                 },
@@ -236,9 +237,14 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
                     for dg_object in dg_apps_objects:
                         app_object_template: dict = create_object(app_module, cmdb_token, app_type['public_id'],
                                                                   user_id, app_type["description"], template=True)
+
+                        dg_to_diff = dg_object["fields"].copy()
+                        tmp_to_diff = app_object_template["fields"].copy()
+                        dg_to_diff.pop(-1)
+                        tmp_to_diff.pop(-1)
+
                         if app_module['id'] == dg_object['fields'][5]['value'] and \
-                                app_module['tag'] == dg_object['fields'][3]['value'] and \
-                                app_object_template['fields'] != dg_object['fields']:
+                                app_module['tag'] == dg_object['fields'][3]['value'] and tmp_to_diff != dg_to_diff:
                             update_object_template: dict = {
                                 "type_id": dg_object['type_id'],
                                 "status": dg_object['status'],

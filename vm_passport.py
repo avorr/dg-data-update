@@ -17,7 +17,7 @@ from common_function import cmdb_api, \
     portal_api
 
 
-def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, ipa_domain: str,
+def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, ipa_domain: str, project_networks: list,
                method: str = "POST", template: bool = False, tags: list = [], vdc_object=None) -> dict:
     """
     Func to create or update or delete objects in DataGerry
@@ -94,6 +94,14 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, ipa
     def check_creation_date(x: str) -> str:
         return x[:10] if x else ""
 
+    def network_name(networks: list, network_uuid: str) -> str:
+
+        for net in networks:
+            if 'network_uuid' in net:
+                if net['network_uuid'] == network_uuid:
+                    return net["network_name"]
+            return "network without uuid"
+
     payload_vm_tmp: dict = {
         "status": True,
         "type_id": type_id,
@@ -131,6 +139,10 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, ipa
             {
                 "name": "additional-disk",
                 "value": sum_disks(extra_disks)
+            },
+            {
+                "name": "network-name",
+                "value": network_name(project_networks, vm_info["network_uuid"])
             },
             {
                 "name": "summary-vm-info",
@@ -238,9 +250,6 @@ def PassportsVM(portal_name: str) -> tuple:
 
     dg_categories: tuple = get_mongodb_objects("framework.categories")
 
-    # print(list(map(lambda x: x['id'], portal_groups_info["groups"])))
-    # exit()
-
     # for domain in dg_categories:
     #     if domain["name"][:10] == "group_id--" and domain["name"][10:] in \
     #             list(map(lambda x: x['id'], portal_groups_info["groups"])):
@@ -266,10 +275,10 @@ def PassportsVM(portal_name: str) -> tuple:
     portal_projects: dict = portal_api("projects", portal_name)["stdout"]
 
     # for i in portal_projects["projects"]:
-        # if i["name"] == 'gt-foms-prod-platform':
-        # if i["name"] == 'gt-foms-uat-k8s':
-        #     portal_projects["projects"] = [i]
-
+    #     if i["name"] == 'gt-mintrud-common-admins-junior':
+    # if i["name"] == 'gt-foms-uat-k8s':
+    #     portal_projects["projects"] = [i]
+    #
     def get_vdc_checksum(vdc_info: dict) -> dict:
         """
         Func to get vdc checksum from portal
@@ -278,7 +287,10 @@ def PassportsVM(portal_name: str) -> tuple:
         """
         # vdc_checksum = portal_api(f"projects/{vdc_info["id"]}/checksum", portal_name)
         vdc_checksum: dict = portal_api("servers?project_id=%s" % vdc_info["id"], portal_name)
-        return dict(info=vdc_info, checksum=hashlib.md5(json.dumps(vdc_checksum["stdout"]).encode()).hexdigest())
+        return {
+            "info": vdc_info,
+            "checksum": hashlib.md5(json.dumps(vdc_checksum["stdout"]).encode()).hexdigest()
+        }
 
     def checksum_vdc(cloud_projects: dict) -> dict:
         """
@@ -296,6 +308,7 @@ def PassportsVM(portal_name: str) -> tuple:
                     "group_id": project["info"]["group_id"],
                     "zone": project["info"]["datacenter_name"],
                     "checksum": project["checksum"],
+                    "networks": project["info"]["networks"],
                     "desc": project["info"]["desc"] if "desc" in project["info"] else ""
                 }
         return checksum_portal_vdc
@@ -318,8 +331,8 @@ def PassportsVM(portal_name: str) -> tuple:
             # if "VDC" in delete_dg_type["description"]:
             # print(delete_dg_type["description"])
             # if ".gtp" in delete_dg_type["description"] and portal_name.lower() in delete_dg_type["description"]:
-                # print(delete_dg_type["description"])
-                # if "pd20-" in delete_dg_type["label"]:
+            # print(delete_dg_type["description"])
+            # if "pd20-" in delete_dg_type["label"]:
 
         for delete_category in dg_categories:
             logger.info(f"DELETE CMDB TYPE {delete_category}")
@@ -335,7 +348,7 @@ def PassportsVM(portal_name: str) -> tuple:
         if vm_type["render_meta"]["sections"][0]["name"] == f"passport-vm-{portal_name}":
             if vm_type['name'] not in tuple(map(lambda x: x["id"], portal_projects["projects"])):
                 cmdb_api("DELETE", "types/%s" % vm_type["public_id"], cmdb_token)
-                logger.info("DELETE TYPE %s from CMDB" % vm_type["name"])
+                logger.info("Delete type %s from cmdb" % vm_type["name"])
             else:
                 dg_vm_projects.append(vm_type)
 
@@ -375,7 +388,8 @@ def PassportsVM(portal_name: str) -> tuple:
                     {
                         "type_id": dg_vdc["type_id"],
                         "vdc_id": dg_vdc["vdc_id"],
-                        "ipa_domain": ".%s" % projects[project]["desc"] if "desc" in projects[project] else ""
+                        "ipa_domain": ".%s" % projects[project]["desc"] if "desc" in projects[project] else "",
+                        "networks": projects[project]["networks"]
                         # "desc": project["info"]["desc"] if "desc" in project["info"] else ""
                     }
                 )
@@ -433,6 +447,11 @@ def PassportsVM(portal_name: str) -> tuple:
                         "type": "text",
                         "name": "additional-disk",
                         "label": "additional disk"
+                    },
+                    {
+                        "type": "text",
+                        "name": "network-name",
+                        "label": "network name"
                     },
                     {
                         "type": "text",
@@ -526,6 +545,7 @@ def PassportsVM(portal_name: str) -> tuple:
                                 "ram",
                                 "disk",
                                 "additional-disk",
+                                "network-name",
                                 "summary-vm-info",
                                 "local-ip",
                                 "public-ip",
@@ -573,11 +593,14 @@ def PassportsVM(portal_name: str) -> tuple:
                             "ram",
                             "disk",
                             "additional-disk",
+                            "network-name",
                             "local-ip",
                             "public-ip",
                             "tags",
                             "state",
-                            "creation-date"
+                            "creation-date",
+                            "record-update-time",
+                            "vdc-link"
                         ]
                     }
                 },
@@ -634,12 +657,13 @@ def PassportsVM(portal_name: str) -> tuple:
                 time.sleep(0.1)
                 try:
                     create_object = vm_objects(server, cmdb_token, create_type["result_id"], user_id, ipa_domain,
-                                               tags=portal_tags, vdc_object=vdc_id)
+                                               projects[project]["networks"], tags=portal_tags, vdc_object=vdc_id)
                     logger.info(f'Create object {create_object} in {create_type["result_id"]}')
-                except:
+                except NameError as error:
+                    logger.info(error)
                     time.sleep(5)
-                    vm_objects(server, cmdb_token, create_type["result_id"], user_id, ipa_domain, tags=portal_tags,
-                               vdc_object=vdc_id)
+                    vm_objects(server, cmdb_token, create_type["result_id"], user_id, ipa_domain,
+                               projects[project]["networks"], tags=portal_tags, vdc_object=vdc_id)
 
     if not update_dg_types:
         return all_objects
@@ -651,19 +675,23 @@ def PassportsVM(portal_name: str) -> tuple:
         dg_type_objects = tuple(filter(lambda x: x["type_id"] == dg_type["type_id"], all_objects))
 
         portal_project_vms = \
-            tuple(map(lambda server:
-                      vm_objects(server, "token", dg_type["type_id"], user_id, dg_type["ipa_domain"],
-                                 template=True, tags=portal_tags, vdc_object=vdc_id).get("fields"),
-                      vm_list["stdout"]["servers"]))
+            tuple(map(lambda server: vm_objects(server, "token", dg_type["type_id"], user_id, dg_type["ipa_domain"],
+                                                dg_type["networks"], template=True, tags=portal_tags,
+                                                vdc_object=vdc_id).get("fields"), vm_list["stdout"]["servers"]))
 
         for portal_vm in portal_project_vms:
-            if not any(map(lambda x: x["fields"][17]["value"] == portal_vm[17]["value"], dg_type_objects)):
+            if not any(map(lambda x: x["fields"][18]["value"] == portal_vm[18]["value"], dg_type_objects)):
                 logger.info(f'Vm-object {portal_vm[2]["value"]} for creating in {dg_type["type_id"]}')
                 vm_objects(portal_vm, cmdb_token, dg_type["type_id"], user_id, dg_type["ipa_domain"],
-                           "POST_NEW_VM", tags=portal_tags, vdc_object=vdc_id)
+                           dg_type["networks"], "POST_NEW_VM", tags=portal_tags, vdc_object=vdc_id)
 
             for dg_object in dg_type_objects:
-                if dg_object["fields"][17]["value"] == portal_vm[17]["value"] and dg_object["fields"] != portal_vm:
+                dg_to_diff = dg_object["fields"].copy()
+                tmp_to_diff = portal_vm.copy()
+                dg_to_diff.pop(-2)
+                tmp_to_diff.pop(-2)
+
+                if dg_object["fields"][18]["value"] == portal_vm[18]["value"] and dg_to_diff != tmp_to_diff:
                     logger.info(f'Vm-object {portal_vm[2]["value"]} for updating in {dg_type["type_id"]}')
                     payload_object_tmp: dict = {
                         "type_id": dg_type["type_id"],
@@ -686,9 +714,10 @@ def PassportsVM(portal_name: str) -> tuple:
 
                     time.sleep(0.1)
                     vm_objects(payload_object_tmp, cmdb_token, dg_type["type_id"], user_id, dg_type["ipa_domain"],
-                               "PUT", tags=portal_tags, vdc_object=vdc_id)
+                               dg_type["networks"], "PUT", tags=portal_tags, vdc_object=vdc_id)
 
-        for object in filter(lambda x: x[1][17]["value"] not in map(lambda x: x[17]["value"], portal_project_vms),
+        for object in filter(lambda x: x[1][18]["value"] not in
+                                       tuple(map(lambda x: x[18]["value"], portal_project_vms)),
                              map(lambda y: (y.get("public_id"), y.get("fields")), dg_type_objects)):
             logger.info(f'Delete vm-object {object[1][0]["value"]}')
             cmdb_api("DELETE", "object/%s" % object[0], cmdb_token)

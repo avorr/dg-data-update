@@ -380,7 +380,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                             "imagePullPolicy",
                             "image",
                             "security.istio.io/tlsMode",
-                            "jenkinsDeployUser"
+                            "jenkinsDeployUser",
+                            "record-update-time"
                         ]
                     }
                 },
@@ -458,8 +459,8 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
                         cmdb_api("DELETE", "object/%s" % dg_labels[dg_name]["public_id"], cmdb_token)
 
                     elif not dg_name:
-                        create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"], user_id)
                         logger.info(f'Create label-object {ex_labels[ex_name]["name"]}')
+                        create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"], user_id)
 
                     else:
                         template: dict = create_label(ex_labels[ex_name], cmdb_token, cmdb_cluster["public_id"],
