@@ -138,7 +138,7 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
         new_info = list()
         for info in old_info:
             if "cluster" in info["metric"] and "namespace" in info["metric"] and "resource" in info["metric"]:
-            # if "cluster" in info["metric"] and "namespace" in info["metric"]:
+                # if "cluster" in info["metric"] and "namespace" in info["metric"]:
                 new_info.append(info)
         return new_info
 
@@ -268,7 +268,8 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                             "cores-usage",
                             "limits.memory-hard",
                             "limits.memory-used",
-                            "memory-usage"
+                            "memory-usage",
+                            "record-update-time"
                         ]
                     }
                 },
@@ -339,16 +340,21 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                         time.sleep(0.1)
 
                     for cmdb_ns in cmdb_namespaces:
-                        ns_template = ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id,
-                                                 template=True)
-                        if cmdb_ns["fields"][0]["value"] == os_namespace["namespace"] and cmdb_ns["fields"] != \
-                                ns_template["fields"]:
+                        ns_template = ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"],
+                                                 user_id, template=True)
+
+                        dg_to_diff = cmdb_ns["fields"].copy()
+                        tmp_to_diff = ns_template["fields"].copy()
+                        dg_to_diff.pop(-1)
+                        tmp_to_diff.pop(-1)
+
+                        if cmdb_ns["fields"][0]["value"] == os_namespace["namespace"] and dg_to_diff != tmp_to_diff:
                             update_object_template: dict = {
                                 "type_id": cmdb_ns["type_id"],
                                 "status": cmdb_ns["version"],
                                 "version": cmdb_ns["version"],
                                 "creation_time": {
-                                    "$date": int(datetime.datetime.timestamp(cmdb_ns["creation_time"]) * 1000)
+                                    "$date": int(datetime.timestamp(cmdb_ns["creation_time"]) * 1000)
                                 },
                                 "author_id": cmdb_ns["author_id"],
                                 "last_edit_time": {

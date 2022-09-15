@@ -5,17 +5,18 @@ from vm_passport import PassportsVM
 from os_passport import PassportsOS
 from os_labels import LabelsOS
 from app_versions import gtp_app_versions
+
+
 # from view_settings import visible_settings
 # from gtp_releases import releases
 
 def main() -> None:
     # visible_settings()
     # return
+
     # all_objects: tuple = PassportsVM(sys.argv[1])
     # return
-    # PassportsOS(sys.argv[1])
-    # LabelsOS(sys.argv[1])
-    # gtp_app_versions(sys.argv[1])
+
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
     except EOFError as error:
