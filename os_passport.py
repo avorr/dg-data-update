@@ -340,8 +340,8 @@ def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
                         time.sleep(0.1)
 
                     for cmdb_ns in cmdb_namespaces:
-                        ns_template = ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"],
-                                                 user_id, template=True)
+                        ns_template = \
+                            ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id, template=True)
 
                         dg_to_diff = cmdb_ns["fields"].copy()
                         tmp_to_diff = ns_template["fields"].copy()

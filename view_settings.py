@@ -84,10 +84,10 @@ def visible_settings() -> None:
             for cmdb_type in projects["items"]:
                 for settings in view_settings:
 
-                    if settings["resource"][:22] == "framework-object-type-":
-                        if int(settings["resource"][22:]) not in projects["items"]:
-                            users_settings.delete_one({"_id": ObjectId(settings["_id"])})
-                            logger.info(f"Delete view setting for user {user_id} for type {cmdb_type}")
+                    # if settings["resource"][:22] == "framework-object-type-":
+                    #     if int(settings["resource"][22:]) not in projects["items"]:
+                    #         users_settings.delete_one({"_id": ObjectId(settings["_id"])})
+                    #         logger.info(f"Delete view setting for user {user_id} for type {cmdb_type}")
 
                     if "framework-object-type-%s" % cmdb_type == settings["resource"]:
                         if "currentState" in settings["payloads"][0]:
