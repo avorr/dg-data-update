@@ -144,7 +144,7 @@ def visible_settings() -> None:
                                         }
                                     )
                                     print(update_view_settings.raw_result)
-                                    time.sleep(0.5)
+                                    # time.sleep(0.5)
 
                             elif "fields.limits.cpu-hard" in settings["payloads"][0]["currentState"]["visibleColumns"]:
 
