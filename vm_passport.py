@@ -404,7 +404,8 @@ def PassportsVM(portal_name: str) -> tuple:
 
             ipa_domain = ""
             if projects[project]['desc']:
-                ipa_domain: str = ".%s" % projects[project]['desc']
+                # ipa_domain: str = ".%s" % projects[project]['desc']
+                ipa_domain: str = ".%s" % projects[project]['desc'] if projects[project]["desc"] else ""
 
             payload_type_tmp: dict = {
                 "fields": [
