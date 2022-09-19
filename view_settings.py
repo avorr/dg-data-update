@@ -41,7 +41,10 @@ def visible_settings() -> None:
         "items": list()
     }
 
+    all_type_ids = list()
+
     for dg_type in cmdb_projects:
+        all_type_ids.append(dg_type["public_id"])
         if dg_type["name"] != "Release-Artifact":
             if dg_type["render_meta"]["sections"][0]["fields"][2] == "os-type":
                 cmdb_projects_vm["items"].append(dg_type["public_id"])
@@ -79,6 +82,18 @@ def visible_settings() -> None:
             view_settings.append(settings)
         del display_settings
 
+        # user_id = 10
+        # for cmdb_type in cmdb_projects_vm["items"]:
+        #     for settings in view_settings:
+        #         if settings["resource"][:22] == "framework-object-type-":
+                    # if int(settings["resource"][22:]) not in projects["items"]:
+                    # if int(settings["resource"][22:]) not in all_type_ids:
+                    #     print(int(settings["resource"][22:]))
+                        # users_settings.delete_one({"_id": ObjectId(settings["_id"])})
+                        # logger.info(f"Delete view setting for user {user_id} for type {cmdb_type}")
+
+        # return
+
         def create_settings(projects: list) -> None:
             view_settings_for_create = list()
             for cmdb_type in projects["items"]:
@@ -86,8 +101,10 @@ def visible_settings() -> None:
 
                     # if settings["resource"][:22] == "framework-object-type-":
                     #     if int(settings["resource"][22:]) not in projects["items"]:
-                    #         users_settings.delete_one({"_id": ObjectId(settings["_id"])})
-                    #         logger.info(f"Delete view setting for user {user_id} for type {cmdb_type}")
+                    #     if int(settings["resource"][22:]) not in all_type_ids:
+                    #         print(int(settings["resource"][22:]))
+                            # users_settings.delete_one({"_id": ObjectId(settings["_id"])})
+                            # logger.info(f"Delete view setting for user {user_id} for type {cmdb_type}")
 
                     if "framework-object-type-%s" % cmdb_type == settings["resource"]:
                         if "currentState" in settings["payloads"][0]:
@@ -102,6 +119,7 @@ def visible_settings() -> None:
                                     "fields.ram",
                                     "fields.disk",
                                     "fields.additional-disk",
+                                    "fields.network-name",
                                     "fields.local-ip",
                                     "fields.public-ip",
                                     "fields.tags",
@@ -318,6 +336,7 @@ def visible_settings() -> None:
                                                 "fields.ram",
                                                 "fields.disk",
                                                 "fields.additional-disk",
+                                                "fields.network-name",
                                                 "fields.local-ip",
                                                 "fields.public-ip",
                                                 "fields.tags",
@@ -555,6 +574,7 @@ def visible_settings() -> None:
                                                 "fields.ram",
                                                 "fields.disk",
                                                 "fields.additional-disk",
+                                                "fields.network-name",
                                                 "fields.local-ip",
                                                 "fields.public-ip",
                                                 "fields.tags",
