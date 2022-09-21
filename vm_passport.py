@@ -95,12 +95,11 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, ipa
         return x[:10] if x else ""
 
     def network_name(networks: list, network_uuid: str) -> str:
-
         for net in networks:
             if 'network_uuid' in net:
                 if net['network_uuid'] == network_uuid:
                     return net["network_name"]
-            return "network without uuid"
+        return "network without uuid"
 
     payload_vm_tmp: dict = {
         "status": True,
@@ -202,7 +201,6 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, ipa
             }
         ]
     }
-
     if template:
         return payload_vm_tmp
 
@@ -232,7 +230,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     dg_categories: tuple = get_mongodb_objects("framework.categories")
 
-    vm_category_id: dict = category_id("passports", "Passports VM", "far fa-folder-open", cmdb_token, dg_categories)
+    vm_category_id: dict = category_id("passports", "Passports Vm", "far fa-folder-open", cmdb_token, dg_categories)
     portal_category_id: dict = category_id(portal_name, portal_name, "fas fa-folder-open", cmdb_token, dg_categories,
                                            vm_category_id["public_id"])
 
@@ -302,8 +300,8 @@ def PassportsVM(portal_name: str) -> tuple:
         # with ThreadPoolExecutor(max_workers=thread_count(len(cloud_projects))) as executor:
         with ThreadPoolExecutor(max_workers=4) as executor:
             for project in executor.map(get_vdc_checksum, cloud_projects):
-                checksum_portal_vdc[project["info"]["name"]] = {
-                    "id": project["info"]["id"],
+                checksum_portal_vdc[project["info"]["id"]] = {
+                    "name": project["info"]["name"],
                     "domain_id": project["info"]["domain_id"],
                     "group_id": project["info"]["group_id"],
                     "zone": project["info"]["datacenter_name"],
@@ -317,22 +315,22 @@ def PassportsVM(portal_name: str) -> tuple:
 
     def delete_all():
         for delete_dg_type in dg_types:
-            logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
+            # logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
             cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
             # print(delete_dg_type["render_meta"]["sections"][0]["name"])
             # if "apps-versions" in delete_dg_type["render_meta"]["sections"][0]["name"]:
             #     logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
             #     cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
             # if delete_dg_type["public_id"] in list(range(171, 262)):
-            # if delete_dg_type["description"] == "passport-vm-%s" % portal_name:
+            # print(delete_dg_type["render_meta"]["sections"][0]["name"])
+            # if "passport-vm-" in delete_dg_type["render_meta"]["sections"][0]["name"]:
+            #     print(delete_dg_type["render_meta"]["sections"][0]["name"])
+            #     logger.info(f"Delete cmdb type {delete_dg_type}")
+                # cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
             # if "VDC-PD" in delete_dg_type["description"] or "vm-passport" in delete_dg_type["description"]:
-            # if "VDC-%s" % portal_name in delete_dg_type["description"]:
-            # if "VDC-PD23" % portal_name in delete_dg_type["description"]:
             # if "VDC" in delete_dg_type["description"]:
-            # print(delete_dg_type["description"])
             # if ".gtp" in delete_dg_type["description"] and portal_name.lower() in delete_dg_type["description"]:
             # print(delete_dg_type["description"])
-            # if "pd20-" in delete_dg_type["label"]:
 
         for delete_category in dg_categories:
             logger.info(f"DELETE CMDB TYPE {delete_category}")
@@ -383,7 +381,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     for project in projects:
         for dg_vdc in dg_vdc_checksum:
-            if projects[project]["id"] == dg_vdc["vdc_id"] and projects[project]["checksum"] != dg_vdc["check_sum"]:
+            if project == dg_vdc["vdc_id"] and projects[project]["checksum"] != dg_vdc["check_sum"]:
                 update_dg_types.append(
                     {
                         "type_id": dg_vdc["type_id"],
@@ -399,12 +397,11 @@ def PassportsVM(portal_name: str) -> tuple:
     all_objects: tuple = get_mongodb_objects("framework.objects")
 
     for project in projects:
-        if not any(map(lambda x: x['name'] == projects[project]["id"], dg_types)):
-            vdc_id: int = project_id_vdc_types[projects[project]["id"]]["vdc_object_id"]
+        if not any(tuple(map(lambda x: x['name'] == project, dg_types))):
+            vdc_id: int = project_id_vdc_types[project]["vdc_object_id"]
 
             ipa_domain = ""
             if projects[project]['desc']:
-                # ipa_domain: str = ".%s" % projects[project]['desc']
                 ipa_domain: str = ".%s" % projects[project]['desc'] if projects[project]["desc"] else ""
 
             payload_type_tmp: dict = {
@@ -563,7 +560,6 @@ def PassportsVM(portal_name: str) -> tuple:
                                 "vdc-link"
                             ],
                             "type": "section",
-                            # "name": projects[project]["id"],
                             "name": "passport-vm-%s" % portal_name,
                             "label": projects[project]["checksum"]
                         }
@@ -571,14 +567,14 @@ def PassportsVM(portal_name: str) -> tuple:
                     "externals": [
                         {
                             "name": "vdc link",
-                            "href": f"{portal_info[portal_name]['url']}/client/orders/{projects[project]['id']}",
+                            "href": f"{portal_info[portal_name]['url']}/client/orders/{project}",
                             "label": "Vdc link",
                             "icon": "fas fa-external-link-alt",
                             "fields": []
                         },
                         {
                             "name": "vm link",
-                            "href": f"{portal_info[portal_name]['url']}/client/orders/{projects[project]['id']}/servers/{{}}/info",
+                            "href": f"{portal_info[portal_name]['url']}/client/orders/{project}/servers/{{}}/info",
                             "label": "Vm link",
                             "icon": "fas fa-external-link-alt",
                             "fields": ["vm-id"]
@@ -621,9 +617,8 @@ def PassportsVM(portal_name: str) -> tuple:
                         }
                     }
                 },
-                "name": projects[project]['id'],
-                "label": f"{project} | {projects[project]['zone']} | {projects[project]['id']}",
-                # "description": "passport-vm-%s" % portal_name
+                "name": project,
+                "label": f"{projects[project]['name']} | {projects[project]['zone']} | {project}",
                 "description": ipa_domain[1:]
             }
 
@@ -652,7 +647,7 @@ def PassportsVM(portal_name: str) -> tuple:
             cmdb_api("PUT", "categories/%s" % category_search["public_id"], cmdb_token, payload_category_tmp)
             logger.info(f'Put new type {create_type["result_id"]} in category {category_search["label"]}')
 
-            vm_list: dict = portal_api("servers?project_id=%s" % projects[project]["id"], portal_name)
+            vm_list: dict = portal_api("servers?project_id=%s" % project, portal_name)
 
             for server in vm_list["stdout"]["servers"]:
                 time.sleep(0.1)

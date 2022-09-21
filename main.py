@@ -6,17 +6,14 @@ from os_passport import PassportsOS
 from os_labels import LabelsOS
 from app_versions import gtp_app_versions
 
+# from common_function import portal_api
+# from view_settings import visible_settings
 
-from view_settings import visible_settings
+
 # from gtp_releases import releases
 
 def main() -> None:
-    # visible_settings()
-    # PassportsOS(sys.argv[1])
-    # return
-
     # all_objects: tuple = PassportsVM(sys.argv[1])
-    # LabelsOS(sys.argv[1])
     # return
 
     try:
