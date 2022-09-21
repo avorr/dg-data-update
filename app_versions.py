@@ -86,7 +86,7 @@ def gtp_app_versions(portal_name: str, all_objects: tuple = ()) -> None:
     cmdb_token, user_id = get_dg_token()
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
-    os_passports_category_id = category_id('vm-apps-versions', 'VM Apps Versions',
+    os_passports_category_id = category_id('vm-apps-versions', 'Vm Apps Versions',
                                            'fas fa-server', cmdb_token, all_categories)
 
     os_portal_category_id = \
