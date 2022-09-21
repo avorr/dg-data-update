@@ -17,7 +17,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
     all_categories: tuple = get_mongodb_objects('framework.categories')
 
     vdc_category_id: dict = \
-        category_id("passports-vdc", 'Passports VDC', 'fas fa-network-wired', dg_token, all_categories)
+        category_id("passports-vdc", 'Passports Vdc', 'fas fa-network-wired', dg_token, all_categories)
 
     def create_vdc(vdc_info: dict, dg_token: str, type_id: str, author_id: int, method: str = 'POST', domains={},
                    template: bool = False) -> dict | str:
@@ -306,7 +306,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
 
         for vdc in portal_projects:
             create_vdc_object = create_vdc(vdc, dg_token, create_type['result_id'], user_id, domains=domains_info)
-            print(create_vdc_object)
+            logger.info(f"Create vdc object {create_vdc_object} in {create_type['result_id']}")
             time.sleep(0.1)
 
     if "create_type" in locals():
