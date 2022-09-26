@@ -14,7 +14,7 @@ from app_versions import gtp_app_versions
 
 def main() -> None:
     # all_objects: tuple = PassportsVM(sys.argv[1])
-    # return
+    # visible_settings()
 
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
