@@ -69,42 +69,22 @@ def visible_settings() -> None:
     for user_id in cmdb_users:
 
         users_settings = db.get_collection("management.users.settings")
-        display_settings = users_settings.find(
+        display_settings = list(users_settings.find(
             {
                 "user_id": user_id
             }
-        )
+        ))
 
-        # display_settings = get_mongodb_objects("management.users.settings", {"user_id": user_id})
-
-        view_settings = list()
-        for settings in display_settings:
-            view_settings.append(settings)
-        del display_settings
-
-        # user_id = 10
-        # for cmdb_type in cmdb_projects_vm["items"]:
-        #     for settings in view_settings:
-        #         if settings["resource"][:22] == "framework-object-type-":
-                    # if int(settings["resource"][22:]) not in projects["items"]:
-                    # if int(settings["resource"][22:]) not in all_type_ids:
-                    #     print(int(settings["resource"][22:]))
-                        # users_settings.delete_one({"_id": ObjectId(settings["_id"])})
-                        # logger.info(f"Delete view setting for user {user_id} for type {cmdb_type}")
-
-        # return
+        for setting_to_delete in display_settings:
+            if setting_to_delete["resource"][:22] == "framework-object-type-" \
+                    and int(setting_to_delete["resource"][22:]) not in all_type_ids:
+                logger.info(f"Delete view setting {setting_to_delete['resource']} for user {user_id}")
+                users_settings.delete_one({"_id": ObjectId(setting_to_delete["_id"])})
 
         def create_settings(projects: list) -> None:
             view_settings_for_create = list()
             for cmdb_type in projects["items"]:
-                for settings in view_settings:
-
-                    # if settings["resource"][:22] == "framework-object-type-":
-                    #     if int(settings["resource"][22:]) not in projects["items"]:
-                    #     if int(settings["resource"][22:]) not in all_type_ids:
-                    #         print(int(settings["resource"][22:]))
-                            # users_settings.delete_one({"_id": ObjectId(settings["_id"])})
-                            # logger.info(f"Delete view setting for user {user_id} for type {cmdb_type}")
+                for settings in display_settings:
 
                     if "framework-object-type-%s" % cmdb_type == settings["resource"]:
                         if "currentState" in settings["payloads"][0]:
@@ -144,7 +124,6 @@ def visible_settings() -> None:
                                         }
                                     )
                                     print(update_view_settings.raw_result)
-                                    # time.sleep(0.5)
 
                             elif "fields.limits.cpu-hard" in settings["payloads"][0]["currentState"]["visibleColumns"]:
 
@@ -510,7 +489,7 @@ def visible_settings() -> None:
                                 })
                             print(update_view_settings.raw_result)
 
-                if "framework-object-type-%s" % cmdb_type not in map(lambda x: x["resource"], view_settings):
+                if "framework-object-type-%s" % cmdb_type not in map(lambda x: x["resource"], display_settings):
                     if projects["type"] == "os":
                         settings_view_os: dict = {
                             "setting_type": "APPLICATION",
