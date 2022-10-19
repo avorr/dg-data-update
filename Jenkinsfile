@@ -120,7 +120,7 @@ pipeline {
             steps {
                 catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
                     sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=36fd0c49c63b3bda068fec30c751291cd498376a523c0a1b5f47252fe8798670"
-                    sh "sleep 500"
+                    sh "sleep 5"
                     sh "./main.py PD24"
                 }
             }
