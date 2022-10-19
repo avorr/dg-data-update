@@ -4,7 +4,8 @@ properties([disableConcurrentBuilds()])
 
 pipeline {
 //     agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
-    agent { label 'pkles-gt0012105-pd15 || pkles-gt0012100-pd15 || pkles-gt0012102-pd15 || pkles-gt0012098-pd15 || pkles-gt0012099-pd15' }
+//     agent { label 'pkles-gt0012105-pd15 || pkles-gt0012100-pd15 || pkles-gt0012102-pd15 || pkles-gt0012098-pd15 || pkles-gt0012099-pd15' }
+    agent { label 'pkles-gt0012100-pd15' }
     options {
         buildDiscarder(logRotator(numToKeepStr: "30", artifactNumToKeepStr: "30"))
         timestamps()
@@ -93,7 +94,7 @@ pipeline {
             steps {
                 catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
                     sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=03d57a4c8e580bd17424283763d7e0da8a844715290f789a056906f7f4654260"
-                    sh "sleep 5"
+                    sh "sleep 500"
                     sh "./main.py PD23"
                 }
             }
