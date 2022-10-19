@@ -94,12 +94,11 @@ pipeline {
             steps {
                 catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
                     sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=03d57a4c8e580bd17424283763d7e0da8a844715290f789a056906f7f4654260"
-                    sh "sleep 500"
+                    sh "sleep 5"
                     sh "./main.py PD23"
                 }
             }
         }
-
         stage("Update CMDB Info Portal-PD24") {
             environment {
                 PORTAL_URL_PD24 = "https://portal.pd24.gtp"
@@ -121,7 +120,7 @@ pipeline {
             steps {
                 catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
                     sh "screen -dm openfortivpn $FORTI_VPN_HOST -u $FORTI_VPN_CRED_USR -p '$FORTI_VPN_CRED_PSW' --trusted-cert=36fd0c49c63b3bda068fec30c751291cd498376a523c0a1b5f47252fe8798670"
-                    sh "sleep 5"
+                    sh "sleep 500"
                     sh "./main.py PD24"
                 }
             }
