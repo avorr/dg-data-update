@@ -3,7 +3,8 @@
 properties([disableConcurrentBuilds()])
 
 pipeline {
-    agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
+//     agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
+    agent { label 'pkles-gt0012105-pd15 || pkles-gt0012100-pd15 || pkles-gt0012102-pd15 || pkles-gt0012098-pd15 || pkles-gt0012099-pd15' }
     options {
         buildDiscarder(logRotator(numToKeepStr: "30", artifactNumToKeepStr: "30"))
         timestamps()
