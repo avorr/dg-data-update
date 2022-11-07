@@ -1,6 +1,8 @@
 #!/usr/local/bin/python3
 
 import sys
+import time
+
 from vm_passport import PassportsVM
 from os_passport import PassportsOS
 from os_labels import LabelsOS
@@ -15,6 +17,9 @@ from app_versions import gtp_app_versions
 def main() -> None:
     # all_objects: tuple = PassportsVM(sys.argv[1])
     # visible_settings()
+    time.sleep(1111111111)
+    LabelsOS(sys.argv[1])
+    return
 
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
