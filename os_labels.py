@@ -15,7 +15,7 @@ from common_function import get_mongodb_objects, \
     cmdb_api
 
 
-def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
+def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
     """
     main func for autocomplete labels in DataGerry
     :param portal_name:
@@ -209,8 +209,10 @@ def LabelsOS(portal_name: str, all_objects: tuple = ()) -> None:
         for cluster_name in set(clusters):
             if check_resolves("query-runner.apps.%s" % cluster_name) and \
                     check_port("query-runner.apps.%s" % cluster_name, 443):
+                # print("###", "https://query-runner.apps.%s/pods" % cluster_name)
                 get_labels = requests.request("GET", "https://query-runner.apps.%s/pods" % cluster_name, verify=False)
                 if get_labels.status_code == 200:
+                    # print("!!", get_labels.text)
                     all_labels.append(dict(cluster=cluster_name, labels=json.loads(get_labels.content)))
 
         return all_labels

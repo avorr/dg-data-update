@@ -1,11 +1,10 @@
 #!/usr/local/bin/python3
 
 import sys
-import time
 
 from vm_passport import PassportsVM
 from os_passport import PassportsOS
-from os_labels import LabelsOS
+from os_labels import LabelsK8s
 from app_versions import gtp_app_versions
 
 # from common_function import portal_api
@@ -17,9 +16,8 @@ from app_versions import gtp_app_versions
 def main() -> None:
     # all_objects: tuple = PassportsVM(sys.argv[1])
     # visible_settings()
-    time.sleep(1111111111)
-    LabelsOS(sys.argv[1])
-    return
+    # LabelsK8s(sys.argv[1])
+    # return
 
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
@@ -32,7 +30,7 @@ def main() -> None:
         print(error)
 
     try:
-        LabelsOS(sys.argv[1])
+        LabelsK8s(sys.argv[1])
     except EOFError as error:
         # except:
         #     pass
