@@ -10,8 +10,8 @@ import os
 cmdb_login: str = os.environ['CMDB_CRED_USR']
 cmdb_password: str = os.environ['CMDB_CRED_PSW']
 
-mongo_db_url: str = 'mongodb://%s:%s@p-infra-internallb.common.novalocal:27017/cmdb?authSource=admin' % \
-                    (os.environ['DG_MONGO_DB_CRED_USR'], os.environ['DG_MONGO_DB_CRED_PSW'])
+mongo_db_url: str = f"mongodb://{os.getenv('DG_MONGO_DB_CRED_USR')}:{os.getenv('DG_MONGO_DB_CRED_PSW')}@p-infra-internallb.common.novalocal:27017/cmdb?authSource={os.getenv('DG_MONGO_DB_CRED_USR')}"
+# mongo_db_url: str = f"mongodb://{os.getenv('DG_MONGO_DB_CRED_USR')}:{os.getenv('DG_MONGO_DB_CRED_PSW')}@172.26.106.3:27017/cmdb?authSource={os.getenv('DG_MONGO_DB_CRED_USR')}"
 
 env: dict = \
     {
