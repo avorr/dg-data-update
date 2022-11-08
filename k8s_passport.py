@@ -115,7 +115,7 @@ def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, met
     #     return dict(vm_name=ns_info["name"], tag_name=ns_info["tag_name"], status_code=response["status_code"])
 
 
-def PassportsOS(portal_name: str, all_objects: tuple = None) -> None:
+def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
     if portal_info[portal_name]["metrics"] == "false":
         return
 

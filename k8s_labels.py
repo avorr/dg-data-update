@@ -5,6 +5,7 @@ import socket
 import requests
 from loguru import logger
 from itertools import zip_longest
+from collections import defaultdict
 from datetime import datetime
 
 from tools import *
@@ -61,6 +62,17 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                 else:
                     return ""
 
+        def get_resources(labels: dict, metric_type: str, label: str) -> str:
+            """
+            Func to get labels from ose exporter
+            :param labels:
+            :param label:
+            :return:
+            """
+            if "resources" in labels:
+                return defaultdict(str, labels["resources"][metric_type])[label]
+            return ""
+
         label_object_template: dict = {
             "status": True,
             "type_id": type_id,
@@ -107,6 +119,22 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                 {
                     "name": "build",
                     "value": get_label(labels_info, "build")
+                },
+                {
+                    "name": "limits-cpu",
+                    "value": get_resources(labels_info, "limits", "cpu")
+                },
+                {
+                    "name": "limits-ram",
+                    "value": get_resources(labels_info, "limits", "memory")
+                },
+                {
+                    "name": "requests-cpu",
+                    "value": get_resources(labels_info, "requests", "cpu")
+                },
+                {
+                    "name": "requests-ram",
+                    "value": get_resources(labels_info, "requests", "memory")
                 },
                 {
                     "name": "restartPolicy",
@@ -209,10 +237,8 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         for cluster_name in set(clusters):
             if check_resolves("query-runner.apps.%s" % cluster_name) and \
                     check_port("query-runner.apps.%s" % cluster_name, 443):
-                # print("###", "https://query-runner.apps.%s/pods" % cluster_name)
                 get_labels = requests.request("GET", "https://query-runner.apps.%s/pods" % cluster_name, verify=False)
                 if get_labels.status_code == 200:
-                    # print("!!", get_labels.text)
                     all_labels.append(dict(cluster=cluster_name, labels=json.loads(get_labels.content)))
 
         return all_labels
@@ -279,6 +305,26 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                     },
                     {
                         "type": "text",
+                        "name": "limits-cpu",
+                        "label": "limits cpu"
+                    },
+                    {
+                        "type": "text",
+                        "name": "limits-ram",
+                        "label": "limits ram"
+                    },
+                    {
+                        "type": "text",
+                        "name": "requests-cpu",
+                        "label": "requests cpu"
+                    },
+                    {
+                        "type": "text",
+                        "name": "requests-ram",
+                        "label": "requests ram"
+                    },
+                    {
+                        "type": "text",
                         "name": "restartPolicy",
                         "label": "restartPolicy"
                     },
@@ -326,6 +372,10 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                                 "distribVersion",
                                 "version",
                                 "build",
+                                "limits-cpu",
+                                "limits-ram",
+                                "requests-cpu",
+                                "requests-ram",
                                 "restartPolicy",
                                 "imagePullPolicy",
                                 "image",
@@ -378,6 +428,10 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                             "distribVersion",
                             "version",
                             "build",
+                            "limits-cpu",
+                            "limits-ram",
+                            "requests-cpu",
+                            "requests-ram",
                             "restartPolicy",
                             "imagePullPolicy",
                             "image",
