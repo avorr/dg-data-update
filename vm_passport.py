@@ -316,11 +316,12 @@ def PassportsVM(portal_name: str) -> tuple:
     def delete_all():
         for delete_dg_type in dg_types:
             # logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
-            cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
+            # cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
             # print(delete_dg_type["render_meta"]["sections"][0]["name"])
-            # if "apps-versions" in delete_dg_type["render_meta"]["sections"][0]["name"]:
-            #     logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
-            #     cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
+            if "k8s-labels" in delete_dg_type["render_meta"]["sections"][0]["name"]:
+                logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
+                print(delete_dg_type["render_meta"]["sections"][0]["name"])
+                # cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], cmdb_token)
             # if delete_dg_type["public_id"] in list(range(171, 262)):
             # print(delete_dg_type["render_meta"]["sections"][0]["name"])
             # if "passport-vm-" in delete_dg_type["render_meta"]["sections"][0]["name"]:
@@ -334,7 +335,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
         for delete_category in dg_categories:
             logger.info(f"DELETE CMDB TYPE {delete_category}")
-            cmdb_api("DELETE", "categories/%s" % delete_category["public_id"], cmdb_token)
+            # cmdb_api("DELETE", "categories/%s" % delete_category["public_id"], cmdb_token)
 
     # delete_all()
     # return

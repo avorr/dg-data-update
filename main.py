@@ -3,8 +3,8 @@
 import sys
 
 from vm_passport import PassportsVM
-from os_passport import PassportsOS
-from os_labels import LabelsK8s
+from k8s_passport import PassportsK8s
+from k8s_labels import LabelsK8s
 from app_versions import gtp_app_versions
 
 # from common_function import portal_api
@@ -25,7 +25,7 @@ def main() -> None:
         print(error)
 
     try:
-        PassportsOS(sys.argv[1], all_objects)
+        PassportsK8s(sys.argv[1], all_objects)
     except EOFError as error:
         print(error)
 
