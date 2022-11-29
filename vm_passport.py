@@ -273,10 +273,8 @@ def PassportsVM(portal_name: str) -> tuple:
     portal_projects: dict = portal_api("projects", portal_name)["stdout"]
 
     # for i in portal_projects["projects"]:
-    #     if i["name"] == 'gt-mintrud-common-admins-junior':
-    # if i["name"] == 'gt-foms-uat-k8s':
-    #     portal_projects["projects"] = [i]
-    #
+    #     if i["name"] == 'mt-sol-dev-platform':
+    #         portal_projects["projects"] = [i]
     def get_vdc_checksum(vdc_info: dict) -> dict:
         """
         Func to get vdc checksum from portal
@@ -670,6 +668,9 @@ def PassportsVM(portal_name: str) -> tuple:
         vm_list: dict = portal_api("servers?project_id=%s" % dg_type["vdc_id"], portal_name)
 
         dg_type_objects = tuple(filter(lambda x: x["type_id"] == dg_type["type_id"], all_objects))
+
+        if dg_type["ipa_domain"] == ".None":
+            dg_type["ipa_domain"] = ""
 
         portal_project_vms = \
             tuple(map(lambda server: vm_objects(server, "token", dg_type["type_id"], user_id, dg_type["ipa_domain"],

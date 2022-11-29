@@ -8,12 +8,7 @@ ENV TZ=Europe/Moscow
 #                                 screen \
 #                                 openfortivpn && apt-get clean -q && apt-get -y autoremove --purge
 
-
+#RUN apt-get update && apt-get -y install screen openfortivpn strongswan xl2tpd && apt-get clean -q && apt-get -y autoremove --purge
 RUN apt-get update && apt-get -y install screen openfortivpn && apt-get clean -q && apt-get -y autoremove --purge
 
 RUN pip3 install --no-cache --upgrade requests pymongo loguru
-
-
-
-
-
