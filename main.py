@@ -16,6 +16,7 @@ from app_versions import gtp_app_versions
 def main() -> None:
     # all_objects: tuple = PassportsVM(sys.argv[1])
     # visible_settings()
+    # PassportsK8s(sys.argv[1])
     # LabelsK8s(sys.argv[1])
     # return
 

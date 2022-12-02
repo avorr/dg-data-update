@@ -375,5 +375,5 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                 for cmdb_ns in cmdb_namespaces:
                     if cmdb_ns["fields"][0]["value"] not in tuple(map(lambda x: x["namespace"], cluster["info"])):
                         logger.info(f'Delete ns-object {cmdb_ns["fields"][0]["value"]}')
-                        cmdb_api("DELETE", "object/%s" % cmdb_ns["public_id"], cmdb_token)
+                        # cmdb_api("DELETE", "object/%s" % cmdb_ns["public_id"], cmdb_token)
                         time.sleep(0.1)
