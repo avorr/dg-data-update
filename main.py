@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 import sys
+import subprocess
 
 from vm_passport import PassportsVM
 from k8s_passport import PassportsK8s
@@ -15,7 +16,7 @@ from app_versions import gtp_app_versions
 
 def main() -> None:
     # all_objects: tuple = PassportsVM(sys.argv[1])
-    # visible_settings()
+    # PassportsK8s(sys.argv[1], all_objects)
     # PassportsK8s(sys.argv[1])
     # LabelsK8s(sys.argv[1])
     # return
@@ -45,6 +46,7 @@ def main() -> None:
     # gtp_app_versions(sys.argv[1])
 
     # visible_settings()
+    subprocess.run(["pkill", "openconnect"])
 
 
 if __name__ == '__main__':

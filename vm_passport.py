@@ -2,11 +2,11 @@
 
 import time
 import hashlib
+import json
 from loguru import logger
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from tools import *
 from env import portal_info
 from common_function import cmdb_api, \
     get_mongodb_objects, \
@@ -229,11 +229,9 @@ def PassportsVM(portal_name: str) -> tuple:
     cmdb_token, user_id = get_dg_token()
 
     dg_categories: tuple = get_mongodb_objects("framework.categories")
-
     vm_category_id: dict = category_id("passports", "Passports Vm", "far fa-folder-open", cmdb_token, dg_categories)
     portal_category_id: dict = category_id(portal_name, portal_name, "fas fa-folder-open", cmdb_token, dg_categories,
                                            vm_category_id["public_id"])
-
     portal_domains_info: dict = portal_api("domains", portal_name)["stdout"]
 
     domains_info: dict = {

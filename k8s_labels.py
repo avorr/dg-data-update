@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 import time
+import json
 import socket
 import requests
 from loguru import logger
@@ -8,7 +9,7 @@ from itertools import zip_longest
 from collections import defaultdict
 from datetime import datetime
 
-from tools import *
+# from tools import *
 from env import portal_info
 from common_function import get_mongodb_objects, \
     get_dg_token, \
