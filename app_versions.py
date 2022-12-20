@@ -1,11 +1,12 @@
 #!/usr/local/bin/python3
 
 import time
+import json
 import requests
 from loguru import logger
 from datetime import datetime
 
-from tools import *
+# from tools import *
 from env import portal_info
 from common_function import cmdb_api
 from common_function import category_id

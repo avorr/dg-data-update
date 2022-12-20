@@ -1,0 +1,14 @@
+k8s
+.git
+.gitignore
+.dockerignore
+.idea
+__pycache__
+__init__.py
+Dockerfile-dg
+Dockerfile-openfortivpn
+gtp_releases.py
+Jenkinsfile
+README.md
+requirements.txt
+tools.py
