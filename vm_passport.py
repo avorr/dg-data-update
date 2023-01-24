@@ -25,6 +25,8 @@ def vm_objects(vm_info: dict, cmdb_token: str, type_id: str, author_id: int, pro
     :param cmdb_token:
     :param type_id:
     :param author_id:
+    :param ipa_domain:
+    :param project_networks:
     :param method:
     :param template:
     :param tags:
@@ -340,17 +342,14 @@ def PassportsVM(portal_name: str) -> tuple:
 
     for vm_type in dg_types:
         # if vm_type["description"] == f"passport-vm-{portal_name}" or f"{portal_name.lower()}.foms.gtp" in vm_type["description"]:
-        if vm_type["render_meta"]["sections"][0]["name"] == f"passport-vm-{portal_name}":
+        if "section" in vm_type["render_meta"] and \
+                vm_type["render_meta"]["sections"][0]["name"] == f"passport-vm-{portal_name}":  ###tmp if "section" in vm_type["render_meta"]
             if vm_type['name'] not in tuple(map(lambda x: x["id"], portal_projects["projects"])):
                 cmdb_api("DELETE", "types/%s" % vm_type["public_id"], cmdb_token)
                 logger.info("Delete type %s from cmdb" % vm_type["name"])
             else:
                 dg_vm_projects.append(vm_type)
 
-        # if vm_type["description"][-4:] == ".gtp":
-        #     print(vm_type["description"][-4:])
-        #     print(vm_type["description"])
-        #     print("####")
 
     from vdc_passports import PassportsVDC
     all_vdc_objects, dg_vdc_type = \
@@ -372,7 +371,7 @@ def PassportsVM(portal_name: str) -> tuple:
     dg_vdc_checksum = tuple(map(lambda x: {
         "vdc_id": x["name"],
         "type_id": x["public_id"],
-        "check_sum": x["render_meta"]["sections"][0]["label"]
+        "check_sum": x["render_meta"]["sections"][0]["label"] if "section" in vm_type["render_meta"] else None ###tmp if "section" in vm_type["render_meta"] else None
     }, dg_types))
     update_dg_types = list()
 
