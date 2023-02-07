@@ -190,7 +190,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         :return:
         """
         info = list()
-        for metrics_url in portal_info[portal_name]["metrics"].split(","):
+        for metrics_url in portal_info[portal_name]["metrics"].split(";"):
             print(metrics_url)
             print("########")
 
