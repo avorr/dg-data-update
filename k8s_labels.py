@@ -192,8 +192,8 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         info = list()
         for metrics_url in portal_info[portal_name]["metrics"].split(","):
             foo = json.loads(requests.request("GET", metrics_url.strip()).content)
-            print(foo['data']['result'])
-            print("#############")
+            # print(foo['data']['result'])
+            # print("#############")
             info.append(foo)
 
         # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
@@ -201,7 +201,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
 
     clusters_info: list = get_os_info()
 
-    return
+    # return
     # for i in clusters_info:
     #     for k in i["data"]['result']:
     #         print(k)
