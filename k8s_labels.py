@@ -199,12 +199,6 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
 
     clusters_info: list = get_os_info()
 
-    # for i in clusters_info:
-    #     print(i["data"]['result'])
-    #     print("#####")
-
-    # return
-
     #### temporary
     def clear_info(old_info: list) -> list:
         new_info = list()

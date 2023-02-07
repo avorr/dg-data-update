@@ -45,7 +45,7 @@ pipeline {
                 }
             }
         }
-/*
+
         stage("Update CMDB Info Portal-PD20") {
             environment {
                 PORTAL_URL_PD20 = "https://portal.pd20.gtp"
@@ -142,6 +142,5 @@ pipeline {
                     sh "./view_settings.py"
             }
         }
-        */
     }
 }
