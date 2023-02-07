@@ -142,6 +142,5 @@ pipeline {
                     sh "./view_settings.py"
             }
         }
-
     }
 }
