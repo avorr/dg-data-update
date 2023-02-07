@@ -185,16 +185,21 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         Func to get json from ose exporter
         :return:
         """
-        clusters_info = list()
-        for metric_url in portal_info[portal_name]["metrics"].split(","):
-            clusters_info.append(json.loads(requests.request("GET", metric_url.strip()).content))
+        info = list()
+        for metrics_url in portal_info[portal_name]["metrics"].split(","):
+            print("#########")
+            print(metrics_url)
+            print("#########")
+            clusters_info.append(json.loads(requests.request("GET", metrics_url.strip()).content))
 
         # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
-        return clusters_info
+        return info
 
     clusters_info: list = get_os_info()
 
-    # for i in clusters_info:
+
+    return
+    # for i in clusters_info:k
     #     for k in i["data"]['result']:
     #         print(k)
 
