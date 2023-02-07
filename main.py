@@ -41,8 +41,6 @@ def main() -> None:
         gtp_app_versions(sys.argv[1])
     except EOFError as err:
         logger.error(err)
-    # releases()
-    # gtp_app_versions(sys.argv[1])
 
     # visible_settings()
     subprocess.run(["pkill", "openconnect"])
@@ -50,7 +48,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-
-    # if 0 != 5:
-    # raise TypeError("Type not serializable")
-    # raise EOFError("asasa")
