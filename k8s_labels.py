@@ -205,9 +205,6 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         print(i["data"]['result'])
         print("#####")
 
-k
-
-
     # return
 
 
