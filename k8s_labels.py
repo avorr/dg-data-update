@@ -184,20 +184,19 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                                                "fas fa-folder-open", dg_token, all_categories,
                                                k8s_passports_category_id["public_id"])
 
-    def get_os_info() -> list:
+    def get_k8s_info() -> list:
         """
         Func to get json from ose exporter
         :return:
         """
         info = list()
         for metrics_url in portal_info[portal_name]["metrics"].split(";"):
-            request: bytes = requests.request("GET", metrics_url.strip(), timeout=3).content
-            info.append(json.loads(request)['data']['result'])
+            info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
 
         # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
         return info
 
-    clusters_info: list = get_os_info()
+    clusters_info: list = get_k8s_info()
 
     #### temporary
     # def clear_info(old_info: list) -> list:

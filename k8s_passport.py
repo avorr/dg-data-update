@@ -128,10 +128,21 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
     os_portal_category_id: dict = category_id("K8s-%s" % portal_name, "K8s-%s" % portal_name, "far fa-folder-open",
                                               cmdb_token, all_categories, os_passports_category_id["public_id"])
 
-    def get_os_info() -> dict:
-        return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
+    # def get_os_info() -> dict:
+    #     return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
+    def get_k8s_info() -> list:
+        """
+        Func to get json from ose exporter
+        :return:
+        """
+        info = list()
+        for metrics_url in portal_info[portal_name]["metrics"].split(";"):
+            info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
 
-    cluster_info: dict = get_os_info()
+        # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
+        return info
+
+    clusters_info: list = get_k8s_info()
 
     #### temporary
     def clear_info(old_info: list) -> list:
@@ -144,89 +155,126 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
 
     # cluster_info["data"]["result"] = tuple(map(lambda x: {'metric': defaultdict(str, x['metric'])},
     #                                            cluster_info["data"]["result"]))
-    cluster_info["data"]["result"] = clear_info(cluster_info["data"]["result"])
-    #### temporary
-    clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"]))
 
-    os_info = list()
-    for cluster in set(clusters):
-        metrics = list()
-        os_info.append(dict(cluster=cluster, info=metrics))
-        for info in cluster_info["data"]["result"]:
-            if cluster == info["metric"]["cluster"]:
-                metrics.append(info["metric"]["namespace"])
+    for cluster_info in clusters_info:
+        cluster_info = clear_info(cluster_info)
+        #### temporary
+        clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info))
 
-    for info in os_info:
-        info["info"] = list(set(info["info"]))
-        i = -1
-        for namespace in info["info"]:
-            i += 1
-            info["info"][i] = dict(namespace=namespace, info=list())
+        os_info = list()
+        for cluster in set(clusters):
+            metrics = list()
+            os_info.append(dict(cluster=cluster, info=metrics))
+            for info in cluster_info:
+                if cluster == info["metric"]["cluster"]:
+                    metrics.append(info["metric"]["namespace"])
 
-    for item in os_info:
-        for info in item["info"]:
-            for metric in cluster_info["data"]["result"]:
-                if item["cluster"] == metric["metric"]["cluster"] and \
-                        info["namespace"] == metric["metric"]["namespace"]:
-                    info["info"].append((metric["metric"]["resource"], metric["metric"]["type"], metric["value"]))
+        for info in os_info:
+            info["info"] = list(set(info["info"]))
+            i = -1
+            for namespace in info["info"]:
+                i += 1
+                info["info"][i] = dict(namespace=namespace, info=list())
 
-    cmdb_projects: tuple = get_mongodb_objects("framework.types")
+        for item in os_info:
+            for info in item["info"]:
+                for metric in cluster_info:
+                    if item["cluster"] == metric["metric"]["cluster"] and \
+                            info["namespace"] == metric["metric"]["namespace"]:
+                        info["info"].append((metric["metric"]["resource"], metric["metric"]["type"], metric["value"]))
 
-    for cluster in os_info:
-        if not any(tuple(map(lambda y: y["name"] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
-                             cmdb_projects))):
+        cmdb_projects: tuple = get_mongodb_objects("framework.types")
 
-            data_type_template: dict = {
-                "fields": [
-                    {
-                        "type": "text",
-                        "name": "namespace",
-                        "label": "namespace"
-                    },
-                    {
-                        "type": "text",
-                        "name": "limits.cpu-hard",
-                        "label": "limits.cpu-hard"
-                    },
-                    {
-                        "type": "text",
-                        "name": "limits.cpu-used",
-                        "label": "limits.cpu-used"
-                    },
-                    {
-                        "type": "text",
-                        "name": "cores-usage",
-                        "label": "cores usage (%)"
-                    },
-                    {
-                        "type": "text",
-                        "name": "limits.memory-hard",
-                        "label": "limits.memory-hard (Gi)"
-                    },
-                    {
-                        "type": "text",
-                        "name": "limits.memory-used",
-                        "label": "limits.memory-used (Gi)"
-                    },
-                    {
-                        "type": "text",
-                        "name": "memory-usage",
-                        "label": "memory usage (%)"
-                    },
-                    {
-                        "type": "text",
-                        "name": "record-update-time",
-                        "label": "record update time"
-                    }
-                ],
-                "active": True,
-                "version": "1.0.0",
-                "author_id": user_id,
-                "render_meta": {
-                    # "icon": "fas fa-clipboard-list",
-                    "icon": "fas fa-dharmachakra",
-                    "sections": [
+        for cluster in os_info:
+            if not any(tuple(map(
+                    lambda y: y["name"] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                    cmdb_projects))):
+
+                data_type_template: dict = {
+                    "fields": [
                         {
+                            "type": "text",
+                            "name": "namespace",
+                            "label": "namespace"
+                        },
+                        {
+                            "type": "text",
+                            "name": "limits.cpu-hard",
+                            "label": "limits.cpu-hard"
+                        },
+                        {
+                            "type": "text",
+                            "name": "limits.cpu-used",
+                            "label": "limits.cpu-used"
+                        },
+                        {
+                            "type": "text",
+                            "name": "cores-usage",
+                            "label": "cores usage (%)"
+                        },
+                        {
+                            "type": "text",
+                            "name": "limits.memory-hard",
+                            "label": "limits.memory-hard (Gi)"
+                        },
+                        {
+                            "type": "text",
+                            "name": "limits.memory-used",
+                            "label": "limits.memory-used (Gi)"
+                        },
+                        {
+                            "type": "text",
+                            "name": "memory-usage",
+                            "label": "memory usage (%)"
+                        },
+                        {
+                            "type": "text",
+                            "name": "record-update-time",
+                            "label": "record update time"
+                        }
+                    ],
+                    "active": True,
+                    "version": "1.0.0",
+                    "author_id": user_id,
+                    "render_meta": {
+                        # "icon": "fas fa-clipboard-list",
+                        "icon": "fas fa-dharmachakra",
+                        "sections": [
+                            {
+                                "fields": [
+                                    "namespace",
+                                    "limits.cpu-hard",
+                                    "limits.cpu-used",
+                                    "cores-usage",
+                                    "limits.memory-hard",
+                                    "limits.memory-used",
+                                    "memory-usage",
+                                    "record-update-time"
+                                ],
+                                "type": "section",
+                                "name": f"os-cluster-{portal_name}--{cluster['cluster']}",
+                                "label": cluster["cluster"]
+                            }
+                        ],
+                        "externals": [
+                            {
+                                "name": "cluster link",
+                                "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects" %
+                                        cluster["cluster"],
+                                "label": "Cluster link",
+                                "icon": "fas fa-external-link-alt",
+                                "fields": []
+                            },
+                            {
+                                "name": "namespace link",
+                                "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects/{}" %
+                                        cluster["cluster"],
+                                "label": "Namespace link",
+                                "icon": "fas fa-external-link-alt",
+                                "fields": ["namespace"]
+                            }
+                        ],
+                        "summary": {
                             "fields": [
                                 "namespace",
                                 "limits.cpu-hard",
@@ -236,144 +284,112 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                                 "limits.memory-used",
                                 "memory-usage",
                                 "record-update-time"
-                            ],
-                            "type": "section",
-                            "name": f"os-cluster-{portal_name}--{cluster['cluster']}",
-                            "label": cluster["cluster"]
-                        }
-                    ],
-                    "externals": [
-                        {
-                            "name": "cluster link",
-                            "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects" %
-                                    cluster["cluster"],
-                            "label": "Cluster link",
-                            "icon": "fas fa-external-link-alt",
-                            "fields": []
-                        },
-                        {
-                            "name": "namespace link",
-                            "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects/{}" %
-                                    cluster["cluster"],
-                            "label": "Namespace link",
-                            "icon": "fas fa-external-link-alt",
-                            "fields": ["namespace"]
-                        }
-                    ],
-                    "summary": {
-                        "fields": [
-                            "namespace",
-                            "limits.cpu-hard",
-                            "limits.cpu-used",
-                            "cores-usage",
-                            "limits.memory-hard",
-                            "limits.memory-used",
-                            "memory-usage",
-                            "record-update-time"
-                        ]
-                    }
-                },
-                "acl": {
-                    "activated": True,
-                    "groups": {
-                        "includes": {
-                            "1": [
-                                "CREATE",
-                                "READ",
-                                "UPDATE",
-                                "DELETE"
-                            ],
-                            "2": [
-                                "READ"
                             ]
                         }
-                    }
-                },
-                "name": f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
-                "label": cluster["cluster"],
-                "description": "openshift cluster %s" % cluster["cluster"]
-            }
+                    },
+                    "acl": {
+                        "activated": True,
+                        "groups": {
+                            "includes": {
+                                "1": [
+                                    "CREATE",
+                                    "READ",
+                                    "UPDATE",
+                                    "DELETE"
+                                ],
+                                "2": [
+                                    "READ"
+                                ]
+                            }
+                        }
+                    },
+                    "name": f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                    "label": cluster["cluster"],
+                    "description": "openshift cluster %s" % cluster["cluster"]
+                }
 
-            create_type = cmdb_api("POST", "types/", cmdb_token, data_type_template)
+                create_type = cmdb_api("POST", "types/", cmdb_token, data_type_template)
 
-            logger.info(f'Create new type {create_type["result_id"]} with id')
+                logger.info(f'Create new type {create_type["result_id"]} with id')
 
-            data_category_template: dict = {
-                "public_id": os_portal_category_id["public_id"],
-                "name": os_portal_category_id["name"],
-                "label": os_portal_category_id["label"],
-                "meta": {
-                    "icon": "far fa-folder-open",
-                    "order": None
-                },
-                "parent": os_passports_category_id["public_id"],
-                "types": os_portal_category_id["types"]
-            }
+                data_category_template: dict = {
+                    "public_id": os_portal_category_id["public_id"],
+                    "name": os_portal_category_id["name"],
+                    "label": os_portal_category_id["label"],
+                    "meta": {
+                        "icon": "far fa-folder-open",
+                        "order": None
+                    },
+                    "parent": os_passports_category_id["public_id"],
+                    "types": os_portal_category_id["types"]
+                }
 
-            if not create_type["result_id"]:
-                return
+                if not create_type["result_id"]:
+                    return
 
-            data_category_template["types"].append(create_type["result_id"])
+                data_category_template["types"].append(create_type["result_id"])
 
-            cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token, data_category_template)
-            logger.info(f'Put new type {create_type["result_id"]} in category {data_category_template["name"]}')
+                cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], cmdb_token,
+                         data_category_template)
+                logger.info(f'Put new type {create_type["result_id"]} in category {data_category_template["name"]}')
 
-            for namespace in cluster["info"]:
-                create_object = ns_objects(namespace, cmdb_token, create_type["result_id"], user_id, "NAMESPACE")
-                print(create_object)
-                time.sleep(0.1)
+                for namespace in cluster["info"]:
+                    create_object = ns_objects(namespace, cmdb_token, create_type["result_id"], user_id, "NAMESPACE")
+                    print(create_object)
+                    time.sleep(0.1)
 
-    if not all_objects:
-        all_objects: tuple = get_mongodb_objects("framework.objects")
+        if not all_objects:
+            all_objects: tuple = get_mongodb_objects("framework.objects")
 
-    all_cmdb_cluster_types = tuple(filter(lambda f: "os-cluster-%s--" % portal_name in f["name"], cmdb_projects))
+        all_cmdb_cluster_types = tuple(filter(lambda f: "os-cluster-%s--" % portal_name in f["name"], cmdb_projects))
 
-    for cmdb_cluster in all_cmdb_cluster_types:
-        for cluster in os_info:
-            if cmdb_cluster["label"] == cluster["cluster"]:
-                cmdb_namespaces = tuple(filter(lambda x: x["type_id"] == cmdb_cluster["public_id"], all_objects))
-                for os_namespace in cluster["info"]:
-                    if os_namespace["namespace"] not in tuple(map(lambda x: x.get("fields")[0]["value"],
-                                                                  cmdb_namespaces)):
-                        logger.info(f'Create ns-object {os_namespace["namespace"]}')
-                        ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id, "NAMESPACE")
-                        time.sleep(0.1)
+        for cmdb_cluster in all_cmdb_cluster_types:
+            for cluster in os_info:
+                if cmdb_cluster["label"] == cluster["cluster"]:
+                    cmdb_namespaces = tuple(filter(lambda x: x["type_id"] == cmdb_cluster["public_id"], all_objects))
+                    for os_namespace in cluster["info"]:
+                        if os_namespace["namespace"] not in tuple(map(lambda x: x.get("fields")[0]["value"],
+                                                                      cmdb_namespaces)):
+                            logger.info(f'Create ns-object {os_namespace["namespace"]}')
+                            ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id, "NAMESPACE")
+                            time.sleep(0.1)
+
+                        for cmdb_ns in cmdb_namespaces:
+                            ns_template = \
+                                ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id, template=True)
+
+                            dg_to_diff = cmdb_ns["fields"].copy()
+                            tmp_to_diff = ns_template["fields"].copy()
+                            dg_to_diff.pop(-1)
+                            tmp_to_diff.pop(-1)
+
+                            if cmdb_ns["fields"][0]["value"] == os_namespace["namespace"] and dg_to_diff != tmp_to_diff:
+                                update_object_template: dict = {
+                                    "type_id": cmdb_ns["type_id"],
+                                    "status": cmdb_ns["version"],
+                                    "version": cmdb_ns["version"],
+                                    "creation_time": {
+                                        "$date": int(datetime.timestamp(cmdb_ns["creation_time"]) * 1000)
+                                    },
+                                    "author_id": cmdb_ns["author_id"],
+                                    "last_edit_time": {
+                                        "$date": int(time.time() * 1000)
+                                    },
+                                    "editor_id": user_id,
+                                    "active": cmdb_ns["active"],
+                                    "fields": ns_template["fields"],
+                                    "public_id": cmdb_ns["public_id"],
+                                    "views": cmdb_ns["views"],
+                                    "comment": ""
+                                }
+
+                                time.sleep(0.1)
+                                logger.info(f'Update ns-object {os_namespace["namespace"]} in {cmdb_ns["type_id"]}')
+                                ns_objects(update_object_template, cmdb_token, cmdb_cluster["public_id"], user_id,
+                                           "PUT")
 
                     for cmdb_ns in cmdb_namespaces:
-                        ns_template = \
-                            ns_objects(os_namespace, cmdb_token, cmdb_cluster["public_id"], user_id, template=True)
-
-                        dg_to_diff = cmdb_ns["fields"].copy()
-                        tmp_to_diff = ns_template["fields"].copy()
-                        dg_to_diff.pop(-1)
-                        tmp_to_diff.pop(-1)
-
-                        if cmdb_ns["fields"][0]["value"] == os_namespace["namespace"] and dg_to_diff != tmp_to_diff:
-                            update_object_template: dict = {
-                                "type_id": cmdb_ns["type_id"],
-                                "status": cmdb_ns["version"],
-                                "version": cmdb_ns["version"],
-                                "creation_time": {
-                                    "$date": int(datetime.timestamp(cmdb_ns["creation_time"]) * 1000)
-                                },
-                                "author_id": cmdb_ns["author_id"],
-                                "last_edit_time": {
-                                    "$date": int(time.time() * 1000)
-                                },
-                                "editor_id": user_id,
-                                "active": cmdb_ns["active"],
-                                "fields": ns_template["fields"],
-                                "public_id": cmdb_ns["public_id"],
-                                "views": cmdb_ns["views"],
-                                "comment": ""
-                            }
-
+                        if cmdb_ns["fields"][0]["value"] not in tuple(map(lambda x: x["namespace"], cluster["info"])):
+                            logger.info(f'Delete ns-object {cmdb_ns["fields"][0]["value"]}')
+                            # cmdb_api("DELETE", "object/%s" % cmdb_ns["public_id"], cmdb_token)
                             time.sleep(0.1)
-                            logger.info(f'Update ns-object {os_namespace["namespace"]} in {cmdb_ns["type_id"]}')
-                            ns_objects(update_object_template, cmdb_token, cmdb_cluster["public_id"], user_id, "PUT")
-
-                for cmdb_ns in cmdb_namespaces:
-                    if cmdb_ns["fields"][0]["value"] not in tuple(map(lambda x: x["namespace"], cluster["info"])):
-                        logger.info(f'Delete ns-object {cmdb_ns["fields"][0]["value"]}')
-                        # cmdb_api("DELETE", "object/%s" % cmdb_ns["public_id"], cmdb_token)
-                        time.sleep(0.1)
