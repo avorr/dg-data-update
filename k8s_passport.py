@@ -127,20 +127,6 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
     os_portal_category_id: dict = category_id("K8s-%s" % portal_name, "K8s-%s" % portal_name, "far fa-folder-open",
                                               cmdb_token, all_categories, os_passports_category_id["public_id"])
 
-    # def get_os_info() -> dict:
-    #     return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
-    # def get_k8s_info() -> list:
-    #     """
-    #     Func to get json from ose exporter
-    #     :return:
-    #     """
-    #     info = list()
-    #     for metrics_url in portal_info[portal_name]["metrics"].split(";"):
-    #         info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
-    #
-        # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
-        # return info
-
     clusters_info: list = get_k8s_info(portal_name)
 
     #### temporary
@@ -156,7 +142,7 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
     #                                            cluster_info["data"]["result"]))
 
     for cluster_info in clusters_info:
-        cluster_info = clear_info(cluster_info)
+        # cluster_info = clear_info(cluster_info)
         #### temporary
         clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info))
 
