@@ -202,7 +202,9 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
 
 
     for i in clusters_info:
-        print(i)
+        print(i["data"]['result'])
+        print("#####")
+
 
 
 
