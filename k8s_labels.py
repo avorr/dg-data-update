@@ -214,7 +214,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         return new_info
 
     for cluster_info in clusters_info:
-        cluster_info["data"]["result"]: list = clear_info(cluster_info["data"]["result"])
+        # cluster_info["data"]["result"]: list = clear_info(cluster_info["data"]["result"])
         #### temporary
 
         clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"]))
