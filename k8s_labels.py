@@ -191,9 +191,6 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         """
         info = list()
         for metrics_url in portal_info[portal_name]["metrics"].split(";"):
-            print(metrics_url)
-            print("########")
-
             info.append(json.loads(requests.request("GET", metrics_url.strip()).content))
 
         # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
@@ -259,9 +256,6 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
             return all_labels
 
         all_labels: list = get_k8s_labels(clusters)
-        # from tools import write_to_file
-        # write_to_file(f"{all_labels=}")
-        # from all_labels import all_labels
 
         dg_projects: tuple = get_mongodb_objects("framework.types")
 
