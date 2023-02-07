@@ -2,6 +2,7 @@
 
 import sys
 import subprocess
+from loguru import logger
 
 from vm_passport import PassportsVM
 from k8s_passport import PassportsK8s
@@ -18,30 +19,28 @@ def main() -> None:
     # all_objects: tuple = PassportsVM(sys.argv[1])
     # PassportsK8s(sys.argv[1], all_objects)
     # PassportsK8s(sys.argv[1])
-    LabelsK8s(sys.argv[1])
-    return
+    # LabelsK8s(sys.argv[1])
+    # return
 
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
-    except EOFError as error:
-        print(error)
+    except EOFError as err:
+        logger.error(err)
 
     try:
         PassportsK8s(sys.argv[1], all_objects)
-    except EOFError as error:
-        print(error)
+    except EOFError as err:
+        logger.error(err)
 
     try:
         LabelsK8s(sys.argv[1])
-    except EOFError as error:
-        # except:
-        #     pass
-        print(error)
+    except EOFError as err:
+        logger.error(err)
 
     try:
         gtp_app_versions(sys.argv[1])
-    except EOFError as error:
-        print(error)
+    except EOFError as err:
+        logger.error(err)
     # releases()
     # gtp_app_versions(sys.argv[1])
 

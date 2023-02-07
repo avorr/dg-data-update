@@ -200,12 +200,12 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
     clusters_info: list = get_os_info()
 
     #### temporary
-    def clear_info(old_info: list) -> list:
-        new_info = list()
-        for info in old_info:
-            if "cluster" in info["metric"]:
-                new_info.append(info)
-        return new_info
+    # def clear_info(old_info: list) -> list:
+    #     new_info = list()
+    #     for info in old_info:
+    #         if "cluster" in info["metric"]:
+    #             new_info.append(info)
+    #     return new_info
 
     for cluster_info in clusters_info:
         # cluster_info["data"]["result"]: list = clear_info(cluster_info["data"]["result"])
@@ -230,7 +230,8 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                     socket.gethostbyname(dns_name)
                     return True
                 except socket.error as Error:
-                    print(dns_name, Error)
+                    # print(dns_name, Error)
+                    logger.error(dns_name, Error)
                     return False
 
             def check_port(checked_host: str, port: int) -> bool:
