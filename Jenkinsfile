@@ -73,7 +73,7 @@ pipeline {
                }
            }
        }
-*/
+
         stage("Update CMDB Info Portal-PD23") {
             environment {
                 PORTAL_URL_PD23 = "https://portal.pd23.gtp"
@@ -100,6 +100,7 @@ pipeline {
                 }
             }
         }
+        */
         stage("Update CMDB Info Portal-PD24") {
             environment {
                 PORTAL_URL_PD24 = "https://portal.pd24.gtp"
