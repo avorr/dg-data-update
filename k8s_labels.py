@@ -192,9 +192,6 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         info = list()
         for metrics_url in portal_info[portal_name]["metrics"].split(";"):
             request: bytes = requests.request("GET", metrics_url.strip(), timeout=3).content
-            # print(json.loads(request)['data']['result'])
-            # print("########")
-
             info.append(json.loads(request)['data']['result'])
 
         # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
@@ -211,10 +208,9 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
     #     return new_info
 
     for cluster_info in clusters_info:
-        # cluster_info["data"]["result"]: list = clear_info(cluster_info["data"]["result"])
+        # cluster_info: list = clear_info(cluster_info)
         #### temporary
 
-        # clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info["data"]["result"]))
         clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info))
 
         def get_k8s_labels(clusters: map) -> list:
@@ -234,7 +230,6 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                     socket.gethostbyname(dns_name)
                     return True
                 except socket.error as Error:
-                    # print(dns_name, Error)
                     logger.error(dns_name, Error)
                     return False
 

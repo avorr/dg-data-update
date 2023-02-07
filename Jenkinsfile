@@ -72,7 +72,7 @@ pipeline {
                }
            }
        }
-
+*/
         stage("Update CMDB Info Portal-PD23") {
             environment {
                 PORTAL_URL_PD23 = "https://portal.pd23.gtp"
@@ -142,6 +142,5 @@ pipeline {
                     sh "./view_settings.py"
             }
         }
-        */
     }
 }
