@@ -22,7 +22,6 @@ pipeline {
         MONGO_DB =  "p-infra-internallb.common.novalocal:172.26.106.3"
     }
     stages {
-    /*
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 PORTAL_URL_PD15 = "https://portal.gos.sbercloud.dev"
@@ -37,7 +36,7 @@ pipeline {
                     image IMAGE
                     registryCredentialsId REGISTRY_CRED
                     args "-u root --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165"
-                    reuseNode true
+                    reuseNode truek
                 }
             }
             steps {
@@ -46,7 +45,7 @@ pipeline {
                 }
             }
         }
-
+/*
         stage("Update CMDB Info Portal-PD20") {
             environment {
                 PORTAL_URL_PD20 = "https://portal.pd20.gtp"
@@ -73,7 +72,7 @@ pipeline {
                }
            }
        }
-
+*/
         stage("Update CMDB Info Portal-PD23") {
             environment {
                 PORTAL_URL_PD23 = "https://portal.pd23.gtp"
@@ -100,13 +99,12 @@ pipeline {
                 }
             }
         }
-        */
+
         stage("Update CMDB Info Portal-PD24") {
             environment {
                 PORTAL_URL_PD24 = "https://portal.pd24.gtp"
 //                 OS_METRICS_PD24 = "http://infra-victoriametrics-01.pd24.common.gtp:8428/api/v1/query?query=sum(kube_resourcequota)%20by%20(monitor,%20namespace,%20cluster,%20resource,%20type)"
                 OS_METRICS_PD24 = "http://infra-victoriametrics-01.pd24.common.gtp:8428/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-//                 OS_METRICS_PD15 = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 APP_VERSIONS_PD24 = "http://infra-jenkinsslave-alt-01.pd24.common.gtp:5002/versions-pd24"
                 PORTAL_TOKEN_PD24 = credentials("PORTAL_TOKEN_PD24")
                 FORTI_VPN_HOST = "2.63.137.212:15443"
