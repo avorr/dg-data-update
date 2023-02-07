@@ -36,7 +36,7 @@ pipeline {
                     image IMAGE
                     registryCredentialsId REGISTRY_CRED
                     args "-u root --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165"
-                    reuseNode truek
+                    reuseNode true
                 }
             }
             steps {
