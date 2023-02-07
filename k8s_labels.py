@@ -138,6 +138,10 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                     "value": get_resources(labels_info, "requests", "memory")
                 },
                 {
+                    "name": "log-level",
+                    "value": get_label(labels_info, "logLevel")
+                },
+                {
                     "name": "restartPolicy",
                     "value": get_label(labels_info, "restartPolicy")
                 },
@@ -194,9 +198,13 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
 
     clusters_info: list = get_os_info()
 
-    # for i in clusters_info:k
+    # for i in clusters_info:
     #     for k in i["data"]['result']:
     #         print(k)
+    # return
+    # import time
+    # print('SLEEP')
+    # time.sleep(20)
 
     #### temporary
     def clear_info(old_info: list) -> list:
@@ -256,6 +264,9 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
             return all_labels
 
         all_labels: list = get_k8s_labels(clusters)
+        # from tools import write_to_file
+        # write_to_file(f"{all_labels=}")
+        # from all_labels import all_labels
 
         dg_projects: tuple = get_mongodb_objects("framework.types")
 
@@ -338,6 +349,11 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                         },
                         {
                             "type": "text",
+                            "name": "log-level",
+                            "label": "log level"
+                        },
+                        {
+                            "type": "text",
                             "name": "restartPolicy",
                             "label": "restartPolicy"
                         },
@@ -389,6 +405,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                                     "limits-ram",
                                     "requests-cpu",
                                     "requests-ram",
+                                    "log-level",
                                     "restartPolicy",
                                     "imagePullPolicy",
                                     "image",
@@ -446,6 +463,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                                 "limits-ram",
                                 "requests-cpu",
                                 "requests-ram",
+                                "log-level",
                                 "restartPolicy",
                                 "imagePullPolicy",
                                 "image",
