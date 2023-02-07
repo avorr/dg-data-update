@@ -1,16 +1,15 @@
 #!/usr/local/bin/python3
 
-import json
+# import json
 import time
-import requests
+# import requests
 from loguru import logger
 from datetime import datetime
 
 from env import portal_info
 from common_function import cmdb_api, \
-    category_id, \
-    get_dg_token, \
-    get_mongodb_objects
+    category_id, get_dg_token, \
+    get_mongodb_objects, get_k8s_info
 
 
 def ns_objects(ns_info: dict, cmdb_token: str, type_id: str, author_id: int, method: str = "POST",
@@ -130,19 +129,19 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
 
     # def get_os_info() -> dict:
     #     return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
-    def get_k8s_info() -> list:
-        """
-        Func to get json from ose exporter
-        :return:
-        """
-        info = list()
-        for metrics_url in portal_info[portal_name]["metrics"].split(";"):
-            info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
-
+    # def get_k8s_info() -> list:
+    #     """
+    #     Func to get json from ose exporter
+    #     :return:
+    #     """
+    #     info = list()
+    #     for metrics_url in portal_info[portal_name]["metrics"].split(";"):
+    #         info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
+    #
         # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
-        return info
+        # return info
 
-    clusters_info: list = get_k8s_info()
+    clusters_info: list = get_k8s_info(portal_name)
 
     #### temporary
     def clear_info(old_info: list) -> list:

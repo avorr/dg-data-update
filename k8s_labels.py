@@ -12,9 +12,8 @@ from datetime import datetime
 # from tools import *
 from env import portal_info
 from common_function import get_mongodb_objects, \
-    get_dg_token, \
-    category_id, \
-    cmdb_api
+    get_dg_token, category_id, \
+    cmdb_api, get_k8s_info
 
 
 def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
@@ -184,19 +183,19 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                                                "fas fa-folder-open", dg_token, all_categories,
                                                k8s_passports_category_id["public_id"])
 
-    def get_k8s_info() -> list:
-        """
-        Func to get json from ose exporter
-        :return:
-        """
-        info = list()
-        for metrics_url in portal_info[portal_name]["metrics"].split(";"):
-            info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
+    # def get_k8s_info() -> list:
+    #     """
+    #     Func to get json from ose exporter
+    #     :return:
+    #     """
+    #     info = list()
+    #     for metrics_url in portal_info[portal_name]["metrics"].split(";"):
+    #         info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
+    #
+    #     # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
+    #     return info
 
-        # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
-        return info
-
-    clusters_info: list = get_k8s_info()
+    clusters_info: list = get_k8s_info(portal_name)
 
     #### temporary
     # def clear_info(old_info: list) -> list:
