@@ -635,7 +635,7 @@ def PassportsVM(portal_name: str) -> tuple:
                       vm_list["stdout"]["servers"]))
 
         for portal_vm in portal_project_vms:
-            if not any(map(lambda x: x["fields"][18]["value"] == portal_vm[18]["value"], dg_type_objects)):
+            if not any(map(lambda x: x["fields"][19]["value"] == portal_vm[19]["value"], dg_type_objects)):
                 logger.info(f'Vm-object {portal_vm[2]["value"]} for creating in {dg_type["type_id"]}')
                 vm_objects(portal_vm, dg_token, dg_type["type_id"], user_id, dg_type["networks"], "POST_NEW_VM",
                            tags=portal_tags, vdc_object=vdc_id)
@@ -646,7 +646,7 @@ def PassportsVM(portal_name: str) -> tuple:
                 dg_to_diff.pop(-2)
                 tmp_to_diff.pop(-2)
 
-                if dg_object["fields"][18]["value"] == portal_vm[18]["value"] and dg_to_diff != tmp_to_diff:
+                if dg_object["fields"][19]["value"] == portal_vm[19]["value"] and dg_to_diff != tmp_to_diff:
                     logger.info(f'Vm-object {portal_vm[2]["value"]} for updating in {dg_type["type_id"]}')
                     payload_object_tmp: dict = {
                         "type_id": dg_type["type_id"],
@@ -671,8 +671,8 @@ def PassportsVM(portal_name: str) -> tuple:
                     vm_objects(payload_object_tmp, dg_token, dg_type["type_id"], user_id, dg_type["networks"], "PUT",
                                tags=portal_tags, vdc_object=vdc_id)
 
-        for object in filter(lambda x: x[1][18]["value"] not in
-                                       tuple(map(lambda x: x[18]["value"], portal_project_vms)),
+        for object in filter(lambda x: x[1][19]["value"] not in
+                                       tuple(map(lambda x: x[19]["value"], portal_project_vms)),
                              map(lambda y: (y.get("public_id"), y.get("fields")), dg_type_objects)):
             logger.info(f'Delete vm-object {object[1][0]["value"]}')
             cmdb_api("DELETE", "object/%s" % object[0], dg_token)
