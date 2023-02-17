@@ -161,6 +161,10 @@ def vm_objects(vm_info: dict, dg_token: str, type_id: str, author_id: int, proje
                 "value": get_tag_name(vm_info)
             },
             {
+                "name": "description",
+                "value": vm_info["comment"] if "comment" in vm_info else ""
+            },
+            {
                 "name": "zone",
                 "value": vm_info["region_name"]
             },
@@ -285,7 +289,7 @@ def PassportsVM(portal_name: str) -> tuple:
 
     def delete_all():
         for delete_dg_type in dg_types:
-            if "k8s-labels" in delete_dg_type["render_meta"]["sections"][0]["name"]:
+            if "VDC-PD15" in delete_dg_type["render_meta"]["sections"][0]["name"]:
                 logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
                 print(delete_dg_type["render_meta"]["sections"][0]["name"])
                 # cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], dg_token)
@@ -421,6 +425,11 @@ def PassportsVM(portal_name: str) -> tuple:
                     },
                     {
                         "type": "text",
+                        "name": "description",
+                        "label": "description"
+                    },
+                    {
+                        "type": "text",
                         "name": "zone",
                         "label": "zone"
                     },
@@ -496,6 +505,7 @@ def PassportsVM(portal_name: str) -> tuple:
                                 "local-ip",
                                 "public-ip",
                                 "tags",
+                                "description",
                                 "zone",
                                 "ingress-ports",
                                 "egress-ports",
@@ -542,6 +552,7 @@ def PassportsVM(portal_name: str) -> tuple:
                             "local-ip",
                             "public-ip",
                             "tags",
+                            "description",
                             "state",
                             "creation-date",
                             "record-update-time",

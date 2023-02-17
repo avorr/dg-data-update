@@ -16,6 +16,7 @@ from app_versions import gtp_app_versions
 # from gtp_releases import releases
 
 def main() -> None:
+    # visible_settings()
     # all_objects: tuple = PassportsVM(sys.argv[1])
     # PassportsK8s(sys.argv[1], all_objects)
     # PassportsK8s(sys.argv[1])
@@ -42,7 +43,6 @@ def main() -> None:
     except EOFError as err:
         logger.error(err)
 
-    # visible_settings()
     subprocess.run(["pkill", "openconnect"])
 
 

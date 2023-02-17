@@ -103,6 +103,7 @@ def visible_settings() -> None:
                                     "fields.local-ip",
                                     "fields.public-ip",
                                     "fields.tags",
+                                    "fields.description",
                                     "fields.state",
                                     "fields.creation-date",
                                     "actions"
@@ -324,6 +325,7 @@ def visible_settings() -> None:
                                                 "fields.local-ip",
                                                 "fields.public-ip",
                                                 "fields.tags",
+                                                "fields.description",
                                                 "fields.state",
                                                 "fields.creation-date",
                                                 "actions"
@@ -567,6 +569,7 @@ def visible_settings() -> None:
                                                 "fields.local-ip",
                                                 "fields.public-ip",
                                                 "fields.tags",
+                                                "fields.description",
                                                 "fields.state",
                                                 "fields.creation-date",
                                                 "actions"
