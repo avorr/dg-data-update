@@ -72,7 +72,7 @@ pipeline {
                }
            }
        }
-*/
+
         stage("Update CMDB Info Portal-PD23") {
             environment {
                 PORTAL_URL_PD23 = "https://portal.pd23.gtp"
@@ -127,7 +127,7 @@ pipeline {
                 }
             }
         }
-
+*/
         stage("Update visible settings") {
             agent {
                 docker {

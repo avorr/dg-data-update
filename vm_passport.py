@@ -289,10 +289,10 @@ def PassportsVM(portal_name: str) -> tuple:
 
     def delete_all():
         for delete_dg_type in dg_types:
-            if "VDC-PD15" in delete_dg_type["render_meta"]["sections"][0]["name"]:
+            if "passport-vm-PD15" in delete_dg_type["render_meta"]["sections"][0]["name"]:
                 logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
                 print(delete_dg_type["render_meta"]["sections"][0]["name"])
-                # cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], dg_token)
+                cmdb_api("DELETE", "types/%s" % delete_dg_type["public_id"], dg_token)
 
         for delete_category in dg_categories:
             logger.info(f"DELETE CMDB TYPE {delete_category}")
@@ -578,7 +578,7 @@ def PassportsVM(portal_name: str) -> tuple:
                 },
                 "name": project,
                 "label": f"{projects[project]['name']} | {projects[project]['zone']} | {project}",
-                "description": "passport-vm-%s" % portal_name
+                "description": projects[project]['desc'] if 'desc' in projects[project] else ""
             }
 
             create_type = cmdb_api("POST", "types/", dg_token, payload_type_tmp)
