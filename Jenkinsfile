@@ -27,7 +27,8 @@ pipeline {
                 PORTAL_URL_PD15 = "https://portal.gos.sbercloud.dev"
 //                 OS_METRICS_PD15 = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 OS_METRICS_PD15 = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type);http://vm_select.pd15.admin.gtp:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-                APP_VERSIONS_PD15 = "http://p-infra-jenkinsslave-02.common.novalocal:5002/versions-pd15"
+//                 APP_VERSIONS_PD15 = "http://p-infra-jenkinsslave-02.common.novalocal:5002/versions-pd15"
+                APP_VERSIONS_PD15 = "http://infra-jenkinsslave-04.pd15.admin.gtp:5002/versions-pd15"
                 PORTAL_TOKEN_PD15 = credentials("PORTAL_TOKEN_PD15")
             }
             agent {
