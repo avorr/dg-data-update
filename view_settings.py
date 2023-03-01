@@ -45,7 +45,7 @@ def visible_settings() -> None:
 
     for dg_type in cmdb_projects:
         all_type_ids.append(dg_type["public_id"])
-        if dg_type["name"] != "Release-Artifact":
+        if dg_type["name"] not in ("Release-Artifact", "labels"):
             if dg_type["render_meta"]["sections"][0]["fields"][2] == "os-type":
                 cmdb_projects_vm["items"].append(dg_type["public_id"])
             elif dg_type["render_meta"]["sections"][0]["fields"][1] == "limits.cpu-hard":
