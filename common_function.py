@@ -78,7 +78,6 @@ def get_dg_token() -> tuple[str, int]:
     return user_info["token"], user_info["user"]["public_id"]
 
 
-
 def get_k8s_info(portal: str) -> list:
     """
     Func to get json from ose exporter
@@ -87,9 +86,9 @@ def get_k8s_info(portal: str) -> list:
     info = list()
     for metrics_url in portal_info[portal]["metrics"].split(";"):
         info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
-
     # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
     return info
+
 
 # thread_count = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)
 # def thread_count(x: int) -> int: return int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)

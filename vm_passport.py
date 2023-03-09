@@ -288,6 +288,7 @@ def PassportsVM(portal_name: str) -> tuple:
     dg_types: tuple = get_mongodb_objects("framework.types")
 
     def delete_all():
+        # dg_o: tuple = get_mongodb_objects("framework.objects")
         for delete_dg_type in dg_types:
             if "passport-vm-PD15" in delete_dg_type["render_meta"]["sections"][0]["name"]:
                 logger.info(f"DELETE CMDB TYPE {delete_dg_type}")
