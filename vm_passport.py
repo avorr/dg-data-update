@@ -419,7 +419,7 @@ def PassportsVM(portal_name: str) -> tuple | None:
 
             all_vdc_objects = tuple(filter(lambda x: x["type_id"] == dg_type["public_id"], all_objects))
 
-            del all_objects
+            # del all_objects
 
             for dg_object in all_vdc_objects:
                 if dg_object["fields"][5]["value"] not in tuple(map(lambda x: x["id"], portal_projects)):
@@ -598,9 +598,7 @@ def PassportsVM(portal_name: str) -> tuple | None:
 
         payload_category['types'].append(create_type)
 
-        # move_type = cmdb_api('PUT', "categories/%s" % portal_stands_id['public_id'], dg_token, payload_category)
         move_type = cmdb_api('PUT', "categories/%s" % links_category_id['public_id'], dg_token, payload_category)
-        print(move_type)
 
         logger.info(f"Move type {move_type['result']['public_id']} to category {payload_category['name']}")
 
