@@ -16,8 +16,8 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                  all_objects: tuple = ()) -> tuple | None:
     all_categories: tuple = get_mongodb_objects('framework.categories')
 
-    vdc_category_id: dict = \
-        category_id("passports-vdc", 'Passports Vdc', 'fas fa-network-wired', dg_token, all_categories)
+    vdc_category_id: dict = category_id("passports-vdc", 'Passports Vdc', 'fas fa-network-wired',
+                                        dg_token, all_categories)
 
     def create_vdc(vdc_info: dict, dg_token: str, type_id: str, author_id: int, method: str = 'POST', domains={},
                    template: bool = False) -> dict | str:
@@ -42,7 +42,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
                     network_names.append(network["network_name"])
                     network_uuids.append(network["network_uuid"])
                 return ' | '.join(subnet_names), ' | '.join(subnet_uuids), \
-                       ' | '.join(network_names), ' | '.join(network_uuids)
+                    ' | '.join(network_names), ' | '.join(network_uuids)
 
             for network in networks:
                 cidrs.append(f'{network["cidr"]}({network["network_name"]})')
@@ -50,7 +50,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
 
         subnet_name, subnet_uuid, network_name, network_uuid = networks_info(vdc_info["networks"], False, True)
 
-        payload_vcd_object: dict = {
+        payload_vdc_object: dict = {
             "status": True,
             "type_id": type_id,
             "version": "1.0.0",
@@ -120,9 +120,9 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, po
         }
 
         if template:
-            return payload_vcd_object
+            return payload_vdc_object
 
-        return cmdb_api("POST", "object/", dg_token, payload_vcd_object)
+        return cmdb_api("POST", "object/", dg_token, payload_vdc_object)
 
     dg_types: tuple = get_mongodb_objects("framework.types")
 

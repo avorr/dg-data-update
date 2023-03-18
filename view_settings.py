@@ -33,7 +33,7 @@ def visible_settings() -> None:
         "items": list()
     }
     cmdb_projects_vdc: dict = {
-        "type": "vcd",
+        "type": "vdc",
         "items": list()
     }
     cmdb_projects_release: dict = {
@@ -204,7 +204,7 @@ def visible_settings() -> None:
 
                             elif "fields.datacenter-name" in settings["payloads"][0]["currentState"]["visibleColumns"]:
 
-                                visible_columns_vcd: list = [
+                                visible_columns_vdc: list = [
                                     "fields.name",
                                     "fields.desc",
                                     "fields.datacenter-name",
@@ -216,12 +216,12 @@ def visible_settings() -> None:
                                 ]
 
                                 bat = set(settings["payloads"][0]["currentState"]["visibleColumns"])
-                                quux = set(visible_columns_vcd)
+                                quux = set(visible_columns_vdc)
 
                                 if (bat - quux) or (quux - bat) or \
                                         settings["payloads"][0]["currentState"]["pageSize"] != 100:
                                     settings["payloads"][0]["currentState"]["pageSize"] = 100
-                                    settings["payloads"][0]["currentState"]["visibleColumns"] = visible_columns_vcd
+                                    settings["payloads"][0]["currentState"]["visibleColumns"] = visible_columns_vdc
                                     update_view_settings = users_settings.update_one(
                                         {
                                             "_id": settings["_id"]
@@ -434,9 +434,9 @@ def visible_settings() -> None:
                                 ]
                                 settings["payloads"] = payloads_version
 
-                            elif projects["type"] == "vcd":
+                            elif projects["type"] == "vdc":
                                 print("######" * 100, "\nTHIS BLOCK IS WORKING\n", "######" * 100)
-                                payloads_vcd: list = [
+                                payloads_vdc: list = [
                                     {
                                         "id": "table-objects-type",
                                         "tableStates": [],
@@ -461,7 +461,7 @@ def visible_settings() -> None:
                                         }
                                     }
                                 ]
-                                settings["payloads"] = payloads_vcd
+                                settings["payloads"] = payloads_vdc
 
                             elif projects["type"] == "release":
                                 print("######" * 100, "\nTHIS BLOCK IS WORKING\n", "######" * 100)
@@ -671,9 +671,9 @@ def visible_settings() -> None:
                         settings_view_version["user_id"] = user_id
                         view_settings_for_create.append(settings_view_version)
 
-                    elif projects["type"] == "vcd":
+                    elif projects["type"] == "vdc":
 
-                        settings_view_vcd: dict = \
+                        settings_view_vdc: dict = \
                             {
                                 "setting_type": "APPLICATION",
                                 "resource": "framework-object-type-1009",
@@ -705,9 +705,9 @@ def visible_settings() -> None:
                                 ]
                             }
                         # users_settings = max(filter(lambda x: x["name"] == "management.users.settings", collection))
-                        settings_view_vcd["resource"] = "framework-object-type-%s" % cmdb_type
-                        settings_view_vcd["user_id"] = user_id
-                        view_settings_for_create.append(settings_view_vcd)
+                        settings_view_vdc["resource"] = "framework-object-type-%s" % cmdb_type
+                        settings_view_vdc["user_id"] = user_id
+                        view_settings_for_create.append(settings_view_vdc)
 
 
                     elif projects["type"] == "release":
