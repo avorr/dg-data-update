@@ -17,11 +17,11 @@ from app_versions import gtp_app_versions
 
 def main() -> None:
     # visible_settings()
-    all_objects: tuple = PassportsVM(sys.argv[1])
+    # all_objects: tuple = PassportsVM(sys.argv[1])
     # PassportsK8s(sys.argv[1], all_objects)
     # PassportsK8s(sys.argv[1])
     # LabelsK8s(sys.argv[1])
-    return
+    # return
 
     try:
         all_objects: tuple = PassportsVM(sys.argv[1])
