@@ -17,7 +17,7 @@ from common_function import cmdb_api, \
     portal_api
 
 
-def vm_objects(vm_info: dict, dg_token: str, type_id: str, author_id: int, project_networks: list,
+def vm_objects(vm_info: dict, dg_token: str, type_id: int, author_id: int, project_networks: list,
                method: str = "POST", template: bool = False, tags: list = [], vdc_object=None) -> dict:
     """
     Func to create or update or delete objects in DataGerry
@@ -257,6 +257,18 @@ def PassportsVM(portal_name: str) -> tuple | None:
                 if domain["name"] == "domain_id--%s" % group_id["domain_id"]:
                     create_category("group_id--%s" % group_id["id"], group_id["name"],
                                     "fas fa-folder-open", dg_token, domain["public_id"])
+
+    # print(tuple(map(lambda y: f'group_id--{y["id"]}', portal_groups_info)))
+    # print(portal_category_id)
+    # for dg_category in dg_categories:
+    #     if dg_category["name"][:10] == "group_id--" and dg_category['parent'] == portal_category_id['public_id']:
+            # if dg_category["name"] not in tuple(map(lambda y: f'group_id--{y["id"]}', portal_groups_info)):
+            # print(dg_category)
+
+        # for portal_group in portal_groups_info:
+        #     print(f'group_id--{portal_group["id"]}')
+        # return
+    # return
 
     portal_projects: list = portal_api("projects", portal_name)["stdout"]["projects"]
 
