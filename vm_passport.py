@@ -223,14 +223,14 @@ def PassportsVM(portal_name: str) -> tuple | None:
 
     dg_categories: tuple = get_mongodb_objects("framework.categories")
 
-    passport_stands_id: dict = category_id("passport-stands", "Passport Stands", "fas fa-folder-open",
-                                           dg_token, dg_categories)
+    # passport_stands_id: dict = category_id("passport-stands", "Passport Stands", "fas fa-folder-open",
+    #                                        dg_token, dg_categories)
 
-    portal_stands_id: dict = category_id(f"{portal_name.lower()}-stands", portal_name, "fas fa-file-alt", dg_token,
-                                         dg_categories, passport_stands_id["public_id"])
+    # portal_stands_id: dict = category_id(f"{portal_name.lower()}-stands", portal_name, "fas fa-file-alt", dg_token,
+    #                                      dg_categories, passport_stands_id["public_id"])
 
-    links_category_id: dict = category_id(f"links-{portal_name.lower()}", "Links", "fab fa-staylinked", dg_token,
-                                          dg_categories, portal_stands_id["public_id"])
+    # links_category_id: dict = category_id(f"links-{portal_name.lower()}", "Links", "fab fa-staylinked", dg_token,
+    #                                       dg_categories, portal_stands_id["public_id"])
 
     vm_category_id: dict = category_id("passports", "Passports Vm", "far fa-folder-open", dg_token, dg_categories)
 
@@ -262,12 +262,12 @@ def PassportsVM(portal_name: str) -> tuple | None:
     # print(portal_category_id)
     # for dg_category in dg_categories:
     #     if dg_category["name"][:10] == "group_id--" and dg_category['parent'] == portal_category_id['public_id']:
-            # if dg_category["name"] not in tuple(map(lambda y: f'group_id--{y["id"]}', portal_groups_info)):
-            # print(dg_category)
+    # if dg_category["name"] not in tuple(map(lambda y: f'group_id--{y["id"]}', portal_groups_info)):
+    # print(dg_category)
 
-        # for portal_group in portal_groups_info:
-        #     print(f'group_id--{portal_group["id"]}')
-        # return
+    # for portal_group in portal_groups_info:
+    #     print(f'group_id--{portal_group["id"]}')
+    # return
     # return
 
     portal_projects: list = portal_api("projects", portal_name)["stdout"]["projects"]
@@ -377,6 +377,7 @@ def PassportsVM(portal_name: str) -> tuple | None:
     portal_tags: list = portal_api("dict/tags", portal_name)["stdout"]["tags"]
     all_objects: tuple = get_mongodb_objects("framework.objects")
 
+    """    
     def create_link_vdc(vdc_info: dict, dg_token: str, type_id: int, author_id: int, method: str = 'POST', domains={},
                         template: bool = False) -> dict | str:
         if method == "PUT":
@@ -617,6 +618,7 @@ def PassportsVM(portal_name: str) -> tuple | None:
         for vdc in portal_projects:
             link_vdc_object = create_link_vdc(vdc, dg_token, create_type, user_id, domains=domains_info)
             logger.info(f"Create vdc object {link_vdc_object} in {create_type}")
+    """
 
     for project in projects:
         if not any(tuple(map(lambda x: x['name'] == project, dg_types))):
@@ -872,9 +874,9 @@ def PassportsVM(portal_name: str) -> tuple | None:
             cmdb_api("PUT", "categories/%s" % category_search["public_id"], dg_token, payload_category_tmp)
             logger.info(f'Put new type {create_type} in category {category_search["label"]}')
 
-            vm_list: dict = portal_api("servers?project_id=%s" % project, portal_name)
+            vm_list: list = portal_api("servers?project_id=%s" % project, portal_name)["stdout"]["servers"]
 
-            for server in vm_list["stdout"]["servers"]:
+            for server in vm_list:
                 time.sleep(0.1)
                 try:
                     create_object = vm_objects(server, dg_token, create_type, user_id, projects[project]["networks"],
@@ -891,14 +893,13 @@ def PassportsVM(portal_name: str) -> tuple | None:
 
     for dg_type in update_dg_types:
         vdc_id: int = project_id_vdc_types[dg_type["vdc_id"]]["vdc_object_id"]
-        vm_list: dict = portal_api("servers?project_id=%s" % dg_type["vdc_id"], portal_name)
+        vm_list: list = portal_api("servers?project_id=%s" % dg_type["vdc_id"], portal_name)["stdout"]["servers"]
 
         dg_type_objects = tuple(filter(lambda x: x["type_id"] == dg_type["type_id"], all_objects))
 
-        portal_project_vms = \
-            tuple(map(lambda server: vm_objects(server, "token", dg_type["type_id"], user_id, dg_type["networks"],
-                                                template=True, tags=portal_tags, vdc_object=vdc_id).get("fields"),
-                      vm_list["stdout"]["servers"]))
+        portal_project_vms = tuple(map(lambda server: vm_objects(server, "token", dg_type["type_id"], user_id,
+                                                                 dg_type["networks"], template=True, tags=portal_tags,
+                                                                 vdc_object=vdc_id).get("fields"), vm_list))
 
         for portal_vm in portal_project_vms:
             if not any(map(lambda x: x["fields"][19]["value"] == portal_vm[19]["value"], dg_type_objects)):

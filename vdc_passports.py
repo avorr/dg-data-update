@@ -12,7 +12,7 @@ from common_function import category_id
 from common_function import get_mongodb_objects
 
 
-def PassportsVDC(portal_name: str, dg_token: str, user_id: str, domains_info, portal_projects: list,
+def PassportsVDC(portal_name: str, dg_token: str, user_id: int, domains_info, portal_projects: list,
                  all_objects: tuple = ()) -> tuple | None:
     all_categories: tuple = get_mongodb_objects('framework.categories')
 
