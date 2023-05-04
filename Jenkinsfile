@@ -23,12 +23,6 @@ pipeline {
         MONGO_DB =  "p-infra-internallb.common.novalocal:172.26.106.3"
     }
     stages {
-         stage('Build') {
-            steps {
-                sh 'ls -la'
-            }
-        }
-        /*
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 PORTAL_URL_PD15 = "https://portal.gos.sbercloud.dev"
@@ -53,7 +47,6 @@ pipeline {
                 }
             }
         }
-        */
 /*
         stage("Update CMDB Info Portal-PD20") {
             environment {
