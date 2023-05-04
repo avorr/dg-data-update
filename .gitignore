@@ -2,3 +2,5 @@ unused/creds.py
 unused
 .idea
 __pycache__
+k8s/secret.yml
+info
