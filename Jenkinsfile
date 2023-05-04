@@ -36,8 +36,8 @@ pipeline {
                     registryUrl REGISTRY
                     image IMAGE
                     registryCredentialsId REGISTRY_CRED
-//                     args "-u root --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165"
-                    args '--user "$(id -u):$(id -g)" -v /etc/passwd:/etc/passwd:ro --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165'
+                    args "-u root --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165"
+//                     args '--user "$(id -u):$(id -g)" -v /etc/passwd:/etc/passwd:ro --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165'
                     reuseNode true
                 }
             }
