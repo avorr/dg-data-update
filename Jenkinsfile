@@ -4,7 +4,8 @@ properties([disableConcurrentBuilds()])
 
 pipeline {
 //     agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
-    agent { label 'pkles-gt0012105-pd15 || pkles-gt0012100-pd15 || pkles-gt0012102-pd15 || pkles-gt0012098-pd15 || pkles-gt0012099-pd15' }
+//     agent { label 'pkles-gt0012105-pd15 || pkles-gt0012100-pd15 || pkles-gt0012102-pd15 || pkles-gt0012098-pd15 || pkles-gt0012099-pd15' }
+    agent { label 'pkles-gt0012102-pd15' }
     options {
         buildDiscarder(logRotator(numToKeepStr: "30", artifactNumToKeepStr: "30"))
         timestamps()
@@ -37,7 +38,6 @@ pipeline {
                     image IMAGE
                     registryCredentialsId REGISTRY_CRED
                     args "-u root --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165"
-//                     args '--user "$(id -u):$(id -g)" -v /etc/passwd:/etc/passwd:ro --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165'
                     reuseNode true
                 }
             }
