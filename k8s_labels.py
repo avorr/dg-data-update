@@ -12,19 +12,23 @@ from datetime import datetime
 # from tools import *
 from env import portal_info
 from common_function import get_mongodb_objects, \
-    get_dg_token, category_id, \
-    cmdb_api, get_k8s_info
+    category_id, \
+    cmdb_api, \
+    get_k8s_info
 
 
-def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
+def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
     """
     main func for autocomplete labels in DataGerry
-    :param portal_name:
+    :param region:
+    :param auth_info:
     :param all_objects:
     :return:
     """
-    if portal_info[portal_name]["metrics"] == "false":
+    if portal_info[region]["metrics"] == "false":
         return
+
+    dg_token, user_id = auth_info
 
     def create_label(labels_info: dict, dg_token: str, type_id: str, author_id: int, method: str = "POST",
                      template: bool = False) -> dict:
@@ -66,6 +70,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
             """
             Func to get labels from ose exporter
             :param labels:
+            :param metric_type:
             :param label:
             :return:
             """
@@ -172,16 +177,13 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
 
         return cmdb_api("POST", "object/", dg_token, label_object_template)
 
-    dg_token, user_id = get_dg_token()
-
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
     k8s_passports_category_id: dict = category_id("k8s-apps-labels", "K8s Apps Labels", "fas fa-tags", dg_token,
                                                   all_categories)
 
-    k8s_portal_category_id: dict = category_id(f"K8s-Labels-{portal_name}", f"K8s-Labels-{portal_name}",
-                                               "fas fa-folder-open", dg_token, all_categories,
-                                               k8s_passports_category_id["public_id"])
+    k8s_portal_category_id: dict = category_id(f"K8s-Labels-{region}", f"K8s-Labels-{region}", "fas fa-folder-open",
+                                               dg_token, all_categories, k8s_passports_category_id["public_id"])
 
     # def get_k8s_info() -> list:
     #     """
@@ -189,13 +191,13 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
     #     :return:
     #     """
     #     info = list()
-    #     for metrics_url in portal_info[portal_name]["metrics"].split(";"):
+    #     for metrics_url in portal_info[region]["metrics"].split(";"):
     #         info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
     #
-    #     # return json.loads(requests.request("GET", portal_info[portal_name]["metrics"]).content)
+    #     # return json.loads(requests.request("GET", portal_info[region]["metrics"]).content)
     #     return info
 
-    clusters_info: list = get_k8s_info(portal_name)
+    clusters_info: list = get_k8s_info(region)
 
     #### temporary
     # def clear_info(old_info: list) -> list:
@@ -204,193 +206,6 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
     #         if "cluster" in info["metric"]:
     #             new_info.append(info)
     #     return new_info
-
-    """
-    def create_link_k8s(cluster: str, dg_token: str, type_id: int, author_id: int, method: str = 'POST',
-                        template: bool = False) -> dict | str:
-        if method == "PUT":
-            return cmdb_api(method, "object/%s" % type_id, dg_token, cluster)
-
-        payload_k8s_object: dict = {
-            "status": True,
-            "type_id": type_id,
-            "version": "1.0.0",
-            "author_id": author_id,
-            "fields": [
-                {
-                    "name": "name",
-                    "value": cluster
-                },
-                {
-                    "name": "record-update-time",
-                    "value": datetime.now().strftime('%d.%m.%Y %H:%M')
-                }
-            ]
-        }
-
-        if template:
-            return payload_k8s_object
-
-        return cmdb_api("POST", "object/", dg_token, payload_k8s_object)
-
-    search_link_type = False
-
-    for dg_type in dg_projects:
-        if dg_type["name"] == "links-labels -%s" % portal_name.lower():
-            search_link_type = True
-
-            all_k8s_objects = tuple(filter(lambda x: x["type_id"] == dg_type["public_id"], all_objects))
-
-            for dg_object in all_k8s_objects:
-
-                if dg_object["fields"][0]["value"] not in tuple(map(lambda x: x["cluster"], k8s_info)):
-                    # cmdb_api('DELETE', "object/%s" % dg_object['public_id'], dg_token)
-                    logger.info(
-                        f'Delete k8s cluster {dg_object["fields"][0]["value"]} from type {dg_type["public_id"]}'
-                    )
-
-            for cluster in k8s_info:
-                for dg_object in all_k8s_objects:
-                    vdc_template: dict | str = create_link_k8s(cluster['cluster'], dg_token, dg_type['public_id'],
-                                                               user_id, template=True)
-
-                    dg_to_diff = dg_object["fields"].copy()
-                    tmp_to_diff = vdc_template["fields"].copy()
-                    dg_to_diff.pop(-1)
-                    tmp_to_diff.pop(-1)
-
-                    if cluster["cluster"] == dg_object["fields"][0]['value'] and dg_to_diff != tmp_to_diff:
-                        payload_link_tmp: dict = {
-                            "type_id": dg_object['type_id'],
-                            "status": dg_object['status'],
-                            "version": dg_object['version'],
-                            "creation_time": {
-                                "$date": int(datetime.timestamp(dg_object['creation_time']) * 1000)
-                            },
-                            "author_id": dg_object['author_id'],
-                            "last_edit_time": {
-                                "$date": int(time.time() * 1000)
-                            },
-                            "editor_id": user_id,
-                            "active": dg_object['active'],
-                            "fields": vdc_template['fields'],
-                            "public_id": dg_object['public_id'],
-                            "views": dg_object['views'],
-                            "comment": ""
-                        }
-
-                        create_link_k8s(payload_link_tmp, dg_token, dg_object['public_id'], user_id, 'PUT')
-                        logger.info(f'Update object {dg_object["public_id"]} in type {dg_object["type_id"]}')
-
-                if cluster["cluster"] not in tuple(map(lambda x: x['fields'][0]['value'], all_k8s_objects)):
-                    # all_vdc_objects.append({})
-                    create_link_k8s(cluster['cluster'], dg_token, dg_type["public_id"], user_id)
-                    logger.info(f'Create vdc {cluster["cluster"]} in type {dg_type["public_id"]}')
-
-            # all_objects: tuple = get_mongodb_objects('framework.objects')
-            # all_vdc_objects = tuple(filter(lambda x: x['type_id'] == dg_vdc_type['public_id'], all_objects))
-
-    if not search_link_type:
-
-        payload_type_tmp: dict = {
-            "fields": [
-                {
-                    "type": "text",
-                    "name": "name",
-                    "label": "name"
-                },
-                {
-                    "type": "text",
-                    "name": "record-update-time",
-                    "label": "record update time"
-                }
-            ],
-            "active": True,
-            "version": "1.0.0",
-            "author_id": user_id,
-            "render_meta": {
-                # "icon": "fas fa-link",
-                "icon": "fas fa-dharmachakra",
-                "sections": [
-                    {
-                        "fields": [
-                            "name",
-                            "record-update-time"
-                        ],
-                        "type": "section",
-                        "name": "links-k8s-%s" % portal_name.lower(),
-                        "label": "Links-k8s-%s" % portal_name
-                    }
-                ],
-                "externals": [
-                    {
-                        "name": "cluster link",
-                        "href": "https://console-openshift-console.apps.{}/k8s/cluster/projects",
-                        "label": "Cluster link",
-                        "icon": "fas fa-external-link-alt",
-                        "fields": ["name"]
-                    },
-
-                ],
-                "summary": {
-                    "fields": [
-                        "name",
-                        "record-update-time"
-                    ]
-                }
-            },
-            "acl": {
-                "activated": True,
-                "groups": {
-                    "includes": {
-                        "1": [
-                            "CREATE",
-                            "READ",
-                            "UPDATE",
-                            "DELETE"
-                        ],
-                        "2": [
-                            "READ"
-                        ]
-                    }
-                }
-            },
-            "name": "links-k8s-%s" % portal_name.lower(),
-            "label": "Links-k8s-%s" % portal_name,
-            "description": "Links-k8s-%s" % portal_name
-        }
-
-        create_type_id: int = cmdb_api("POST", "types/", dg_token, payload_type_tmp)['result_id']
-
-        if not create_type_id:
-            return None
-
-        logger.info(f"Create new type with id -> {create_type_id}")
-
-        payload_category: dict = {
-            "public_id": links_category_id['public_id'],
-            "name": links_category_id['name'],
-            "label": links_category_id['label'],
-            "meta": {
-                "icon": "fab fa-staylinked",
-                "order": None
-            },
-            "parent": portal_stands_id["public_id"],
-            "types": links_category_id['types']
-        }
-
-        payload_category['types'].append(create_type_id)
-
-        move_type = cmdb_api('PUT', "categories/%s" % links_category_id['public_id'], dg_token, payload_category)
-
-        logger.info(f"Move type {move_type['result']['public_id']} to category {payload_category['name']}")
-
-        for cluster in k8s_info:
-            link_k8s_object = create_link_k8s(cluster['cluster'], dg_token, create_type_id, user_id)
-            logger.info(f"Create vdc object {link_k8s_object} in {create_type_id}")
-            
-            
-            """
 
     for cluster_info in clusters_info:
         # cluster_info: list = clear_info(cluster_info)
@@ -446,9 +261,8 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         dg_projects: tuple = get_mongodb_objects("framework.types")
 
         for cluster in all_labels:
-            if not any(tuple(map(
-                    lambda y: y["name"] == f'k8s-labels-{portal_name}--{cluster["cluster"].replace(".", "_")}',
-                    dg_projects))):
+            if not any(tuple(map(lambda y: y["name"] == f'k8s-labels-{region}--{cluster["cluster"].replace(".", "_")}',
+                                 dg_projects))):
 
                 data_type_template: dict = {
                     "fields": [
@@ -589,7 +403,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                                     "record-update-time"
                                 ],
                                 "type": "section",
-                                "name": f"k8s-labels-{portal_name}--{cluster['cluster']}",
+                                "name": f"k8s-labels-{region}--{cluster['cluster']}",
                                 "label": cluster["cluster"]
                             }
                         ],
@@ -664,7 +478,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
                             }
                         }
                     },
-                    "name": f"k8s-labels-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                    "name": f"k8s-labels-{region}--{cluster['cluster'].replace('.', '_')}",
                     "label": cluster["cluster"],
                     "description": "k8s labels %s" % cluster["cluster"]
                 }
@@ -700,7 +514,7 @@ def LabelsK8s(portal_name: str, all_objects: tuple = ()) -> None:
         if not all_objects:
             all_objects: tuple = get_mongodb_objects("framework.objects")
 
-        all_types_labels = tuple(filter(lambda x: "k8s-labels-%s--" % portal_name in x["name"], dg_projects))
+        all_types_labels = tuple(filter(lambda x: "k8s-labels-%s--" % region in x["name"], dg_projects))
 
         for dg_cluster in all_types_labels:
             for cluster in all_labels:

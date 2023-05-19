@@ -4,19 +4,17 @@ import os
 
 # from tools import *
 
-# cf_login: str = os.environ['CF_LOGIN']
-# cf_password: str = os.environ['CF_PASS']
 
-cmdb_login: str = os.environ['CMDB_CRED_USR']
-cmdb_password: str = os.environ['CMDB_CRED_PSW']
+dg_url: str = os.getenv("DG_URL")
+dg_login: str = os.getenv('CMDB_CRED_USR')
+dg_password: str = os.getenv('CMDB_CRED_PSW')
 
-mongo_db_url: str = f"mongodb://{os.getenv('DG_MONGO_DB_CRED_USR')}:{os.getenv('DG_MONGO_DB_CRED_PSW')}@p-infra-internallb.common.novalocal:27017/cmdb?authSource={os.getenv('DG_MONGO_DB_CRED_USR')}"
+mongo_db_url: str = f"mongodb://{os.getenv('DG_MONGO_DB_CRED_USR')}:{os.getenv('DG_MONGO_DB_CRED_PSW')}@p-infra-internallb.common.novalocal:27017/cmdb?authSource=admin"
 # mongo_db_url: str = f"mongodb://{os.getenv('DG_MONGO_DB_CRED_USR')}:{os.getenv('DG_MONGO_DB_CRED_PSW')}@172.26.106.3:27017/cmdb?authSource={os.getenv('DG_MONGO_DB_CRED_USR')}"
 
-env: dict = \
-    {
-        url: os.environ[url] for url in os.environ if 'PORTAL_' in url or 'OS_METRICS_' in url or 'APP_VERSIONS_' in url
-    }
+env: dict = {
+    url: os.environ[url] for url in os.environ if 'PORTAL_' in url or 'OS_METRICS_' in url or 'APP_VERSIONS_' in url
+}
 
 portal_info: dict = \
     {

@@ -14,7 +14,7 @@ pipeline {
     environment {
         PYTHONWARNINGS = "ignore:Unverified HTTPS request"
         CMDB_CRED = credentials("cmdb-cred")
-        DATA_GERRY_CMDB_URL = "https://cmdb.common.gos-tech.xyz/rest/"
+        DG_URL = "https://cmdb.common.gos-tech.xyz/rest/"
         DG_MONGO_DB_CRED = credentials("DG_MONGO_DB_CRED")
         REGISTRY =  "https://base.sw.sbc.space/"
         IMAGE =  "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.3"
@@ -129,6 +129,7 @@ pipeline {
             }
         }
 */
+/*
         stage("Update visible settings") {
             agent {
                 docker {
@@ -143,5 +144,6 @@ pipeline {
                     sh "./view_settings.py"
             }
         }
+*/
     }
 }

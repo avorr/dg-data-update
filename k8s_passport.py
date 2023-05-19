@@ -1,15 +1,14 @@
 #!/usr/local/bin/python3
 
-# import json
 import time
-# import requests
 from loguru import logger
 from datetime import datetime
 
 from env import portal_info
 from common_function import cmdb_api, \
-    category_id, get_dg_token, \
-    get_mongodb_objects, get_k8s_info
+    category_id, \
+    get_mongodb_objects, \
+    get_k8s_info
 
 
 def ns_objects(ns_info: dict, dg_token: str, type_id: str, author_id: int, method: str = "POST",
@@ -22,14 +21,11 @@ def ns_objects(ns_info: dict, dg_token: str, type_id: str, author_id: int, metho
     :param author_id:
     :param method:
     :param template:
-    :param tags:
-    :param vdc_object:
     :return:
     """
     if method == "PUT":
         return cmdb_api(method, "object/%s" % ns_info["public_id"], dg_token, ns_info)
 
-    # elif method == "NAMESPACE":
     def convert_to_gb(bytes):
         foo = float(bytes)
         for i in range(3):
@@ -91,7 +87,7 @@ def ns_objects(ns_info: dict, dg_token: str, type_id: str, author_id: int, metho
             },
             {
                 "name": "record-update-time",
-                "value": datetime.now().strftime('%d.%m.%Y %H:%M')
+                "value": datetime.now().strftime("%d.%m.%Y %H:%M")
             }
         ]
     }
@@ -102,28 +98,23 @@ def ns_objects(ns_info: dict, dg_token: str, type_id: str, author_id: int, metho
     return cmdb_api("POST", "object/", dg_token, payload_ns_tmp)
 
 
-def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
-    if portal_info[portal_name]["metrics"] == "false":
+def passports_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
+    if portal_info[region]["metrics"] == "false":
         return
 
-    dg_token, user_id = get_dg_token()
+    dg_token, user_id = auth_info
 
     dg_categories: tuple = get_mongodb_objects("framework.categories")
 
-    passport_stands_id: dict = category_id("passport-stands", "Passport Stands", "fas fa-folder-open", dg_token,
-                                           dg_categories)
+    links_category_id: dict = category_id(f"links-{region.lower()}", "Links", "fab fa-staylinked", dg_token,
+                                          dg_categories)
 
-    portal_stands_id: dict = category_id(f"{portal_name.lower()}-stands", portal_name, "fas fa-file-alt", dg_token,
-                                         dg_categories, passport_stands_id["public_id"])
-    links_category_id: dict = category_id(f"links-{portal_name.lower()}", "Links", "fab fa-staylinked", dg_token,
-                                          dg_categories, portal_stands_id["public_id"])
+    k8s_passports_category_id: dict = category_id("passports-k8s", "Passports K8s", "fab fa-redhat", dg_token,
+                                                  dg_categories)
+    k8s_portal_category_id: dict = category_id("K8s-%s" % region, "K8s-%s" % region, "far fa-folder-open",
+                                               dg_token, dg_categories, k8s_passports_category_id["public_id"])
 
-    k8s_passports_category_id: dict = category_id("passports-k8s", "Passports K8s", "fab fa-redhat",
-                                                 dg_token, dg_categories)
-    k8s_portal_category_id: dict = category_id("K8s-%s" % portal_name, "K8s-%s" % portal_name, "far fa-folder-open",
-                                              dg_token, dg_categories, k8s_passports_category_id["public_id"])
-
-    clusters_info: list = get_k8s_info(portal_name)
+    clusters_info: list = get_k8s_info(region)
 
     #### temporary
     def clear_info(old_info: list) -> list:
@@ -134,7 +125,7 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                 new_info.append(info)
         return new_info
 
-    # cluster_info["data"]["result"] = tuple(map(lambda x: {'metric': defaultdict(str, x['metric'])},
+    # cluster_info["data"]["result"] = tuple(map(lambda x: {"metric": defaultdict(str, x["metric"])},
     #                                            cluster_info["data"]["result"]))
 
     for cluster_info in clusters_info:
@@ -166,7 +157,7 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
 
         dg_projects: tuple = get_mongodb_objects("framework.types")
 
-        def create_link_k8s(cluster: str, dg_token: str, type_id: int, author_id: int, method: str = 'POST',
+        def create_link_k8s(cluster: str, dg_token: str, type_id: int, author_id: int, method: str = "POST",
                             template: bool = False) -> dict | str:
             if method == "PUT":
                 return cmdb_api(method, "object/%s" % type_id, dg_token, cluster)
@@ -183,7 +174,7 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                     },
                     {
                         "name": "record-update-time",
-                        "value": datetime.now().strftime('%d.%m.%Y %H:%M')
+                        "value": datetime.now().strftime("%d.%m.%Y %H:%M")
                     }
                 ]
             }
@@ -198,7 +189,7 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
         all_objects: tuple = get_mongodb_objects("framework.objects")
 
         for dg_type in dg_projects:
-            if dg_type["name"] == "links-k8s-%s" % portal_name.lower():
+            if dg_type["name"] == "links-k8s-%s" % region.lower():
                 search_link_type = True
 
                 all_k8s_objects = tuple(filter(lambda x: x["type_id"] == dg_type["public_id"], all_objects))
@@ -206,14 +197,14 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                 for dg_object in all_k8s_objects:
 
                     if dg_object["fields"][0]["value"] not in tuple(map(lambda x: x["cluster"], k8s_info)):
-                        # cmdb_api('DELETE', "object/%s" % dg_object['public_id'], dg_token)
+                        # cmdb_api("DELETE", "object/%s" % dg_object["public_id"], dg_token)
                         logger.info(
                             f'Delete k8s cluster {dg_object["fields"][0]["value"]} from type {dg_type["public_id"]}'
                         )
 
                 for cluster in k8s_info:
                     for dg_object in all_k8s_objects:
-                        vdc_template: dict | str = create_link_k8s(cluster['cluster'], dg_token, dg_type['public_id'],
+                        vdc_template: dict | str = create_link_k8s(cluster["cluster"], dg_token, dg_type["public_id"],
                                                                    user_id, template=True)
 
                         dg_to_diff = dg_object["fields"].copy()
@@ -221,36 +212,36 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                         dg_to_diff.pop(-1)
                         tmp_to_diff.pop(-1)
 
-                        if cluster["cluster"] == dg_object["fields"][0]['value'] and dg_to_diff != tmp_to_diff:
+                        if cluster["cluster"] == dg_object["fields"][0]["value"] and dg_to_diff != tmp_to_diff:
                             payload_link_tmp: dict = {
-                                "type_id": dg_object['type_id'],
-                                "status": dg_object['status'],
-                                "version": dg_object['version'],
+                                "type_id": dg_object["type_id"],
+                                "status": dg_object["status"],
+                                "version": dg_object["version"],
                                 "creation_time": {
-                                    "$date": int(datetime.timestamp(dg_object['creation_time']) * 1000)
+                                    "$date": int(datetime.timestamp(dg_object["creation_time"]) * 1000)
                                 },
-                                "author_id": dg_object['author_id'],
+                                "author_id": dg_object["author_id"],
                                 "last_edit_time": {
                                     "$date": int(time.time() * 1000)
                                 },
                                 "editor_id": user_id,
-                                "active": dg_object['active'],
-                                "fields": vdc_template['fields'],
-                                "public_id": dg_object['public_id'],
-                                "views": dg_object['views'],
+                                "active": dg_object["active"],
+                                "fields": vdc_template["fields"],
+                                "public_id": dg_object["public_id"],
+                                "views": dg_object["views"],
                                 "comment": ""
                             }
 
-                            create_link_k8s(payload_link_tmp, dg_token, dg_object['public_id'], user_id, 'PUT')
+                            create_link_k8s(payload_link_tmp, dg_token, dg_object["public_id"], user_id, "PUT")
                             logger.info(f'Update object {dg_object["public_id"]} in type {dg_object["type_id"]}')
 
-                    if cluster["cluster"] not in tuple(map(lambda x: x['fields'][0]['value'], all_k8s_objects)):
+                    if cluster["cluster"] not in tuple(map(lambda x: x["fields"][0]["value"], all_k8s_objects)):
                         # all_vdc_objects.append({})
-                        create_link_k8s(cluster['cluster'], dg_token, dg_type["public_id"], user_id)
+                        create_link_k8s(cluster["cluster"], dg_token, dg_type["public_id"], user_id)
                         logger.info(f'Create vdc {cluster["cluster"]} in type {dg_type["public_id"]}')
 
-                # all_objects: tuple = get_mongodb_objects('framework.objects')
-                # all_vdc_objects = tuple(filter(lambda x: x['type_id'] == dg_vdc_type['public_id'], all_objects))
+                # all_objects: tuple = get_mongodb_objects("framework.objects")
+                # all_vdc_objects = tuple(filter(lambda x: x["type_id"] == dg_vdc_type["public_id"], all_objects))
 
         if not search_link_type:
 
@@ -280,8 +271,8 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                                 "record-update-time"
                             ],
                             "type": "section",
-                            "name": "links-k8s-%s" % portal_name.lower(),
-                            "label": "Links-k8s-%s" % portal_name
+                            "name": "links-k8s-%s" % region.lower(),
+                            "label": "Links-k8s-%s" % region
                         }
                     ],
                     "externals": [
@@ -317,12 +308,12 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                         }
                     }
                 },
-                "name": "links-k8s-%s" % portal_name.lower(),
-                "label": "Links-k8s-%s" % portal_name,
-                "description": "Links-k8s-%s" % portal_name
+                "name": "links-k8s-%s" % region.lower(),
+                "label": "Links-k8s-%s" % region,
+                "description": "Links-k8s-%s" % region
             }
 
-            create_type_id: int = cmdb_api("POST", "types/", dg_token, payload_type_tmp)['result_id']
+            create_type_id: int = cmdb_api("POST", "types/", dg_token, payload_type_tmp)["result_id"]
 
             if not create_type_id:
                 return None
@@ -330,30 +321,30 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
             logger.info(f"Create new type with id -> {create_type_id}")
 
             payload_category: dict = {
-                "public_id": links_category_id['public_id'],
-                "name": links_category_id['name'],
-                "label": links_category_id['label'],
+                "public_id": links_category_id["public_id"],
+                "name": links_category_id["name"],
+                "label": links_category_id["label"],
                 "meta": {
                     "icon": "fab fa-staylinked",
                     "order": None
                 },
-                "parent": portal_stands_id["public_id"],
-                "types": links_category_id['types']
+                # "parent": portal_stands_id["public_id"],
+                "types": links_category_id["types"]
             }
 
-            payload_category['types'].append(create_type_id)
+            payload_category["types"].append(create_type_id)
 
-            move_type = cmdb_api('PUT', "categories/%s" % links_category_id['public_id'], dg_token, payload_category)
+            move_type = cmdb_api("PUT", "categories/%s" % links_category_id["public_id"], dg_token, payload_category)
 
-            logger.info(f"Move type {move_type['result']['public_id']} to category {payload_category['name']}")
+            logger.info(f'Move type {move_type["result"]["public_id"]} to category {payload_category["name"]}')
 
             for cluster in k8s_info:
-                link_k8s_object = create_link_k8s(cluster['cluster'], dg_token, create_type_id, user_id)
+                link_k8s_object = create_link_k8s(cluster["cluster"], dg_token, create_type_id, user_id)
                 logger.info(f"Create vdc object {link_k8s_object} in {create_type_id}")
 
         for cluster in k8s_info:
             if not any(tuple(map(
-                    lambda y: y["name"] == f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                    lambda y: y["name"] == f'os-cluster-{region}--{cluster["cluster"].replace(".", "_")}',
                     dg_projects))):
 
                 data_type_tmp: dict = {
@@ -418,7 +409,7 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                                     "record-update-time"
                                 ],
                                 "type": "section",
-                                "name": f"os-cluster-{portal_name}--{cluster['cluster']}",
+                                "name": f"os-cluster-{region}--{cluster['cluster']}",
                                 "label": cluster["cluster"]
                             }
                         ],
@@ -469,7 +460,7 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                             }
                         }
                     },
-                    "name": f"os-cluster-{portal_name}--{cluster['cluster'].replace('.', '_')}",
+                    "name": f"os-cluster-{region}--{cluster['cluster'].replace('.', '_')}",
                     "label": cluster["cluster"],
                     "description": "openshift cluster %s" % cluster["cluster"]
                 }
@@ -499,14 +490,13 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                 logger.info(f'Put new type {create_type["result_id"]} in category {data_category_tmp["name"]}')
 
                 for namespace in cluster["info"]:
-                    create_object = ns_objects(namespace, dg_token, create_type["result_id"], user_id, "NAMESPACE")
-                    print(create_object)
+                    ns_objects(namespace, dg_token, create_type["result_id"], user_id)
                     time.sleep(0.1)
 
         if not all_objects:
             all_objects: tuple = get_mongodb_objects("framework.objects")
 
-        all_dg_cluster_types = tuple(filter(lambda f: "os-cluster-%s--" % portal_name in f["name"], dg_projects))
+        all_dg_cluster_types = tuple(filter(lambda f: "os-cluster-%s--" % region in f["name"], dg_projects))
 
         for dg_cluster in all_dg_cluster_types:
             for cluster in k8s_info:
@@ -515,7 +505,7 @@ def PassportsK8s(portal_name: str, all_objects: tuple = None) -> None:
                     for k8s_ns in cluster["info"]:
                         if k8s_ns["namespace"] not in tuple(map(lambda x: x.get("fields")[0]["value"], dg_ns)):
                             logger.info(f'Create ns-object {k8s_ns["namespace"]}')
-                            ns_objects(k8s_ns, dg_token, dg_cluster["public_id"], user_id, "NAMESPACE")
+                            ns_objects(k8s_ns, dg_token, dg_cluster["public_id"], user_id)
                             time.sleep(0.1)
 
                         for ns in dg_ns:

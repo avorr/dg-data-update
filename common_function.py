@@ -1,6 +1,5 @@
 #!/usr/local/bin/python3
 
-import os
 import json
 import requests
 import datetime
@@ -45,8 +44,8 @@ def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict =
     :param payload:
     :return:
     """
-    cmdb_api_url: str = os.environ["DATA_GERRY_CMDB_URL"]
-    headers_cmdb_api: dict = {
+    from env import dg_url
+    headers: dict = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer %s' % token
     }
@@ -57,8 +56,7 @@ def cmdb_api(method: str, api_method: str = '', token: str = '', payload: dict =
         logger.info(f'UPDATE {method}')
     elif api_method == "DELETE":
         logger.info(f'DELETE {method}')
-    return json.loads(requests.request(method, cmdb_api_url + api_method, headers=headers_cmdb_api,
-                                       data=json.dumps(payload)).content)
+    return json.loads(requests.request(method, dg_url + api_method, headers=headers, data=json.dumps(payload)).content)
 
 
 def get_dg_token() -> tuple[str, int]:
@@ -66,14 +64,14 @@ def get_dg_token() -> tuple[str, int]:
     Function to get app token and user id
     :return:
     """
-    from env import cmdb_login, cmdb_password
+    from env import dg_login, dg_password
     payload_auth: dict = {
-        "user_name": cmdb_login,
-        "password": cmdb_password
+        "user_name": dg_login,
+        "password": dg_password
     }
-    user_info = cmdb_api("POST", "auth/login", payload=payload_auth)
+    user_info: dict = cmdb_api("POST", "auth/login", payload=payload_auth)
     logger.info(
-        f'''Create DataGerry auth-token for "{user_info["user"]["user_name"]}", user-id -> {user_info['user']['public_id']}'''
+        f'''Create DG auth-token for "{user_info["user"]["user_name"]}", user-id -> {user_info['user']['public_id']}'''
     )
     return user_info["token"], user_info["user"]["public_id"]
 
@@ -213,5 +211,5 @@ def check_resolves(dns_name: str) -> bool:
         socket.gethostbyname(dns_name)
         return True
     except socket.error as Error:
-        print(dns_name, Error)
+        logger.error(dns_name, Error)
         return False

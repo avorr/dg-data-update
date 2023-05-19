@@ -7,17 +7,17 @@ from datetime import datetime
 
 # from tools import json_read
 from env import portal_info
-from common_function import cmdb_api
-from common_function import category_id
-from common_function import get_mongodb_objects
+from common_function import cmdb_api, \
+    category_id, \
+    get_mongodb_objects
 
 
-def PassportsVDC(portal_name: str, dg_token: str, user_id: int, domains_info, portal_projects: list,
-                 all_objects: tuple = ()) -> tuple | None:
+def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, portal_projects: list,
+                  all_objects: tuple = ()) -> tuple | None:
     all_categories: tuple = get_mongodb_objects('framework.categories')
 
-    vdc_category_id: dict = category_id("passports-vdc", 'Passports Vdc', 'fas fa-network-wired',
-                                        dg_token, all_categories)
+    vdc_category_id: dict = category_id("passports-vdc", 'Passports Vdc', 'fas fa-network-wired', dg_token,
+                                        all_categories)
 
     def create_vdc(vdc_info: dict, dg_token: str, type_id: str, author_id: int, method: str = 'POST', domains={},
                    template: bool = False) -> dict | str:
@@ -126,7 +126,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: int, domains_info, po
 
     dg_types: tuple = get_mongodb_objects("framework.types")
 
-    if not any(filter(lambda x: x['name'] == "VDC-%s" % portal_name, dg_types)):
+    if not any(filter(lambda x: x['name'] == "vdc-%s" % portal_name.lower(), dg_types)):
 
         payload_type_tmp: dict = {
             "fields": [
@@ -251,11 +251,11 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: int, domains_info, po
                         "name",
                         "desc",
                         "datacenter-name",
-                        "networks",
+                        # "networks",
                         "domain",
                         "group",
-                        "dns-nameservers",
-                        "record-update-time"
+                        # "dns-nameservers",
+                        # "record-update-time"
                     ]
                 }
             },
@@ -275,7 +275,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: int, domains_info, po
                     }
                 }
             },
-            "name": "VDC-%s" % portal_name,
+            "name": "vdc-%s" % portal_name.lower(),
             "label": "VDC-%s" % portal_name,
             "description": "VDC-%s" % portal_name
         }
@@ -315,7 +315,7 @@ def PassportsVDC(portal_name: str, dg_token: str, user_id: int, domains_info, po
         }
         logger.info("There is type id in locals variables")
     else:
-        dg_vdc_type: dict = max(filter(lambda x: x['name'] == "VDC-%s" % portal_name, dg_types))
+        dg_vdc_type: dict = max(filter(lambda x: x['name'] == "vdc-%s" % portal_name.lower(), dg_types))
     del dg_types
 
     # dg_vdc_type: dict = max(filter(lambda x: x['name'] == "VDC-%s" % portal_name, dg_types))
