@@ -3,7 +3,6 @@
 properties([disableConcurrentBuilds()])
 
 pipeline {
-//     agent { label 'pkles-gt0000369 || pkles-gt0003771 || pkles-gt0003772 || pkles-gt0003773' }
     agent { label 'pkles-gt0012105-pd15 || pkles-gt0012100-pd15 || pkles-gt0012102-pd15 || pkles-gt0012098-pd15 || pkles-gt0012099-pd15' }
     options {
         buildDiscarder(logRotator(numToKeepStr: "30", artifactNumToKeepStr: "30"))
@@ -26,9 +25,7 @@ pipeline {
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 PORTAL_URL = "https://portal.gos.sbercloud.dev"
-//                 OS_METRICS = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-                OS_METRICS = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type);http://vm_select.pd15.admin.gtp:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-//                 APP_VERSIONS = "http://p-infra-jenkinsslave-02.common.novalocal:5002/versions-pd15"
+                K8S_METRICS = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type);http://vm_select.pd15.admin.gtp:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 APP_VERSIONS = "http://infra-jenkinsslave-04.pd15.admin.gtp:5002/versions-pd15"
                 PORTAL_TOKEN = credentials("PORTAL_TOKEN")
             }
@@ -37,7 +34,6 @@ pipeline {
                     registryUrl REGISTRY
                     image IMAGE
                     registryCredentialsId REGISTRY_CRED
-//                     args "-u root --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165"
                     args "-u root --privileged --add-host $MONGO_DB"
                     reuseNode true
                 }
