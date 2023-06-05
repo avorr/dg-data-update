@@ -48,9 +48,9 @@ def visible_settings() -> None:
         if dg_type["name"] not in ("Release-Artifact", "links"):
             if dg_type["render_meta"]["sections"][0]["fields"][2] == "os-type":
                 cmdb_projects_vm["items"].append(dg_type["public_id"])
-            elif dg_type["render_meta"]["sections"][0]["fields"][1] == "limits.cpu-hard":
+            elif dg_type["render_meta"]["sections"][0]["fields"][1] == "limits-cpu-hard":
                 cmdb_projects_os["items"].append(dg_type["public_id"])
-            elif dg_type["render_meta"]["sections"][0]["fields"][3] == "SUBSYSTEM":
+            elif dg_type["render_meta"]["sections"][0]["fields"][3] == "subsystem":
                 cmdb_projects_label["items"].append(dg_type["public_id"])
             elif dg_type["render_meta"]["sections"][0]["fields"][4] == "version":
                 cmdb_projects_version["items"].append(dg_type["public_id"])
@@ -126,15 +126,15 @@ def visible_settings() -> None:
                                     )
                                     print(update_view_settings.raw_result)
 
-                            elif "fields.limits.cpu-hard" in settings["payloads"][0]["currentState"]["visibleColumns"]:
+                            elif "fields.limits-cpu-hard" in settings["payloads"][0]["currentState"]["visibleColumns"]:
 
                                 visible_columns_os: list = [
                                     "fields.namespace",
-                                    "fields.limits.cpu-hard",
-                                    "fields.limits.cpu-used",
+                                    "fields.limits-cpu-hard",
+                                    "fields.limits-cpu-used",
                                     "fields.cores-usage",
-                                    "fields.limits.memory-hard",
-                                    "fields.limits.memory-used",
+                                    "fields.limits-memory-hard",
+                                    "fields.limits-memory-used",
                                     "fields.memory-usage",
                                     "actions"
                                 ]
@@ -157,17 +157,17 @@ def visible_settings() -> None:
                                     print(update_view_settings.raw_result)
                                 del baz, zip
 
-                            elif "fields.SUBSYSTEM" in settings["payloads"][0]["currentState"]["visibleColumns"]:
+                            elif "fields.subsystem" in settings["payloads"][0]["currentState"]["visibleColumns"]:
 
                                 visible_columns_label: list = [
                                     "fields.namespace",
                                     "fields.name",
                                     "fields.app",
-                                    "fields.SUBSYSTEM",
+                                    "fields.subsystem",
                                     # "fields.deployment",
-                                    "fields.deploymentconfig",
-                                    "fields.deployDate",
-                                    "fields.distribVersion",
+                                    "fields.deployment-config",
+                                    "fields.deploy-date",
+                                    "fields.distrib-version",
                                     "fields.version",
                                     "fields.build",
                                     "fields.limits-cpu",
@@ -175,11 +175,11 @@ def visible_settings() -> None:
                                     "fields.requests-cpu",
                                     "fields.requests-ram",
                                     "fields.log-level",
-                                    "fields.restartPolicy",
-                                    "fields.imagePullPolicy",
+                                    "fields.restart-policy",
+                                    "fields.image-pull-policy",
                                     "fields.image",
-                                    "fields.security.istio.io/tlsMode",
-                                    "fields.jenkinsDeployUser",
+                                    "fields.security-istio-io-tls-mode",
+                                    "fields.jenkins-deploy-user",
                                     "actions"
                                 ]
 
@@ -351,11 +351,11 @@ def visible_settings() -> None:
                                             },
                                             "visibleColumns": [
                                                 "fields.namespace",
-                                                "fields.limits.cpu-hard",
-                                                "fields.limits.cpu-used",
+                                                "fields.limits-cpu-hard",
+                                                "fields.limits-cpu-used",
                                                 "fields.cores-usage",
-                                                "fields.limits.memory-hard",
-                                                "fields.limits.memory-used",
+                                                "fields.limits-memory-hard",
+                                                "fields.limits-memory-used",
                                                 "fields.memory-usage",
                                                 "actions"
                                             ]
@@ -382,11 +382,11 @@ def visible_settings() -> None:
                                                 "fields.namespace",
                                                 "fields.name",
                                                 "fields.app",
-                                                "fields.SUBSYSTEM",
+                                                "fields.subsystem",
                                                 # "fields.deployment",
-                                                "fields.deploymentconfig",
-                                                "fields.deployDate",
-                                                "fields.distribVersion",
+                                                "fields.deployment-config",
+                                                "fields.deploy-date",
+                                                "fields.distrib-version",
                                                 "fields.version",
                                                 "fields.build",
                                                 "fields.limits-cpu",
@@ -394,11 +394,11 @@ def visible_settings() -> None:
                                                 "fields.requests-cpu",
                                                 "fields.requests-ram",
                                                 "fields.log-level",
-                                                "fields.restartPolicy",
-                                                "fields.imagePullPolicy",
+                                                "fields.restart-policy",
+                                                "fields.image-pull-policy",
                                                 "fields.image",
-                                                "fields.security.istio.io/tlsMode",
-                                                "fields.jenkinsDeployUser",
+                                                "fields.security-istio-io-tls-mode",
+                                                "fields.jenkins-deploy-user",
                                                 "actions"
                                             ]
                                         }
@@ -521,11 +521,11 @@ def visible_settings() -> None:
                                         },
                                         "visibleColumns": [
                                             "fields.namespace",
-                                            "fields.limits.cpu-hard",
-                                            "fields.limits.cpu-used",
+                                            "fields.limits-cpu-hard",
+                                            "fields.limits-cpu-used",
                                             "fields.cores-usage",
-                                            "fields.limits.memory-hard",
-                                            "fields.limits.memory-used",
+                                            "fields.limits-memory-hard",
+                                            "fields.limits-memory-used",
                                             "fields.memory-usage",
                                             "actions"
                                         ]
@@ -606,11 +606,11 @@ def visible_settings() -> None:
                                                 "fields.namespace",
                                                 "fields.name",
                                                 "fields.app",
-                                                "fields.SUBSYSTEM",
+                                                "fields.subsystem",
                                                 # "fields.deployment",
-                                                "fields.deploymentconfig",
-                                                "fields.deployDate",
-                                                "fields.distribVersion",
+                                                "fields.deployment-config",
+                                                "fields.deploy-date",
+                                                "fields.distrib-version",
                                                 "fields.version",
                                                 "fields.build",
                                                 "fields.limits-cpu",
@@ -618,11 +618,11 @@ def visible_settings() -> None:
                                                 "fields.requests-cpu",
                                                 "fields.requests-ram",
                                                 "fields.log-level",
-                                                "fields.restartPolicy",
-                                                "fields.imagePullPolicy",
+                                                "fields.restart-policy",
+                                                "fields.image-pull-policy",
                                                 "fields.image",
-                                                "fields.security.istio.io/tlsMode",
-                                                "fields.jenkinsDeployUser",
+                                                "fields.security-istio-io-tls-mode",
+                                                "fields.jenkins-deploy-user",
                                                 "actions"
                                             ]
                                         }

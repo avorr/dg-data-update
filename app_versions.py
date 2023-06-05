@@ -6,9 +6,8 @@ import requests
 from loguru import logger
 from datetime import datetime
 
-# from tools import *
 from env import portal_info
-from common_function import cmdb_api, \
+from common_function import dg_api, \
     category_id, \
     get_mongodb_objects
 
@@ -18,11 +17,12 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
     Main func for autocomplete labels in DataGerry
     """
 
-    def create_object(version_info: dict, dg_token: str, type_id: str, author_id: int, ipa_domain: str,
-                      method: str = "POST",
-                      template: bool = False) -> dict:
+    dg_token, user_id = auth_info
+
+    def create_object(version_info: dict, type_id: str, method: str = "POST", template: bool = False) -> dict:
+
         if method == "PUT":
-            return cmdb_api(method, "object/%s" % version_info["public_id"], dg_token, version_info)
+            return dg_api(method, "object/%s" % version_info["public_id"], dg_token, version_info)
 
         def get_version(version_info: dict) -> str:
             if next(iter(version_info["version"])) == "ERROR":
@@ -38,16 +38,15 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
 
             return version_info["version"]
 
-        app_object_template: dict = {
+        app_obj: dict = {
             "status": True,
             "type_id": type_id,
             "version": "1.0.0",
-            "author_id": author_id,
+            "author_id": user_id,
             "fields": [
                 {
                     "name": "name",
-                    "value": f"{version_info['service_name']}.{ipa_domain}" if ipa_domain else version_info[
-                        "service_name"]
+                    "value": version_info["service_name"]
                 },
                 {
                     "name": "vm-name",
@@ -78,25 +77,23 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
         }
 
         if template:
-            return app_object_template
+            return app_obj
 
-        return cmdb_api("POST", "object/", dg_token, app_object_template)
+        return dg_api("POST", "object/", dg_token, app_obj)
 
-    dg_token, user_id = auth_info
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
-    os_passports_category_id = category_id("vm-apps-versions", "Vm Apps Versions", "fas fa-server", dg_token,
-                                           all_categories)
+    k8s_category_id = category_id("vm-app-versions", "Vm App Versions", "fas fa-server", dg_token, all_categories)
 
-    os_portal_category_id = category_id("Apps-Version-%s" % region, "Apps-Version-%s" % region, "far fa-folder-open",
-                                        dg_token, all_categories, os_passports_category_id["public_id"])
+    k8s_portal_category_id = category_id("app-versions-%s" % region, "App-Versions-%s" % region.upper(),
+                                         "far fa-folder-open", dg_token, all_categories, k8s_category_id["public_id"])
 
-    all_apps_versions: dict = json.loads(requests.request("GET", portal_info[region]["app_versions"]).content)
+    all_app_versions: dict = json.loads(requests.request("GET", portal_info["app_versions"]).content)
 
-    cmdb_projects: tuple = get_mongodb_objects("framework.types")
+    dg_projects: tuple = get_mongodb_objects("framework.types")
 
-    for stand in all_apps_versions["info"]:
-        if not any(tuple(map(lambda y: y["name"] == f'apps-versions-{region}--{stand["project_id"]}', cmdb_projects))) \
+    for stand in all_app_versions["info"]:
+        if not any(tuple(map(lambda y: y["name"] == f'app-versions-{region}--{stand["project_id"]}', dg_projects))) \
                 and stand["modules_version"]:
 
             payload_type_template: dict = {
@@ -154,7 +151,7 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
                                 "record-update-time"
                             ],
                             "type": "section",
-                            "name": f"apps-versions-{region}--{stand['project_id']}",
+                            "name": f"app-versions-{region}--{stand['project_id']}",
                             "label": stand["project_id"]
                         }
                     ],
@@ -186,59 +183,55 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
                         }
                     }
                 },
-                "name": f"apps-versions-{region}--{stand['project_id']}",
+                "name": f"app-versions-{region}--{stand['project_id']}",
                 "label": stand["project_name"],
-                # "description": "apps versions %s" % stand["project_id"]
-                "description": stand["desc"] if "desc" in stand else ""
+                "description": stand["desc"]
             }
 
-            create_type = cmdb_api("POST", "types/", dg_token, payload_type_template)
+            create_type = dg_api("POST", "types/", dg_token, payload_type_template)
             logger.info(f'Create new type id {create_type["result_id"]}')
 
-            data_cat_template: dict = {
-                "public_id": os_portal_category_id["public_id"],
-                "name": os_portal_category_id["name"],
-                "label": os_portal_category_id["label"],
+            payload_category: dict = {
+                "public_id": k8s_portal_category_id["public_id"],
+                "name": k8s_portal_category_id["name"],
+                "label": k8s_portal_category_id["label"],
                 "meta": {
                     "icon": "far fa-folder-open",
                     "order": None
                 },
-                "parent": os_passports_category_id["public_id"],
-                "types": os_portal_category_id["types"]
+                "parent": k8s_category_id["public_id"],
+                "types": k8s_portal_category_id["types"]
             }
 
             if not create_type["result_id"]:
                 return
 
-            data_cat_template["types"].append(create_type["result_id"])
+            payload_category["types"].append(create_type["result_id"])
 
-            logger.info(f'Put type {create_type["result_id"]} in category {os_portal_category_id["name"]}')
-            cmdb_api("PUT", "categories/%s" % os_portal_category_id["public_id"], dg_token, data_cat_template)
+            logger.info(f'Put type {create_type["result_id"]} in category {k8s_portal_category_id["name"]}')
+            dg_api("PUT", "categories/%s" % k8s_portal_category_id["public_id"], dg_token, payload_category)
 
             for version in stand["modules_version"]:
-                create_app_version_object = create_object(version, dg_token, create_type["result_id"], user_id,
-                                                          stand["desc"])
+                create_app_version_object = create_object(version, create_type["result_id"])
                 logger.info(f"Create new object {create_app_version_object}")
-                time.sleep(0.1)
 
     all_objects: tuple = get_mongodb_objects("framework.objects")
 
-    all_app_types = tuple(filter(lambda x: f"apps-versions-%s--" % region in x["name"], cmdb_projects))
+    all_app_types = tuple(filter(lambda x: f"app-versions-%s--" % region in x["name"], dg_projects))
 
     for app_type in all_app_types:
-        for apps_versions in all_apps_versions["info"]:
-            if app_type["name"][len("apps-versions-%s--" % region):] == apps_versions["project_id"] and \
-                    apps_versions["modules_version"]:
+        for app_versions in all_app_versions["info"]:
+            if app_type["name"][len("app-versions-%s--" % region):] == app_versions["project_id"] and \
+                    app_versions["modules_version"]:
 
-                dg_apps_objects = tuple(filter(lambda x: x["type_id"] == app_type["public_id"], all_objects))
+                dg_app_objects = tuple(filter(lambda x: x["type_id"] == app_type["public_id"], all_objects))
 
-                for app_module in apps_versions["modules_version"]:
-                    for dg_object in dg_apps_objects:
-                        app_object_template: dict = create_object(app_module, dg_token, app_type["public_id"],
-                                                                  user_id, app_type["description"], template=True)
+                for app_module in app_versions["modules_version"]:
+                    for dg_object in dg_app_objects:
+                        app_object: dict = create_object(app_module, app_type["public_id"], template=True)
 
                         dg_to_diff = dg_object["fields"].copy()
-                        tmp_to_diff = app_object_template["fields"].copy()
+                        tmp_to_diff = app_object["fields"].copy()
                         dg_to_diff.pop(-1)
                         tmp_to_diff.pop(-1)
 
@@ -257,31 +250,27 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
                                 },
                                 "editor_id": user_id,
                                 "active": dg_object["active"],
-                                "fields": app_object_template["fields"],
+                                "fields": app_object["fields"],
                                 "public_id": dg_object["public_id"],
                                 "views": dg_object["views"],
                                 "comment": ""
                             }
-                            create_object(update_object_template, dg_token, app_type["public_id"],
-                                          user_id, app_type["description"], "PUT")
+                            create_object(update_object_template, app_type["public_id"], "PUT")
                             logger.info(f'Update app version in {dg_object["type_id"]} type')
 
                     if f'{app_module["tag"]}--{app_module["id"]}' not in \
                             tuple(map(lambda x: f'{x["fields"][3]["value"]}--{x["fields"][5]["value"]}',
-                                      dg_apps_objects)):
+                                      dg_app_objects)):
                         logger.info(f'Create app version in {app_type["public_id"]}')
-                        create_object(app_module, dg_token, app_type["public_id"], user_id, app_type["description"])
-                        time.sleep(0.1)
+                        create_object(app_module, app_type["public_id"])
 
-                for dg_object in dg_apps_objects:
+                for dg_object in dg_app_objects:
                     if f'{dg_object["fields"][3]["value"]}--{dg_object["fields"][5]["value"]}' not in \
-                            tuple(map(lambda x: f'{x["tag"]}--{x["id"]}', apps_versions["modules_version"])):
+                            tuple(map(lambda x: f'{x["tag"]}--{x["id"]}', app_versions["modules_version"])):
                         logger.info(
                             f'Delete app version {dg_object["fields"][3]["value"]}--{dg_object["fields"][5]["value"]}'
                         )
-                        cmdb_api("DELETE", "object/%s" % dg_object["public_id"], dg_token)
-                        time.sleep(0.1)
+                        dg_api("DELETE", "object/%s" % dg_object["public_id"], dg_token)
 
-
-if __name__ == "__main__":
-    gtp_app_versions(next(iter(portal_info)))
+# if __name__ == "__main__":
+#     gtp_app_versions(next(iter(portal_info)))

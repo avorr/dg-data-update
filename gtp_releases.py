@@ -10,9 +10,9 @@ import requests
 # from docx.api import Document
 from requests.auth import HTTPBasicAuth
 
-from tools import *
+# from tools import *
 from env import portal_info
-from common_function import cmdb_api
+from common_function import dg_api
 from common_function import category_id
 from common_function import get_dg_token
 from common_function import get_mongodb_objects
@@ -72,10 +72,10 @@ def releases() -> None:
     :return: None
     """
 
-    def create_object(version_info: dict, cmdb_token: str, type_id: int, author_id: int, method: str = 'POST',
+    def create_object(version_info: dict, dg_token: str, type_id: int, author_id: int, method: str = 'POST',
                       template: bool = False) -> dict:
         if method == 'PUT':
-            # return cmdb_api(method, f'object/{version_info["public_id"]}', cmdb_token, version_info)
+            # return dg_api(method, f'object/{version_info["public_id"]}', dg_token, version_info)
             print(f'object/{version_info["public_id"]}')
 
         release_object_template: dict = {
@@ -120,17 +120,17 @@ def releases() -> None:
         if template:
             return release_object_template
 
-        return cmdb_api('POST', 'object/', cmdb_token, release_object_template)
+        return dg_api('POST', 'object/', dg_token, release_object_template)
 
-    cmdb_token, user_id = get_dg_token()
+    dg_token, user_id = get_dg_token()
     all_categories: tuple = get_mongodb_objects('framework.categories')
 
     platform_releases_category_id = \
-        category_id('platform-releases', 'Platform Releases', 'fas fa-list-alt', cmdb_token, all_categories)
+        category_id('platform-releases', 'Platform Releases', 'fas fa-list-alt', dg_token, all_categories)
 
-    # all_pprb3_verions: dict = json.loads(requests.request("GET", portal_info[portal_name]['app_versions']).content)
+    # all_pprb3_verions: dict = json.loads(requests.request("GET", portal_info['app_versions']).content)
 
-    # cmdb_projects = get_all_jsons('types', cmdb_token)
+    # cmdb_projects = get_all_jsons('types', dg_token)
 
     cmdb_projects: tuple = get_mongodb_objects('framework.types')
 
@@ -229,7 +229,7 @@ def releases() -> None:
                 "label": docx,
                 "description": docx
             }
-            create_type = cmdb_api('POST', 'types/', cmdb_token, data_type_template)
+            create_type = dg_api('POST', 'types/', dg_token, data_type_template)
             print(create_type)
 
             print(create_type['result_id'], 'new type id')
@@ -249,8 +249,8 @@ def releases() -> None:
             if not create_type['result_id']:
                 return
             data_cat_template['types'].append(create_type['result_id'])
-            put_type_in_catigories = cmdb_api('PUT', f"categories/{platform_releases_category_id['public_id']}",
-                                              cmdb_token,
+            put_type_in_catigories = dg_api('PUT', f"categories/{platform_releases_category_id['public_id']}",
+                                              dg_token,
                                               data_cat_template)
 
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
@@ -258,12 +258,12 @@ def releases() -> None:
             release_info: list = read_docx(docx)
 
             for version in release_info:
-                create_version_objects = create_object(version, cmdb_token, create_type['result_id'], user_id)
+                create_version_objects = create_object(version, dg_token, create_type['result_id'], user_id)
                 print('CREATE OBJECT', create_version_objects)
-                time.sleep(0.1)
+                #time.sleep(0.1)
 
     all_objects: tuple = get_mongodb_objects('framework.objects')
-    # cmdb_projects = get_all_jsons('types', cmdb_token)
+    # cmdb_projects = get_all_jsons('types', dg_token)
     # allTypesVersions = reduce(lambda x, y: x + y, map(lambda foo: tuple(
     #     filter(lambda bar: f'pprb3-versions-{portal_name}--' in bar['name'], foo['results'])), cmdb_projects))
 

@@ -5,24 +5,33 @@ from loguru import logger
 from collections import defaultdict
 from datetime import datetime
 
-# from tools import json_read
 from env import portal_info
-from common_function import cmdb_api, \
+from common_function import dg_api, \
     category_id, \
     get_mongodb_objects
 
 
-def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, portal_projects: list,
-                  all_objects: tuple = ()) -> tuple | None:
+def passports_vdc(region: str, auth_info: tuple, domains, projects: list, all_objects: tuple = ()) -> tuple | None:
+    """
+    Func to create vdc objects in DG
+    :param region:
+    :param auth_info:
+    :param domains:
+    :param projects:
+    :param all_objects:
+    :return: tuple
+    """
+
+    dg_token, user_id = auth_info
+
     all_categories: tuple = get_mongodb_objects('framework.categories')
 
     vdc_category_id: dict = category_id("passports-vdc", 'Passports Vdc', 'fas fa-network-wired', dg_token,
                                         all_categories)
 
-    def create_vdc(vdc_info: dict, dg_token: str, type_id: str, author_id: int, method: str = 'POST', domains={},
-                   template: bool = False) -> dict | str:
+    def create_vdc(vdc_info: dict, type_id: int, method: str = 'POST', template: bool = False) -> dict | str:
         if method == "PUT":
-            return cmdb_api(method, "object/%s" % type_id, dg_token, vdc_info)
+            return dg_api(method, "object/%s" % type_id, dg_token, vdc_info)
 
         def networks_info(networks: list, dns_servers: bool, subnet: bool) -> str | tuple[str, str, str, str]:
             networks = tuple(map(lambda x: defaultdict(str, x), networks))
@@ -54,7 +63,7 @@ def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, p
             "status": True,
             "type_id": type_id,
             "version": "1.0.0",
-            "author_id": author_id,
+            "author_id": user_id,
             "fields": [
                 {
                     "name": "name",
@@ -62,7 +71,8 @@ def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, p
                 },
                 {
                     "name": "desc",
-                    "value": vdc_info["desc"] if "desc" in vdc_info else ""
+                    "value": vdc_info["desc"]
+                    # "value": vdc_info["desc"] if "desc" in vdc_info else ""
                 },
                 {
                     "name": "datacenter-name",
@@ -122,11 +132,11 @@ def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, p
         if template:
             return payload_vdc_object
 
-        return cmdb_api("POST", "object/", dg_token, payload_vdc_object)
+        return dg_api("POST", "object/", dg_token, payload_vdc_object)
 
     dg_types: tuple = get_mongodb_objects("framework.types")
 
-    if not any(filter(lambda x: x['name'] == "vdc-%s" % portal_name.lower(), dg_types)):
+    if not any(filter(lambda x: x['name'] == "vdc-%s" % region, dg_types)):
 
         payload_type_tmp: dict = {
             "fields": [
@@ -231,14 +241,14 @@ def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, p
                             "record-update-time"
                         ],
                         "type": "section",
-                        "name": "VDC-%s" % portal_name,
-                        "label": "VDC-%s" % portal_name
+                        "name": "vdc-%s" % region,
+                        "label": "VDC-%s" % region.upper()
                     }
                 ],
                 "externals": [
                     {
                         "name": "vdc link",
-                        "href": "%s/client/orders/{}" % portal_info[portal_name]['url'],
+                        "href": "%s/client/orders/{}" % portal_info['url'],
                         "label": "Vdc link",
                         "icon": "fas fa-external-link-alt",
                         "fields": [
@@ -275,12 +285,12 @@ def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, p
                     }
                 }
             },
-            "name": "vdc-%s" % portal_name.lower(),
-            "label": "VDC-%s" % portal_name,
-            "description": "VDC-%s" % portal_name
+            "name": "vdc-%s" % region,
+            "label": "VDC-%s" % region.upper(),
+            "description": "VDC-%s" % region.upper()
         }
 
-        create_type: dict = cmdb_api("POST", "types/", dg_token, payload_type_tmp)
+        create_type: dict = dg_api("POST", "types/", dg_token, payload_type_tmp)
         logger.info(f"Create new type with id -> {create_type['result_id']}")
 
         payload_category: dict = {
@@ -301,13 +311,12 @@ def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, p
 
         payload_category['types'].append(create_type['result_id'])
 
-        put_type_in_cat = cmdb_api('PUT', "categories/%s" % vdc_category_id['public_id'], dg_token, payload_category)
+        put_type_in_cat = dg_api('PUT', "categories/%s" % vdc_category_id['public_id'], dg_token, payload_category)
         logger.info(f"Put type {put_type_in_cat['result']['public_id']} in category {payload_category['name']}")
 
-        for vdc in portal_projects:
-            create_vdc_object = create_vdc(vdc, dg_token, create_type['result_id'], user_id, domains=domains_info)
+        for vdc in projects:
+            create_vdc_object = create_vdc(vdc, create_type['result_id'])
             logger.info(f"Create vdc object {create_vdc_object} in {create_type['result_id']}")
-            time.sleep(0.1)
 
     if "create_type" in locals():
         dg_vdc_type: dict = {
@@ -315,30 +324,28 @@ def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, p
         }
         logger.info("There is type id in locals variables")
     else:
-        dg_vdc_type: dict = max(filter(lambda x: x['name'] == "vdc-%s" % portal_name.lower(), dg_types))
+        dg_vdc_type: dict = max(filter(lambda x: x['name'] == "vdc-%s" % region, dg_types))
     del dg_types
 
-    # dg_vdc_type: dict = max(filter(lambda x: x['name'] == "VDC-%s" % portal_name, dg_types))
-
-    all_objects: tuple = get_mongodb_objects("framework.objects")
+    if not all_objects:
+        all_objects: tuple = get_mongodb_objects("framework.objects")
     all_vdc_objects = tuple(filter(lambda x: x["type_id"] == dg_vdc_type["public_id"], all_objects))
 
     del all_objects
 
     for dg_object in all_vdc_objects:
-        if dg_object["fields"][8]["value"] not in tuple(map(lambda x: x["id"], portal_projects)):
+        if dg_object["fields"][8]["value"] not in tuple(map(lambda x: x["id"], projects)):
             type_for_delete: tuple = get_mongodb_objects("framework.types", {"name": dg_object["fields"][8]["value"]})
             if type_for_delete:
-                cmdb_api("DELETE", "types/%s" % max(type_for_delete)["public_id"], dg_token)
+                dg_api("DELETE", "types/%s" % max(type_for_delete)["public_id"], dg_token)
                 logger.info(f'Delete vdc object {dg_object["fields"][0]["value"]} from type {dg_vdc_type["public_id"]}')
-            cmdb_api('DELETE', "object/%s" % dg_object['public_id'], dg_token)
+            dg_api('DELETE', "object/%s" % dg_object['public_id'], dg_token)
             logger.info(f'Delete vdc object {dg_object["fields"][0]["value"]} from type {dg_vdc_type["public_id"]}')
 
-    for vdc in portal_projects:
+    for vdc in projects:
         for dg_object in all_vdc_objects:
 
-            vdc_template: dict | str = create_vdc(vdc, dg_token, dg_vdc_type['public_id'], user_id,
-                                                  template=True, domains=domains_info)
+            vdc_template: dict | str = create_vdc(vdc, dg_vdc_type['public_id'], template=True)
 
             dg_to_diff = dg_object["fields"].copy()
             tmp_to_diff = vdc_template["fields"].copy()
@@ -366,12 +373,11 @@ def passports_vdc(portal_name: str, dg_token: str, user_id: int, domains_info, p
                     "comment": ""
                 }
 
-                create_vdc(payload_object_tmp, dg_token, dg_object['public_id'], user_id, 'PUT', domains=domains_info)
+                create_vdc(payload_object_tmp, dg_object['public_id'], 'PUT')
                 logger.info(f'Update object {dg_object["public_id"]} in type {dg_object["type_id"]}')
 
         if vdc["id"] not in tuple(map(lambda x: x['fields'][8]['value'], all_vdc_objects)):
-            # all_vdc_objects.append({})
-            create_vdc(vdc, dg_token, dg_vdc_type["public_id"], user_id, domains=domains_info)
+            create_vdc(vdc, dg_vdc_type["public_id"])
             logger.info(f'Create vdc {vdc["name"]} in type {dg_vdc_type["public_id"]}')
 
     all_objects: tuple = get_mongodb_objects('framework.objects')

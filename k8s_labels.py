@@ -9,11 +9,10 @@ from itertools import zip_longest
 from collections import defaultdict
 from datetime import datetime
 
-# from tools import *
 from env import portal_info
 from common_function import get_mongodb_objects, \
     category_id, \
-    cmdb_api, \
+    dg_api, \
     get_k8s_info
 
 
@@ -25,26 +24,23 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
     :param all_objects:
     :return:
     """
-    if portal_info[region]["metrics"] == "false":
+    if portal_info["metrics"] == "false":
         return
 
     dg_token, user_id = auth_info
 
-    def create_label(labels_info: dict, dg_token: str, type_id: str, author_id: int, method: str = "POST",
-                     template: bool = False) -> dict:
+    def create_label(labels_info: dict, type_id: str, method: str = "POST", template: bool = False) -> dict:
         """
         func to create or update or delete label objects in DataGerry CMDB
         :param labels_info:
-        :param dg_token:
         :param type_id:
-        :param author_id:
         :param method:
         :param template:
         :return:
         """
 
         if method == "PUT":
-            return cmdb_api(method, "object/%s" % labels_info["public_id"], dg_token, labels_info)
+            return dg_api(method, "object/%s" % labels_info["public_id"], dg_token, labels_info)
 
         def get_label(labels: dict, label: str) -> str:
             """
@@ -82,7 +78,7 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
             "status": True,
             "type_id": type_id,
             "version": "1.0.0",
-            "author_id": author_id,
+            "author_id": user_id,
             "fields": [
                 {
                     "name": "namespace",
@@ -97,7 +93,7 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                     "value": get_label(labels_info, "app")
                 },
                 {
-                    "name": "SUBSYSTEM",
+                    "name": "subsystem",
                     "value": get_label(labels_info, "SUBSYSTEM")
 
                 },
@@ -106,15 +102,15 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                     "value": get_label(labels_info, "deployment")
                 },
                 {
-                    "name": "deploymentconfig",
+                    "name": "deployment-config",
                     "value": get_label(labels_info, "deploymentconfig")
                 },
                 {
-                    "name": "deployDate",
+                    "name": "deploy-date",
                     "value": get_label(labels_info, "deployDate")
                 },
                 {
-                    "name": "distribVersion",
+                    "name": "distrib-version",
                     "value": get_label(labels_info, "distribVersion")
                 },
                 {
@@ -146,11 +142,11 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                     "value": get_label(labels_info, "logLevel")
                 },
                 {
-                    "name": "restartPolicy",
+                    "name": "restart-policy",
                     "value": get_label(labels_info, "restartPolicy")
                 },
                 {
-                    "name": "imagePullPolicy",
+                    "name": "image-pull-policy",
                     "value": get_label(labels_info, "imagePullPolicy")
                 },
                 {
@@ -158,11 +154,11 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                     "value": get_label(labels_info, "image")
                 },
                 {
-                    "name": "security.istio.io/tlsMode",
+                    "name": "security-istio-io-tls-mode",
                     "value": get_label(labels_info, "security.istio.io/tlsMode")
                 },
                 {
-                    "name": "jenkinsDeployUser",
+                    "name": "jenkins-deploy-user",
                     "value": get_label(labels_info, "jenkinsDeployUser")
                 },
                 {
@@ -175,15 +171,16 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
         if template:
             return label_object_template
 
-        return cmdb_api("POST", "object/", dg_token, label_object_template)
+        return dg_api("POST", "object/", dg_token, label_object_template)
 
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
-    k8s_passports_category_id: dict = category_id("k8s-apps-labels", "K8s Apps Labels", "fas fa-tags", dg_token,
+    k8s_passports_category_id: dict = category_id("k8s-app-labels", "K8s App Labels", "fas fa-tags", dg_token,
                                                   all_categories)
 
-    k8s_portal_category_id: dict = category_id(f"K8s-Labels-{region}", f"K8s-Labels-{region}", "fas fa-folder-open",
-                                               dg_token, all_categories, k8s_passports_category_id["public_id"])
+    k8s_portal_category_id: dict = category_id(f"k8s-labels-{region}", f"K8s-Labels-{region.upper()}",
+                                               "fas fa-folder-open", dg_token, all_categories,
+                                               k8s_passports_category_id["public_id"])
 
     # def get_k8s_info() -> list:
     #     """
@@ -191,13 +188,13 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
     #     :return:
     #     """
     #     info = list()
-    #     for metrics_url in portal_info[region]["metrics"].split(";"):
+    #     for metrics_url in portal_info["metrics"].split(";"):
     #         info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
     #
-    #     # return json.loads(requests.request("GET", portal_info[region]["metrics"]).content)
+    #     # return json.loads(requests.request("GET", portal_info["metrics"]).content)
     #     return info
 
-    clusters_info: list = get_k8s_info(region)
+    clusters_info: list = get_k8s_info()
 
     #### temporary
     # def clear_info(old_info: list) -> list:
@@ -213,7 +210,7 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
 
         clusters = tuple(map(lambda x: x["metric"]["cluster"], cluster_info))
 
-        def get_k8s_labels(clusters: map) -> list:
+        def get_k8s_labels(clusters: tuple) -> list:
             """
             function for getting pod labels from all clusters
             :param clusters:
@@ -283,7 +280,7 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                         },
                         {
                             "type": "text",
-                            "name": "SUBSYSTEM",
+                            "name": "subsystem",
                             "label": "SUBSYSTEM"
                         },
                         {
@@ -293,17 +290,17 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                         },
                         {
                             "type": "text",
-                            "name": "deploymentconfig",
+                            "name": "deployment-config",
                             "label": "deploymentconfig"
                         },
                         {
                             "type": "text",
-                            "name": "deployDate",
+                            "name": "deploy-date",
                             "label": "deployDate"
                         },
                         {
                             "type": "text",
-                            "name": "distribVersion",
+                            "name": "distrib-version",
                             "label": "distribVersion"
                         },
                         {
@@ -343,12 +340,12 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                         },
                         {
                             "type": "text",
-                            "name": "restartPolicy",
+                            "name": "restart-policy",
                             "label": "restartPolicy"
                         },
                         {
                             "type": "text",
-                            "name": "imagePullPolicy",
+                            "name": "image-pull-policy",
                             "label": "imagePullPolicy"
                         },
                         {
@@ -358,12 +355,12 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                         },
                         {
                             "type": "text",
-                            "name": "security.istio.io/tlsMode",
+                            "name": "security-istio-io-tls-mode",
                             "label": "security.istio.io/tlsMode"
                         },
                         {
                             "type": "text",
-                            "name": "jenkinsDeployUser",
+                            "name": "jenkins-deploy-user",
                             "label": "jenkinsDeployUser"
                         },
                         {
@@ -383,11 +380,11 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                                     "namespace",
                                     "name",
                                     "app",
-                                    "SUBSYSTEM",
+                                    "subsystem",
                                     "deployment",
-                                    "deploymentconfig",
-                                    "deployDate",
-                                    "distribVersion",
+                                    "deployment-config",
+                                    "deploy-date",
+                                    "distrib-version",
                                     "version",
                                     "build",
                                     "limits-cpu",
@@ -395,11 +392,11 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                                     "requests-cpu",
                                     "requests-ram",
                                     "log-level",
-                                    "restartPolicy",
-                                    "imagePullPolicy",
+                                    "restart-policy",
+                                    "image-pull-policy",
                                     "image",
-                                    "security.istio.io/tlsMode",
-                                    "jenkinsDeployUser",
+                                    "security-istio-io-tls-mode",
+                                    "jenkins-deploy-user",
                                     "record-update-time"
                                 ],
                                 "type": "section",
@@ -409,7 +406,7 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                         ],
                         "externals": [
                             {
-                                "name": "cluster link",
+                                "name": "cluster-link",
                                 "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects" %
                                         cluster["cluster"],
                                 "label": "Cluster link",
@@ -417,7 +414,7 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                                 "fields": []
                             },
                             {
-                                "name": "namespace link",
+                                "name": "namespace-link",
                                 "href": "https://console-openshift-console.apps.%s/k8s/cluster/projects/{}" %
                                         cluster["cluster"],
                                 "label": "Namespace link",
@@ -425,7 +422,7 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                                 "fields": ["namespace"]
                             },
                             {
-                                "name": "pod link",
+                                "name": "pod-link",
                                 "href": "https://console-openshift-console.apps.%s/k8s/ns/{}/pods/{}" % cluster[
                                     "cluster"],
                                 "label": "Pod link",
@@ -441,11 +438,11 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                                 "namespace",
                                 "name",
                                 "app",
-                                "SUBSYSTEM",
+                                "subsystem",
                                 # "deployment",
-                                "deploymentconfig",
-                                "deployDate",
-                                "distribVersion",
+                                "deployment-config",
+                                "deploy-date",
+                                "distrib-version",
                                 "version",
                                 "build",
                                 "limits-cpu",
@@ -453,11 +450,11 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                                 "requests-cpu",
                                 "requests-ram",
                                 "log-level",
-                                "restartPolicy",
-                                "imagePullPolicy",
+                                "restart-policy",
+                                "image-pull-policy",
                                 "image",
-                                "security.istio.io/tlsMode",
-                                "jenkinsDeployUser",
+                                "security-istio-io-tls-mode",
+                                "jenkins-deploy-user",
                                 "record-update-time"
                             ]
                         }
@@ -480,10 +477,10 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                     },
                     "name": f"k8s-labels-{region}--{cluster['cluster'].replace('.', '_')}",
                     "label": cluster["cluster"],
-                    "description": "k8s labels %s" % cluster["cluster"]
+                    "description": "K8s Labels %s" % cluster["cluster"]
                 }
 
-                create_type: dict = cmdb_api("POST", "types/", dg_token, data_type_template)
+                create_type: dict = dg_api("POST", "types/", dg_token, data_type_template)
                 logger.info(f'Create new label-type with id {create_type["result_id"]}')
 
                 data_category_tmp: dict = {
@@ -503,13 +500,12 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
 
                 data_category_tmp["types"].append(create_type["result_id"])
 
-                cmdb_api("PUT", "categories/%s" % k8s_portal_category_id["public_id"], dg_token, data_category_tmp)
+                dg_api("PUT", "categories/%s" % k8s_portal_category_id["public_id"], dg_token, data_category_tmp)
                 logger.info(f'Put new label-type id {create_type["result_id"]} in {data_category_tmp["name"]}')
 
                 for labels in cluster["labels"]:
-                    create_label(labels, dg_token, create_type["result_id"], user_id)
+                    create_label(labels, create_type["result_id"])
                     logger.info(f'Create label-object {labels["name"]} in {create_type["result_id"]}')
-                    time.sleep(0.1)
 
         if not all_objects:
             all_objects: tuple = get_mongodb_objects("framework.objects")
@@ -534,15 +530,14 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                                                         set(ex_labels) - set(dg_labels)):
                         if not ex_name:
                             logger.info(f'Delete label {dg_labels[dg_name]["fields"][1]["value"]}')
-                            cmdb_api("DELETE", "object/%s" % dg_labels[dg_name]["public_id"], dg_token)
+                            dg_api("DELETE", "object/%s" % dg_labels[dg_name]["public_id"], dg_token)
 
                         elif not dg_name:
                             logger.info(f'Create label-object {ex_labels[ex_name]["name"]}')
-                            create_label(ex_labels[ex_name], dg_token, dg_cluster["public_id"], user_id)
+                            create_label(ex_labels[ex_name], dg_cluster["public_id"])
 
                         else:
-                            template: dict = create_label(ex_labels[ex_name], dg_token, dg_cluster["public_id"],
-                                                          user_id, template=True)
+                            template: dict = create_label(ex_labels[ex_name], dg_cluster["public_id"], template=True)
                             payload_object_tmp: dict = {
                                 "type_id": dg_labels[dg_name]["type_id"],
                                 "status": dg_labels[dg_name]["status"],
@@ -562,7 +557,7 @@ def labels_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
                                 "comment": ""
                             }
 
-                            create_label(payload_object_tmp, dg_token, dg_labels[dg_name]["type_id"], user_id, "PUT")
+                            create_label(payload_object_tmp, dg_labels[dg_name]["type_id"], "PUT")
                             logger.info(
                                 f'Update label-object {payload_object_tmp["fields"][1]["value"]} '
                                 f'in {dg_labels[dg_name]["type_id"]}'

@@ -1,12 +1,12 @@
 #!/usr/local/bin/python3
 import os
 from loguru import logger
-from common_function import cmdb_api, \
+from common_function import dg_api, \
     get_mongodb_objects, \
     category_id
 
 
-def passport_stands(region: str, auth_info: tuple):
+def passports_stand(region: str, auth_info: tuple):
     """
     Main func for create vm objects in DataGerry
     :param region: ex: PD15
@@ -16,7 +16,7 @@ def passport_stands(region: str, auth_info: tuple):
 
     dg_token, user_id = auth_info
 
-    exist_passports: tuple = get_mongodb_objects("framework.types", {"name": f"passports-{region.lower()}"})
+    exist_passports: tuple = get_mongodb_objects("framework.types", {"name": f"passports-{region}"})
 
     if exist_passports:
         return
@@ -24,11 +24,11 @@ def passport_stands(region: str, auth_info: tuple):
     dg_categories: tuple = get_mongodb_objects("framework.categories")
 
     passport_stands_id: dict = category_id(
-        "passport-stands", "Passport Stands", "fas fa-folder-open", dg_token, dg_categories
+        "passports-stand", "Passports Stand", "fas fa-folder-open", dg_token, dg_categories
     )
 
-    vdc_type_id: int = get_mongodb_objects("framework.types", {"name": f"vdc-{region.lower()}"})[0]["public_id"]
-    links_k8s_id: int = get_mongodb_objects("framework.types", {"name": f"links-k8s-{region.lower()}"})[0]["public_id"]
+    vdc_type_id: int = get_mongodb_objects("framework.types", {"name": f"vdc-{region}"})[0]["public_id"]
+    links_k8s_id: int = get_mongodb_objects("framework.types", {"name": f"links-k8s-{region}"})[0]["public_id"]
 
     payload: dict = {
         "fields": [
@@ -71,9 +71,58 @@ def passport_stands(region: str, auth_info: tuple):
                 "label": "Git"
             },
             {
-                "type": "text",
-                "name": "portal",
-                "label": "Portal"
+                "type": "textarea",
+                "name": "postgre-se",
+                "label": "Postgre SE",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "kafka-se",
+                "label": "Kafka Se",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "audit",
+                "label": "Audit",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "iam",
+                "label": "IAM",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "pprb",
+                "label": "PPRB",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "efs",
+                "label": "EFS",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "fd",
+                "label": "FD",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "istio",
+                "label": "Istio",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "dvp",
+                "label": "DVP",
+                "rows": 30
             }
         ],
         "active": True,
@@ -89,18 +138,33 @@ def passport_stands(region: str, auth_info: tuple):
                         "passport-k8s",
                         "bitwarden",
                         "zone",
-                        "git",
-                        "portal"
+                        "git"
                     ],
                     "type": "section",
                     "name": "passports",
                     "label": "Passports"
+                },
+                {
+                    "fields": [
+                        "postgre-se",
+                        "kafka-se",
+                        "audit",
+                        "iam",
+                        "pprb",
+                        "efs",
+                        "fd",
+                        "istio",
+                        "dvp"
+                    ],
+                    "type": "section",
+                    "name": "services",
+                    "label": "Services"
                 }
             ],
             "externals": [
                 {
-                    "name": "link",
-                    "label": "Link",
+                    "name": "passport-link",
+                    "label": "Passport link",
                     "icon": "fas fa-external-link-alt",
                     "href": "%s?id={}" % os.getenv("PASSPORTS_URL"),
                     "fields": [
@@ -115,8 +179,7 @@ def passport_stands(region: str, auth_info: tuple):
                     "passport-k8s",
                     "bitwarden",
                     "zone",
-                    "git",
-                    "portal"
+                    "git"
                 ]
             }
         },
@@ -126,12 +189,12 @@ def passport_stands(region: str, auth_info: tuple):
                 "includes": {}
             }
         },
-        "name": f"passports-{region.lower()}",
-        "label": f"Passports-{region}",
-        "description": f"Passports {region}"
+        "name": f"passports-{region}",
+        "label": f"Passports-{region.upper()}",
+        "description": f"Passports {region.upper()}"
     }
 
-    create_type: int = cmdb_api("POST", "types/", dg_token, payload)['result_id']
+    create_type: int = dg_api("POST", "types/", dg_token, payload)['result_id']
 
     if not create_type:
         return None
@@ -152,6 +215,6 @@ def passport_stands(region: str, auth_info: tuple):
 
     payload_category['types'].append(create_type)
 
-    move_type = cmdb_api('PUT', "categories/%s" % passport_stands_id['public_id'], dg_token, payload_category)
+    move_type = dg_api('PUT', "categories/%s" % passport_stands_id['public_id'], dg_token, payload_category)
 
     logger.info(f"Move type {move_type['result']['public_id']} to category {payload_category['name']}")

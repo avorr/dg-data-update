@@ -13,9 +13,10 @@ pipeline {
 
     environment {
         PYTHONWARNINGS = "ignore:Unverified HTTPS request"
-        CMDB_CRED = credentials("cmdb-cred")
-        DG_URL = "https://cmdb.common.gos-tech.xyz/rest/"
-        DG_MONGO_DB_CRED = credentials("DG_MONGO_DB_CRED")
+        DG = credentials("DG")
+        DG_URL = "https://cmdb.gos-tech.xyz/rest/"
+        DG_MONGODB = credentials("DG_MONGODB")
+        DG_MONGODB_HOST = "p-infra-internallb.common.novalocal:27017/cmdb"
         REGISTRY =  "https://base.sw.sbc.space/"
         IMAGE =  "pid/pid_registry/datagerry-cmdb/datagerry-cmdb:0.0.3"
         REGISTRY_CRED = "tuz_pid_pidefs"
@@ -24,19 +25,20 @@ pipeline {
     stages {
         stage("Update CMDB Info Portal-PD15") {
             environment {
-                PORTAL_URL_PD15 = "https://portal.gos.sbercloud.dev"
-//                 OS_METRICS_PD15 = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-                OS_METRICS_PD15 = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type);http://vm_select.pd15.admin.gtp:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
-//                 APP_VERSIONS_PD15 = "http://p-infra-jenkinsslave-02.common.novalocal:5002/versions-pd15"
-                APP_VERSIONS_PD15 = "http://infra-jenkinsslave-04.pd15.admin.gtp:5002/versions-pd15"
-                PORTAL_TOKEN_PD15 = credentials("PORTAL_TOKEN_PD15")
+                PORTAL_URL = "https://portal.gos.sbercloud.dev"
+//                 OS_METRICS = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+                OS_METRICS = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type);http://vm_select.pd15.admin.gtp:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+//                 APP_VERSIONS = "http://p-infra-jenkinsslave-02.common.novalocal:5002/versions-pd15"
+                APP_VERSIONS = "http://infra-jenkinsslave-04.pd15.admin.gtp:5002/versions-pd15"
+                PORTAL_TOKEN = credentials("PORTAL_TOKEN")
             }
             agent {
                 docker {
                     registryUrl REGISTRY
                     image IMAGE
                     registryCredentialsId REGISTRY_CRED
-                    args "-u root --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165"
+//                     args "-u root --privileged --add-host $MONGO_DB --add-host p-infra-jenkinsslave-02.common.novalocal:172.26.104.165"
+                    args "-u root --privileged --add-host $MONGO_DB"
                     reuseNode true
                 }
             }
