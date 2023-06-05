@@ -271,6 +271,3 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
                             f'Delete app version {dg_object["fields"][3]["value"]}--{dg_object["fields"][5]["value"]}'
                         )
                         dg_api("DELETE", "object/%s" % dg_object["public_id"], dg_token)
-
-# if __name__ == "__main__":
-#     gtp_app_versions(next(iter(portal_info)))

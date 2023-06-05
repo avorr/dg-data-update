@@ -250,8 +250,8 @@ def releases() -> None:
                 return
             data_cat_template['types'].append(create_type['result_id'])
             put_type_in_catigories = dg_api('PUT', f"categories/{platform_releases_category_id['public_id']}",
-                                              dg_token,
-                                              data_cat_template)
+                                            dg_token,
+                                            data_cat_template)
 
             print('PUT TYPE IN CATIGORIES', put_type_in_catigories)
 
@@ -260,7 +260,7 @@ def releases() -> None:
             for version in release_info:
                 create_version_objects = create_object(version, dg_token, create_type['result_id'], user_id)
                 print('CREATE OBJECT', create_version_objects)
-                #time.sleep(0.1)
+                # time.sleep(0.1)
 
     all_objects: tuple = get_mongodb_objects('framework.objects')
     # cmdb_projects = get_all_jsons('types', dg_token)
