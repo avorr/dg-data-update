@@ -14,7 +14,6 @@ from common_function import get_dg_token
 def main() -> None:
     region: str = sys.argv[1].lower()
     auth_info: tuple = get_dg_token()
-
     try:
         all_objects: tuple = passports_vm(region, auth_info)
     except EOFError as err:
@@ -45,7 +44,7 @@ def main() -> None:
 
 
 def delete_all():
-    from common_function import get_mongodb_objects, dg_api, get_dg_token
+    from common_function import get_mongodb_objects, dg_api, get_dg_token, portal_api
     dg_token, user_id = get_dg_token()
     dg_categories: tuple = get_mongodb_objects("framework.categories")
     dg_types: tuple = get_mongodb_objects("framework.types")

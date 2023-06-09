@@ -7,9 +7,7 @@ from loguru import logger
 from datetime import datetime
 
 from env import portal_info
-from common_function import dg_api, \
-    category_id, \
-    get_mongodb_objects
+from common_function import dg_api, category_id, get_mongodb_objects
 
 
 def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> None:
@@ -19,12 +17,12 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
 
     dg_token, user_id = auth_info
 
-    def create_object(version_info: dict, type_id: str, method: str = "POST", template: bool = False) -> dict:
+    def create_object(version_info: dict, type_id: str, method="POST", template=False) -> dict:
 
         if method == "PUT":
             return dg_api(method, "object/%s" % version_info["public_id"], dg_token, version_info)
 
-        def get_version(version_info: dict) -> str:
+        def get_version() -> str:
             if next(iter(version_info["version"])) == "ERROR":
                 return version_info["version"]["ERROR"]
             if next(iter(version_info["version"])) == "deployment":
@@ -63,7 +61,7 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
                 },
                 {
                     "name": "version",
-                    "value": get_version(version_info)
+                    "value": get_version()
                 },
                 {
                     "name": "vm-id",
@@ -83,7 +81,7 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
 
     all_categories: tuple = get_mongodb_objects("framework.categories")
 
-    k8s_category_id = category_id("vm-app-versions", "Vm App Versions", "fas fa-server", dg_token, all_categories)
+    k8s_category_id: dict = category_id("vm-app-versions", "Vm App Versions", "fas fa-server", dg_token, all_categories)
 
     k8s_portal_category_id = category_id("app-versions-%s" % region, "App-Versions-%s" % region.upper(),
                                          "far fa-folder-open", dg_token, all_categories, k8s_category_id["public_id"])
@@ -155,7 +153,22 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
                             "label": stand["project_id"]
                         }
                     ],
-                    "externals": [],
+                    "externals": [
+                        {
+                            "name": "vdc-link",
+                            "href": f"{portal_info['url']}/client/orders/{stand['project_id']}",
+                            "label": "Vdc link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": []
+                        },
+                        {
+                            "name": "vm-link",
+                            "href": f"{portal_info['url']}/client/orders/{stand['project_id']}/servers/{{}}/info",
+                            "label": "Vm link",
+                            "icon": "fas fa-external-link-alt",
+                            "fields": ["vm-id"]
+                        }
+                    ],
                     "summary": {
                         "fields": [
                             "name",
@@ -255,8 +268,8 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
                                 "views": dg_object["views"],
                                 "comment": ""
                             }
-                            create_object(update_object_template, app_type["public_id"], "PUT")
                             logger.info(f'Update app version in {dg_object["type_id"]} type')
+                            create_object(update_object_template, app_type["public_id"], "PUT")
 
                     if f'{app_module["tag"]}--{app_module["id"]}' not in \
                             tuple(map(lambda x: f'{x["fields"][3]["value"]}--{x["fields"][5]["value"]}',

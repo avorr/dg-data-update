@@ -6,9 +6,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from env import portal_info
-from common_function import dg_api, \
-    category_id, \
-    get_mongodb_objects
+from common_function import dg_api, category_id, get_mongodb_objects
 
 
 def passports_vdc(region: str, auth_info: tuple, domains, projects: list, all_objects: tuple = ()) -> tuple | None:

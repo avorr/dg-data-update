@@ -81,11 +81,11 @@ def get_k8s_info() -> list:
     Func to get json from ose exporter
     :return:
     """
-    info = list()
-    for metrics_url in portal_info["metrics"].split(";"):
-        info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
-    # return json.loads(requests.request("GET", portal_info["metrics"]).content)
-    return info
+    # info = list()
+    # for metrics_url in portal_info["metrics"].split(";"):
+    #     info.append(json.loads(requests.request("GET", metrics_url.strip(), timeout=3).content)['data']['result'])
+    # return info
+    return json.loads(requests.request("GET", portal_info["metrics"]).content)['data']['result']
 
 
 # thread_count = lambda x: int(x) if x < 10 and x != 0 else int((x + 1) ** 0.7)

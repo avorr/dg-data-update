@@ -9,7 +9,9 @@ pipeline {
         timestamps()
         ansiColor("xterm")
     }
-
+    triggers {
+        cron('0 */4 * * *')
+    }
     environment {
         PYTHONWARNINGS = "ignore:Unverified HTTPS request"
         DG = credentials("DG")
@@ -25,7 +27,7 @@ pipeline {
         stage("Update CMDB Info Portal-PD15") {
             environment {
                 PORTAL_URL = "https://portal.gos.sbercloud.dev"
-                K8S_METRICS = "http://p-infra-internallb.common.novalocal:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type);http://vm_select.pd15.admin.gtp:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
+                K8S_METRICS = "http://vm_select.pd15.admin.gtp:8481/select/1/prometheus/api/v1/query?query=sum%20(kube_resourcequota)%20by%20(monitor%2C%20namespace%2C%20cluster%2C%20resource%2C%20type)"
                 APP_VERSIONS = "http://infra-jenkinsslave-04.pd15.admin.gtp:5002/versions-pd15"
                 PORTAL_TOKEN = credentials("PORTAL_TOKEN")
             }

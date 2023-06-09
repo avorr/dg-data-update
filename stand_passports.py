@@ -1,27 +1,22 @@
 #!/usr/local/bin/python3
 import os
 from loguru import logger
-from common_function import dg_api, \
-    get_mongodb_objects, \
-    category_id
+from common_function import dg_api, get_mongodb_objects, category_id
 
 
-def passports_stand(region: str, auth_info: tuple):
+def passports_stand(region: str, auth_info: tuple) -> None:
     """
     Main func for create vm objects in DataGerry
     :param region: ex: PD15
     :param auth_info
-    :return: tuple | None
+    :return: None
     """
-
-    dg_token, user_id = auth_info
-
-    exist_passports: tuple = get_mongodb_objects("framework.types", {"name": f"passports-{region}"})
-
-    if exist_passports:
+    if get_mongodb_objects("framework.types", {"name": f"passports-{region}"}):
         return
 
     dg_categories: tuple = get_mongodb_objects("framework.categories")
+
+    dg_token, user_id = auth_info
 
     passport_stands_id: dict = category_id(
         "passports-stand", "Passports Stand", "fas fa-folder-open", dg_token, dg_categories
@@ -61,9 +56,10 @@ def passports_stand(region: str, auth_info: tuple):
                 "label": "Bitwarden"
             },
             {
-                "type": "text",
+                "type": "textarea",
                 "name": "zone",
-                "label": "Zone"
+                "label": "Zone",
+                "rows": 30
             },
             {
                 "type": "text",

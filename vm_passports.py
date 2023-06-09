@@ -9,12 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from env import portal_info
 from vdc_passports import passports_vdc
-from common_function import dg_api, \
-    get_mongodb_objects, \
-    create_category, \
-    category_id, \
-    json_serial, \
-    portal_api
+from common_function import dg_api, get_mongodb_objects, create_category, category_id, json_serial, portal_api
 
 
 def passports_vm(region: str, auth_info: tuple) -> tuple | None:
@@ -29,16 +24,15 @@ def passports_vm(region: str, auth_info: tuple) -> tuple | None:
 
     portal_tags: list = portal_api("dict/tags")["stdout"]["tags"]
 
-    def vm_objects(vm_info: dict, type_id: int, project_networks: list, method: str = "POST", template: bool = False,
-                   vdc_object=None) -> dict:
+    def vm_objects(vm_info: dict, type_id: int, project_networks: list, vdc_id, method="POST", template=False) -> dict:
         """
         Func to create or update or delete objects in DataGerry
         :param vm_info:
         :param type_id:
         :param project_networks:
+        :param vdc_id:
         :param method:
         :param template:
-        :param vdc_object:
         :return:
         """
         if method == "PUT":
@@ -214,7 +208,7 @@ def passports_vm(region: str, auth_info: tuple) -> tuple | None:
                 },
                 {
                     "name": "vdc-link",
-                    "value": vdc_object
+                    "value": vdc_id
                 }
             ]
         }
@@ -617,7 +611,7 @@ def passports_vm(region: str, auth_info: tuple) -> tuple | None:
             vm_list: list = portal_api("servers?project_id=%s" % project)["stdout"]["servers"]
 
             for server in vm_list:
-                create_object = vm_objects(server, create_type, projects[project]["networks"], vdc_object=vdc_id)
+                create_object = vm_objects(server, create_type, projects[project]["networks"], vdc_id)
                 logger.info(f'Create object {create_object} in {create_type}')
 
     if not update_dg_types:
@@ -629,13 +623,13 @@ def passports_vm(region: str, auth_info: tuple) -> tuple | None:
 
         dg_type_objects = tuple(filter(lambda x: x["type_id"] == dg_type["type_id"], all_objects))
 
-        portal_project_vms = tuple(map(lambda server: vm_objects(server, dg_type["type_id"], dg_type["networks"],
-                                                                 template=True, vdc_object=vdc_id)["fields"], vm_list))
+        portal_vdc_vms = tuple(map(lambda vm: vm_objects(vm, dg_type["type_id"], dg_type["networks"], vdc_id,
+                                                         template=True)["fields"], vm_list))
 
-        for portal_vm in portal_project_vms:
+        for portal_vm in portal_vdc_vms:
             if not any(map(lambda x: x["fields"][19]["value"] == portal_vm[19]["value"], dg_type_objects)):
                 logger.info(f'Vm-object {portal_vm[2]["value"]} for creating in {dg_type["type_id"]}')
-                vm_objects(portal_vm, dg_type["type_id"], dg_type["networks"], "POST_VM", vdc_object=vdc_id)
+                vm_objects(portal_vm, dg_type["type_id"], dg_type["networks"], vdc_id, "POST_VM")
 
             for dg_object in dg_type_objects:
                 dg_to_diff = dg_object["fields"].copy()
@@ -664,11 +658,10 @@ def passports_vm(region: str, auth_info: tuple) -> tuple | None:
                         "comment": ""
                     }
 
-                    vm_objects(payload_object_tmp, dg_type["type_id"], dg_type["networks"], "PUT", vdc_object=vdc_id)
+                    vm_objects(payload_object_tmp, dg_type["type_id"], dg_type["networks"], vdc_id, "PUT")
 
-        for object in filter(
-                lambda x: x[1][19]["value"] not in tuple(map(lambda x: x[19]["value"], portal_project_vms)),
-                map(lambda y: (y.get("public_id"), y.get("fields")), dg_type_objects)):
+        for object in filter(lambda x: x[1][19]["value"] not in tuple(map(lambda x: x[19]["value"], portal_vdc_vms)),
+                             map(lambda y: (y.get("public_id"), y.get("fields")), dg_type_objects)):
             logger.info(f'Delete vm-object {object[1][0]["value"]}')
             dg_api("DELETE", "object/%s" % object[0], dg_token)
 
