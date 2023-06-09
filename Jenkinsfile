@@ -10,7 +10,8 @@ pipeline {
         ansiColor("xterm")
     }
     triggers {
-        cron('0 */4 * * *')
+//         cron('0 */4 * * *')
+        cron('H */4 * * *')
     }
     environment {
         PYTHONWARNINGS = "ignore:Unverified HTTPS request"
