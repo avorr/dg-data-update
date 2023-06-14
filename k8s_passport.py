@@ -26,9 +26,11 @@ def passports_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> Non
         if method == "PUT":
             return dg_api(method, "object/%s" % ns_info["public_id"], dg_token, ns_info)
 
-        def convert_to_gb(bytes):
+        def convert_to_gb(bytes: str) -> float | None:
+            if bytes is None:
+                return None
             foo = float(bytes)
-            for i in range(3):
+            for _ in range(3):
                 foo = foo / 1024
             return foo
 
@@ -49,7 +51,9 @@ def passports_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> Non
 
         # fract = lambda x: str(int(x)) if x - int(x) == 0 else "%.2f" % x
 
-        def fract(x: float) -> str:
+        def fract(x: float) -> str | None:
+            if x is None:
+                return None
             return str(int(x)) if x - int(x) == 0 else "%.2f" % x
 
         payload_ns_tmp: dict = {
