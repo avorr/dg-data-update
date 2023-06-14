@@ -41,7 +41,10 @@ def passports_k8s(region: str, auth_info: tuple, all_objects: tuple = ()) -> Non
 
         # get_usage = lambda x, y: "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
 
-        def get_usage(x: str, y: str) -> str:
+        def get_usage(x: str, y: str) -> str | None:
+            if (x != 0) or (y != 0):
+                if not all((x, y)):
+                    return None
             return "%.2f" % ((float(x) / float(y)) * 100) if float(y) != 0.0 else str(float(y))
 
         # fract = lambda x: str(int(x)) if x - int(x) == 0 else "%.2f" % x
