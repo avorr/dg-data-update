@@ -119,6 +119,48 @@ def passports_stand(region: str, auth_info: tuple) -> None:
                 "name": "dvp",
                 "label": "DVP",
                 "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "interactive-documentation",
+                "label": "Интерактивная Документация",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "s3",
+                "label": "S3",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "jenkins-cd",
+                "label": "Jenkins CD",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "sber-works",
+                "label": "Инструменты Производственного Процесса",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "journaling",
+                "label": "Журналирование",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "monitoring",
+                "label": "Мониторинг",
+                "rows": 30
+            },
+            {
+                "type": "textarea",
+                "name": "k8s",
+                "label": "K8s",
+                "rows": 30
             }
         ],
         "active": True,
@@ -150,7 +192,14 @@ def passports_stand(region: str, auth_info: tuple) -> None:
                         "efs",
                         "fd",
                         "istio",
-                        "dvp"
+                        "dvp",
+                        "interactive-documentation",
+                        "s3",
+                        "jenkins-cd",
+                        "sber-works",
+                        "journaling",
+                        "monitoring",
+                        "k8s"
                     ],
                     "type": "section",
                     "name": "services",

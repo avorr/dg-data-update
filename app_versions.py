@@ -23,6 +23,8 @@ def gtp_app_versions(region: str, auth_info: tuple, all_objects: tuple = ()) -> 
             return dg_api(method, "object/%s" % version_info["public_id"], dg_token, version_info)
 
         def get_version() -> str:
+            if not version_info["version"]:
+                return ""
             if next(iter(version_info["version"])) == "ERROR":
                 return version_info["version"]["ERROR"]
             if next(iter(version_info["version"])) == "deployment":

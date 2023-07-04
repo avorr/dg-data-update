@@ -519,14 +519,14 @@ def passports_vm(region: str, auth_info: tuple) -> tuple | None:
                         {
                             "name": "vdc-link",
                             "href": f"{portal_info['url']}/client/orders/{project}",
-                            "label": "Vdc Link",
+                            "label": "Vdc link",
                             "icon": "fas fa-external-link-alt",
                             "fields": []
                         },
                         {
                             "name": "vm-link",
                             "href": f"{portal_info['url']}/client/orders/{project}/servers/{{}}/info",
-                            "label": "Vm Link",
+                            "label": "Vm link",
                             "icon": "fas fa-external-link-alt",
                             "fields": ["vm-id"]
                         }
