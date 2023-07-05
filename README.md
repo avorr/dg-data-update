@@ -5,14 +5,24 @@
 
 ## Required environment variables
 
-CMDB_LOGIN - DATA GERRY ("https://cmdb.common.gos-tech.xyz/") Login, "portal_monitoring" by default<br>
-CMDB_PASSWORD - Your Bitwarden Password<br>
-PORTAL_TOKEN_PD15 - Token from portal pd15 ("https://portal.gos.sbercloud.dev/client/settings?section=tokens") <br>
+DG_USR - DATA GERRY ("https://cmdb.common.gos-tech.xyz/") Login, "portal_monitoring" by default<br>
+DG_PSW - Your Bitwarden Password<br>
+PORTAL_TOKEN - Token from portal pd15 ("https://portal.gos.sbercloud.dev/client/settings?section=tokens") <br>
 
 ```bash
-export CMDB_LOGIN='portal_monitoring'
-export CMDB_PASSWORD='Password'
-export PORTAL_TOKEN_PD15='TOKEN'
+export APP_VERSIONS=""
+export DG_MONGODB_HOST=""
+export DG_MONGODB_PSW=""
+export DG_MONGODB_USR=""
+export DG_PSW=""
+export DG_URL=""
+export DG_USR=""
+export K8S_METRICS=""
+export PASSPORTS_URL=""
+export PORTAL_TOKEN=""
+export PORTAL_URL=""
+export REGION=""
+
 ```
 
 ### Usage example
